@@ -53,9 +53,8 @@ jobs:
         shell: bash
         run: |
           uv venv --clear --python 3.12
-          uv pip install "torch==2.14.1" --index-url https://download.pytorch.org/whl/cpu
-          uv pip install -e ".[app]" pyinstaller
-          uv run python -c "import torch; print('torch', torch.__version__)"
+          uv pip install -e ".[app]" pyinstaller "torch==2.14.1+cpu"             --extra-index-url https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match
+          uv run python -c "import torch; print('torch', torch.__version__); assert 'cu' not in torch.__version__"
           uv run pyinstaller packaging/ShapeStudio.spec --noconfirm --log-level WARN
           ver="${GITHUB_REF_NAME#v}"
           cp LICENSE NOTICE TRADEMARK.md CHANGELOG.md packaging/README-WINDOWS.txt dist/ShapeStudio/
@@ -135,12 +134,10 @@ jobs:
           uv venv --clear --python 3.12
           # the CPU build of PyTorch, pinned: PyPI's default Linux wheel is the CUDA build and
           # would make the tarball 3 GB (see registry.RUNTIME_WHEELS for the sizes stated)
-          uv pip install "torch==2.14.1" --index-url https://download.pytorch.org/whl/cpu
-          if [ "$RUNNER_OS" = "macOS" ]; then
-            uv pip install -e ".[app]" pyinstaller
-          else
-            uv pip install -e . pyinstaller
-          fi
+          # one resolution, torch pinned to the CPU build from PyTorch's index (a second
+          # install would re-resolve torch from PyPI, which is the CUDA build on Linux)
+          extra=""; [ "$RUNNER_OS" = "macOS" ] && extra="[app]"
+          uv pip install -e ".$extra" pyinstaller "torch==2.14.1+cpu"             --extra-index-url https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match
           uv run python -c "import torch; print('torch', torch.__version__); assert 'cu' not in torch.__version__"
           uv run pyinstaller packaging/ShapeStudio.spec --noconfirm --log-level WARN
           cp LICENSE NOTICE TRADEMARK.md CHANGELOG.md packaging/README-LINUX-MACOS.txt dist/ShapeStudio/
