@@ -751,6 +751,7 @@ class Studio:
                 "cuda": rt["torch"]["cuda_available"],
                 "device": rt["torch"].get("device_name"),
                 "cuda_install": rt["cuda_install"],
+                "nvidia_gpu": cuda_gpu(self.hardware) is not None,
                 "runtime_installed": rt["runtime_installed"],
                 "in_use": False,
             }

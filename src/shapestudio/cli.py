@@ -203,6 +203,14 @@ def cmd_install_runtime(args: argparse.Namespace) -> int:
     if not plan["possible"]:
         print(f"Not possible here: {plan['reason']}")
         return 1
+    from shapestudio.hardware import detect
+    from shapestudio.planner import cuda_gpu
+
+    if cuda_gpu(detect(settings.hardware_cache_file)) is None:
+        print(
+            "Note: no NVIDIA GPU was detected on this machine (nvidia-smi not found or no CUDA "
+            "device). The CUDA build will run on the CPU only; continue if you know better."
+        )
     print(f"Method: {plan['method']}. {plan.get('note', '')}")
     bar = _Bar()
     try:

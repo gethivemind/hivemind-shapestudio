@@ -49,7 +49,7 @@
   .seg { display: inline-flex; padding: 2px; border-radius: 9px; background: var(--surface2); border: 1px solid var(--line); }
   .seg button { height: 28px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); cursor: pointer; font-size: 12.5px; font-weight: 500; }
   .seg button.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
-  .view { display: none; flex: 1; min-height: 0; }
+  .view { display: none; flex: 1 0 auto; }
   .view.active { display: block; }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 18px 16px 60px; }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
@@ -346,7 +346,7 @@ async function loadSettings() {
   loadComponents(); loadProjects().then(renderProjects); loadTrash();
 }
 async function loadComponents() { const j = await api("/api/components"); S.comps = j.components; const tb = $("#comps tbody"); tb.innerHTML = S.comps.map(cmp => { const inst = cmp.installed; let action = "";
-    if (cmp.kind==="runtime") { const ci = cmp.cuda_install||{}; action = cmp.cuda ? `<span class="pill ok">CUDA active</span>` : ci.possible ? `<button class="btn sm" onclick="installRuntime()">Install CUDA build…</button>` : `<span class="muted small">${esc(ci.reason||"")}</span>`; if (cmp.runtime_installed) action += ` <button class="btn sm" onclick="removeComp('runtime','torch')">Remove</button>`; }
+    if (cmp.kind==="runtime") { const ci = cmp.cuda_install||{}; action = cmp.cuda ? `<span class="pill ok">CUDA active</span>` : !cmp.nvidia_gpu ? `<span class="muted small">CPU build; no NVIDIA GPU found, so the CUDA build is not offered</span>` : ci.possible ? `<button class="btn sm" onclick="installRuntime()">Install CUDA build…</button>` : `<span class="muted small">${esc(ci.reason||"")}</span>`; if (cmp.runtime_installed) action += ` <button class="btn sm" onclick="removeComp('runtime','torch')">Remove</button>`; }
     else action = inst ? `<button class="btn sm" onclick="reveal('${esc(cmp.path).replace(/\\/g,"\\\\")}')">Show</button> <button class="btn sm danger" ${cmp.in_use?"disabled":""} onclick="removeComp('${cmp.kind}','${cmp.name}')">Remove</button>` : `<button class="btn sm primary" onclick="installComp('${cmp.name}')">Install…</button>`;
     const status = cmp.kind==="runtime" ? (inst?`${cmp.flavor}${cmp.device?` · ${esc(cmp.device)}`:""}`:"not importable") : inst ? `<span class="pill ok">installed</span>` : `<span class="pill">not downloaded</span>`;
     return `<tr><td><b>${esc(cmp.display_name)}</b>${cmp.verified?`<div class="muted small">${esc(cmp.verified)}</div>`:""}${cmp.note?`<div class="muted small">${esc(cmp.note)}</div>`:""}</td><td>${esc(cmp.tier)}</td><td>${esc(cmp.licence)}</td><td class="mono">${cmp.size?gib(cmp.size):"—"}</td><td>${status}</td><td class="row">${action}</td></tr>`; }).join(""); }
