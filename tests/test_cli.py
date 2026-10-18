@@ -33,7 +33,7 @@ def cli_env(settings, monkeypatch):
 def test_doctor_prints_hardware_runtime_tiers_and_policy(cli_env, capsys):
     assert cli.main(["doctor"]) == 0
     out = capsys.readouterr().out
-    assert "Hivemind Shape Studio" in out and "i5-1235U" in out
+    assert "Presidium Shape Studio" in out and "i5-1235U" in out
     assert "PyTorch" in out and "TripoSR [standard]" in out and "TRELLIS image-large [best]" in out
     assert "does NOT fit" in out and "not measured yet" in out
     assert "Excluded by policy" in out and "Hunyuan3D" in out

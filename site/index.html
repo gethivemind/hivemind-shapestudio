@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shape Studio by Hivemind</title>
+<title>Presidium Shape Studio</title>
 <meta name="description" content="A free, local image-to-3D studio and MCP server. One picture in, a textured GLB or OBJ mesh out, with permissively licensed models, on your own machine. Quality is a setting, never a consequence.">
-<meta property="og:title" content="Shape Studio by Hivemind">
+<meta property="og:title" content="Presidium Shape Studio">
 <meta property="og:description" content="Free, local, permissively licensed image-to-3D. Quality is a setting, never a consequence.">
 <meta property="og:image" content="https://gethivemind.github.io/hivemind-shapestudio/assets/icon-512.png">
 <meta property="og:type" content="website">
+<meta name="theme-color" content="#D5582F">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <style>
   :root {
     --bg: #0f1012; --surface: #17181b; --surface2: #1f2024; --line: #2a2b31; --ink: #f2f2f0; --ink2: #c9c9c4; --muted: #8f9096;
-    --accent: #7aa6ff; --honey: #f0b429; --ok: #52c17c; --bad: #f06f63; --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --accent: #E8734A; --honey: #D5582F; --ok: #52c17c; --bad: #f06f63; --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
   }
-  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg: #f7f6f2; --surface: #ffffff; --surface2: #f0efe9; --line: #e2e1da; --ink: #1b1b19; --ink2: #3a3a37; --muted: #6b6b68; --accent: #2f6fed; --ok: #2e8b57; --bad: #c8463c; } }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg: #f7f6f2; --surface: #ffffff; --surface2: #f0efe9; --line: #e2e1da; --ink: #1b1b19; --ink2: #3a3a37; --muted: #6b6b68; --accent: #D5582F; --ok: #2e8b57; --bad: #c8463c; } }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; } section, .hero { scroll-margin-top: 72px; }
   body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
@@ -25,7 +26,7 @@
   header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 58px; }
   .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -.2px; text-decoration: none; color: var(--ink); }
   .brand svg { width: 28px; height: 28px; }
-  .brand small { font-weight: 400; color: var(--muted); font-size: 12px; margin-left: 6px; }
+  .brand .lk { font-weight: 400; } .brand .lk b { font-weight: 500; margin-right: 6px; }
   nav a { color: var(--ink2); text-decoration: none; margin-left: 18px; font-size: 14px; }
   .hero { padding: 72px 0 36px; display: grid; grid-template-columns: 1.05fr 1fr; gap: 36px; align-items: center; }
   .hero h1 { font-size: clamp(32px, 4.6vw, 52px); line-height: 1.08; margin: 0 0 14px; letter-spacing: -.8px; }
@@ -66,7 +67,7 @@
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <a class="brand" href="#"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6 54 19v26L32 58 10 45V19z" fill="#f0b429"/><path d="M32 20l12 7-12 7-12-7z" fill="#f7f6f2"/><path d="M20 27l12 7v14l-12-7z" fill="#1b1b19"/><path d="M44 27l-12 7v14l12-7z" fill="#3a3a37"/></svg>Shape Studio <small>by Hivemind</small></a>
+  <a class="brand" href="#"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="53.1" cy="18.2" r="3.6" fill="#D5582F"/><circle cx="58.3" cy="41" r="3.6" fill="#D5582F"/><circle cx="43.7" cy="59.3" r="3.6" fill="#D5582F"/><circle cx="20.3" cy="59.3" r="3.6" fill="#D5582F"/><circle cx="5.7" cy="41" r="3.6" fill="#D5582F"/><circle cx="10.9" cy="18.2" r="3.6" fill="#D5582F"/><circle cx="32" cy="8" r="5.5" fill="#D5582F"/><path d="M32 24 L42 29.5 V40.5 L32 46 L22 40.5 V29.5 Z" fill="none" stroke="#D5582F" stroke-width="3" stroke-linejoin="round"/><path d="M22 29.5 L32 35 L42 29.5 M32 35 V46" fill="none" stroke="#D5582F" stroke-width="2.6" stroke-linejoin="round"/></svg><span class="lk"><b>Presidium</b> Shape Studio</span></a>
   <nav><a href="#policy">Policy</a><a href="#tiers">Tiers</a><a href="#status">Status</a><a href="#install">Install</a><a href="#licences">Licences</a><a href="mcp.html">Agents</a><a href="https://github.com/gethivemind/hivemind-shapestudio" target="_blank" rel="noopener">GitHub</a></nav>
 </div></header>
 
@@ -81,7 +82,7 @@
       </div>
       <div class="pills"><span class="pill ok">Apache-2.0</span><span class="pill">Windows · Linux · macOS</span><span class="pill">CPU, or NVIDIA GPU</span><span class="pill">MCP server inside</span><span class="pill">Works offline after setup</span></div>
     </div>
-    <div class="art"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6 54 19v26L32 58 10 45V19z" fill="#f0b429"/><path d="M32 20l12 7-12 7-12-7z" fill="#f7f6f2"/><path d="M20 27l12 7v14l-12-7z" fill="#1b1b19"/><path d="M44 27l-12 7v14l12-7z" fill="#3a3a37"/></svg><p class="note">Screenshots follow once the first real reconstruction has been run; this page shows no mesh this project has not made.</p></div>
+    <div class="art"><img src="assets/shape-tile.svg" alt="The Presidium Shape Studio mark: six seats around a table, a cube on the table" width="320" height="320" style="border-radius:22%"><p class="note">Part of the Presidium family. Screenshots follow once the first real reconstruction has been run; this page shows no mesh this project has not made.</p></div>
   </div>
 
   <section id="policy">
@@ -145,14 +146,14 @@ shapestudio reconstruct chair.png --out meshes/</pre><p class="note">Or do the s
     <div class="grid">
       <div class="card"><h3>Code: Apache-2.0</h3><p>Use it, fork it, ship it, in products and at work. Keep the NOTICE file and the author lines, as the licence asks. The vendored TripoSR code is MIT; its attention blocks derive from Hugging Face diffusers (Apache-2.0).</p></div>
       <div class="card"><h3>Models and runtime</h3><p>TripoSR and TRELLIS weights are MIT. PyTorch is BSD-3-Clause (the CUDA libraries inside its CUDA build are under NVIDIA's EULA). scikit-image is BSD; ONNX Runtime MIT; IS-Net and U²-Net Apache-2.0; model-viewer Apache-2.0.</p></div>
-      <div class="card"><h3>Name: a trademark</h3><p>"Hivemind", "Shape Studio by Hivemind" and the logo identify the official project. Forks are welcome under their own name and may say "based on Hivemind Shape Studio". The policy is in <a href="https://github.com/gethivemind/hivemind-shapestudio/blob/main/TRADEMARK.md" target="_blank" rel="noopener">TRADEMARK.md</a>.</p></div>
+      <div class="card"><h3>Name: a trademark</h3><p>"Presidium" and "Presidium Shape Studio" and the mark identify the official project. Forks are welcome under their own name and may say "based on Presidium Shape Studio". The policy is in <a href="https://github.com/gethivemind/hivemind-shapestudio/blob/main/TRADEMARK.md" target="_blank" rel="noopener">TRADEMARK.md</a>.</p></div>
     </div>
   </section>
 </main>
 
 <footer><div class="wrap">
-  <div class="credit">Shape Studio by Hivemind · made with ♥ by <a href="https://github.com/royal-programmer" target="_blank" rel="noopener">Ratul Roy (royal-programmer)</a></div>
-  <div><a href="https://github.com/gethivemind/hivemind-shapestudio" target="_blank" rel="noopener">Source</a> · <a href="https://github.com/gethivemind/hivemind-shapestudio/issues" target="_blank" rel="noopener">Issues</a> · <a href="https://github.com/gethivemind/hivemind-shapestudio/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a> · <a href="https://github.com/gethivemind/hivemind-shapestudio/blob/main/CITATION.cff" target="_blank" rel="noopener">Cite</a> · <a href="https://gethivemind.github.io/hivemind-imagestudio/" target="_blank" rel="noopener">Image Studio</a> · <a href="privacy.html">Privacy</a> · © 2026 Ratul Roy and the Hivemind contributors</div>
+  <div class="credit">Presidium Shape Studio · made with ♥ by <a href="https://github.com/royal-programmer" target="_blank" rel="noopener">Ratul Roy (royal-programmer)</a></div>
+  <div><a href="https://github.com/gethivemind/hivemind-shapestudio" target="_blank" rel="noopener">Source</a> · <a href="https://github.com/gethivemind/hivemind-shapestudio/issues" target="_blank" rel="noopener">Issues</a> · <a href="https://github.com/gethivemind/hivemind-shapestudio/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a> · <a href="https://github.com/gethivemind/hivemind-shapestudio/blob/main/CITATION.cff" target="_blank" rel="noopener">Cite</a> · <a href="https://gethivemind.github.io/hivemind-imagestudio/" target="_blank" rel="noopener">Presidium Image Studio</a> · <a href="privacy.html">Privacy</a> · © 2026 Ratul Roy and the Hivemind contributors</div>
 </div></footer>
 </body>
 </html>

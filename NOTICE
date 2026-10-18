@@ -1,18 +1,18 @@
-Hivemind Shape Studio
+Presidium Shape Studio (formerly Shape Studio by Hivemind)
 Copyright 2026 Ratul Roy (royal-programmer) and the Hivemind contributors
 Created and maintained by Ratul Roy. https://github.com/royal-programmer
 
 Licensed under the Apache License, Version 2.0. See LICENSE.
 
-Trademarks. "Hivemind", "Hivemind Shape Studio" and "Shape Studio by Hivemind", and the
-Hivemind logos, are trademarks of Ratul Roy. The Apache License grants no trademark rights
-(section 6); the full policy is in TRADEMARK.md.
-You may use the code under the licence, fork it, and ship it; please do not call a
-fork or a derived service "Hivemind" or "Hivemind Shape Studio", or present it as
-official. "A fork of Hivemind Shape Studio" is fine.
+Trademarks. "Presidium" and "Presidium Shape Studio", and the Presidium marks, are
+trademarks of Ratul Roy. The Apache License grants no trademark rights (section 6); the
+full policy is in TRADEMARK.md.
+You may use the code under the licence, fork it, and ship it; please do not call a fork
+or a derived service "Presidium" or "Presidium Shape Studio", or present it as official.
+"A fork of Presidium Shape Studio" is fine.
 
-Official channel. GitHub Releases of gethivemind/hivemind-shapestudio (and, once published after
-the rename, the PyPI package) are the official builds; anything else is unverified.
+Official channel. GitHub Releases of gethivemind/hivemind-shapestudio (and, once published
+under the final name, the PyPI package) are the official builds; anything else is unverified.
 
 Third-party code included in this distribution:
 - src/shapestudio/engine/tsr: derived from TripoSR, Copyright (c) 2024 Tripo AI &
@@ -21,5 +21,7 @@ Third-party code included in this distribution:
 - src/shapestudio/engine/tsr/vit.py: a reimplementation of the DINO ViT-B/16 architecture
   (Facebook AI Research, Apache License 2.0) following Hugging Face transformers' ViTModel
   parameter layout (Apache License 2.0).
+- The Presidium mark geometry comes from the Presidium brand kit (packages/web/src/lib/
+  brand-mark.ts in the Presidium app repository), under the trademark policy above.
 
 Third-party models and components keep their own licences; see the Licences table in README.md.

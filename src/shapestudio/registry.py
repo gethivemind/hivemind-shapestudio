@@ -511,7 +511,7 @@ EXCLUDED_BY_POLICY: tuple[tuple[str, str], ...] = (
 )
 
 LICENCES: tuple[dict[str, str], ...] = (
-    {"component": "Hivemind Shape Studio", "licence": "Apache-2.0"},
+    {"component": "Presidium Shape Studio", "licence": "Apache-2.0"},
     {"component": "TripoSR weights (stabilityai/TripoSR)", "licence": "MIT"},
     {"component": "TripoSR code (vendored, VAST-AI-Research/TripoSR)", "licence": "MIT"},
     {"component": "Attention blocks derived from Hugging Face diffusers", "licence": "Apache-2.0"},

@@ -74,14 +74,14 @@ def main() -> int:
     if args.store:
         ident = os.environ.get("MSIX_IDENTITY_NAME")
         publisher = os.environ.get("MSIX_PUBLISHER")
-        display = os.environ.get("MSIX_PUBLISHER_DISPLAY", "Hivemind")
+        display = os.environ.get("MSIX_PUBLISHER_DISPLAY", "Presidium")
         if not ident or not publisher:
             sys.exit("--store needs MSIX_IDENTITY_NAME and MSIX_PUBLISHER (from Partner Center)")
     else:
         ident, publisher, display = (
             "Hivemind.ShapeStudio",
             "CN=Hivemind Shape Studio Dev",
-            "Hivemind (dev build)",
+            "Presidium (dev build)",
         )
 
     staging = DIST / "msix-staging"

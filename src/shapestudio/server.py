@@ -29,7 +29,7 @@ def _hints(
     )
 
 
-INSTRUCTIONS = """Hivemind Shape Studio: free, local, offline image-to-3D.
+INSTRUCTIONS = """Presidium Shape Studio: free, local, offline image-to-3D.
 
 Policy: quality is a setting, never a consequence. reconstruct() defaults to preset "best"
 (the finest surface grid) on the strongest permissively licensed model that fits this
@@ -48,7 +48,7 @@ GLB path (and OBJ path, turntable PNG). Never block waiting inside a single tool
 
 def build_server(studio: Studio | None = None) -> FastMCP:
     studio = studio or Studio()
-    mcp = FastMCP(name="hivemind-shapestudio", instructions=INSTRUCTIONS)
+    mcp = FastMCP(name="presidium-shapestudio", instructions=INSTRUCTIONS)
 
     def _err(e: Exception) -> dict[str, Any]:
         return {"error": str(e)}

@@ -685,7 +685,7 @@ class Studio:
             z.writestr(
                 "project.json",
                 json.dumps(
-                    {**entry, "app": f"Hivemind Shape Studio {__version__}", "meshes": manifest},
+                    {**entry, "app": f"Presidium Shape Studio {__version__}", "meshes": manifest},
                     indent=2,
                 ),
             )

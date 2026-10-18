@@ -1,15 +1,17 @@
-# Hivemind Shape Studio
+# Presidium Shape Studio
+
+<img src="site/assets/shape-tile.svg" width="96" height="96" alt="The Presidium Shape Studio mark" align="right">
 
 **Website:** https://gethivemind.github.io/hivemind-shapestudio/ · **Releases:** https://github.com/gethivemind/hivemind-shapestudio/releases
 
 A free, local image-to-3D studio and MCP server. One picture in, a textured mesh out (GLB
 and OBJ with vertex colours, plus a turntable PNG), with permissively licensed models on your
 own machine. A desktop app for Windows, macOS and Linux, a web UI, a command line, and an MCP
-server for Hivemind, Claude, Cursor or any other agent. It runs on the CPU if that is all
+server for Presidium, Claude, Cursor or any other agent. It runs on the CPU if that is all
 there is, and uses an NVIDIA GPU when you have one.
 
-Sibling of [Image Studio by Hivemind](https://github.com/gethivemind/hivemind-imagestudio),
-built on the same architecture and the same rules. Design: Hivemind ADR-051. Licence:
+Part of the Presidium family, sibling of [Presidium Image Studio](https://github.com/gethivemind/hivemind-imagestudio),
+built on the same architecture and the same rules. Design: Hivemind ADR-051; brand: ADR-065 and 066. Licence:
 Apache-2.0.
 
 ## The policy
@@ -102,8 +104,7 @@ pipx install https://github.com/gethivemind/hivemind-shapestudio/releases/latest
 ```
 
 or the same wheel with `pip install` / `uv tool install`. The PyPI package is not published yet:
-a brand rename is coming and PyPI names are permanent, so it will be registered once under the
-final name; until then the wheel on the GitHub release is the Python distribution. PyTorch is a
+it will be registered once as `presidium-shapestudio` when its publisher exists; until then the wheel on the GitHub release is the Python distribution. PyTorch is a
 dependency and comes along (see Sizes). Then:
 
 ```bash
@@ -158,7 +159,7 @@ official builds (see NOTICE and TRADEMARK.md).
   sizes, sources and SHA-256), preferences (device, memory limit, threads, over-budget
   unlock, pause), projects, trash, about (with the MCP command).
 
-Dark and light themes, phone-friendly layout.
+Dark and light themes in the Presidium palette (Shape Studio coral #D5582F), phone-friendly layout, the Presidium spinner while a job runs.
 
 ## MCP tools
 
@@ -182,7 +183,7 @@ Client configs for Claude Desktop, Claude Code, Cursor and VS Code are in `examp
 
 | Component | Licence |
 | --- | --- |
-| Hivemind Shape Studio | Apache-2.0 |
+| Presidium Shape Studio | Apache-2.0 |
 | TripoSR weights (stabilityai/TripoSR) | MIT |
 | TripoSR code, vendored under `src/shapestudio/engine/tsr` (VAST-AI-Research/TripoSR) | MIT |
 | Attention blocks derived from Hugging Face diffusers | Apache-2.0 |
@@ -195,9 +196,9 @@ Client configs for Claude Desktop, Claude Code, Cursor and VS Code are in `examp
 | model-viewer web component (Google) | Apache-2.0 |
 
 The code is free (Apache-2.0, `LICENSE`, `NOTICE`, `third_party/`). The names "Hivemind",
-"Hivemind Shape Studio" and "Shape Studio by Hivemind" and the logo identify the official
+"Presidium Shape Studio" and "Presidium Shape Studio" and the logo identify the official
 project and are not covered by the licence; the policy is in `TRADEMARK.md`. Official builds
-carry the line "Shape Studio by Hivemind · made with ♥ by Ratul Roy (royal-programmer)".
+carry the line "Presidium Shape Studio · made with ♥ by Ratul Roy (royal-programmer)".
 
 ## Development
 

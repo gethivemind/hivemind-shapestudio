@@ -23,7 +23,7 @@ def test_page_plan_upload_reconstruct_files_and_jobs(studio: Studio, sample_imag
     client = TestClient(build_app(studio))
     html = client.get("/").text
     assert "Shape Studio" in html and "model-viewer" in html
-    assert client.get("/manifest.webmanifest").json()["name"] == "Shape Studio by Hivemind"
+    assert client.get("/manifest.webmanifest").json()["name"] == "Presidium Shape Studio"
     assert client.get("/icon-64.png").content.startswith(b"\x89PNG")
     assert client.get("/api/about").json()["credit"].startswith("made with")
     caps = client.get("/api/capabilities").json()
@@ -47,7 +47,7 @@ def test_page_plan_upload_reconstruct_files_and_jobs(studio: Studio, sample_imag
     assert glb.status_code == 200 and glb.content[:4] == b"glTF"
     dl = client.get(f"/api/files/{job_id}/obj", params={"download": "1"})
     assert "attachment" in dl.headers["content-disposition"] and dl.text.startswith(
-        "# Shape Studio"
+        "# Presidium Shape Studio"
     )
     assert client.get(f"/api/files/{job_id}/preview").status_code == 200
     assert client.get(f"/api/files/{job_id}/nope").status_code == 404

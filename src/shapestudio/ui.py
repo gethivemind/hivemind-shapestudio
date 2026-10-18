@@ -30,36 +30,40 @@ FILE_KINDS = {
 }
 
 
+BRAND = STATIC / "brand"
+
+
 def _draw_icon(size: int) -> bytes:
-    """The studio mark (hexagon with a faceted cube) as a PNG, drawn at 4x and downsampled."""
+    """The Presidium Shape Studio tile (coral, light mark) as a PNG, drawn at 8x and
+    downsampled; same geometry as static/brand/shape-tile.svg from the brand kit."""
     from PIL import Image, ImageDraw
 
-    s = size * 4
+    s = size * 8
     u = s / 64
     img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    d.rounded_rectangle((0, 0, s - 1, s - 1), radius=int(14 * u), fill="#0f1012")
-    hexagon = [(32, 6), (54, 19), (54, 45), (32, 58), (10, 45), (10, 19)]
-    d.polygon([(x * u, y * u) for x, y in hexagon], fill="#f0b429")
-    # an isometric cube: top, left, right faces
-    top = [(32, 20), (44, 27), (32, 34), (20, 27)]
-    left = [(20, 27), (32, 34), (32, 48), (20, 41)]
-    right = [(32, 34), (44, 27), (44, 41), (32, 48)]
-    d.polygon([(x * u, y * u) for x, y in top], fill="#f7f6f2")
-    d.polygon([(x * u, y * u) for x, y in left], fill="#1b1b19")
-    d.polygon([(x * u, y * u) for x, y in right], fill="#3a3a37")
+    d.rounded_rectangle((0, 0, s - 1, s - 1), radius=int(14 * u), fill="#D5582F")
+    ink = "#F4F4F5"
+    for cx, cy in ((53.1, 18.2), (58.3, 41), (43.7, 59.3), (20.3, 59.3), (5.7, 41), (10.9, 18.2)):
+        d.ellipse(((cx - 3.6) * u, (cy - 3.6) * u, (cx + 3.6) * u, (cy + 3.6) * u), fill=ink)
+    d.ellipse(((32 - 5.5) * u, (8 - 5.5) * u, (32 + 5.5) * u, (8 + 5.5) * u), fill=ink)
+    outline = [(32, 24), (42, 29.5), (42, 40.5), (32, 46), (22, 40.5), (22, 29.5)]
+    pts = [(x * u, y * u) for x, y in outline]
+    d.line([*pts, pts[0]], fill=ink, width=max(1, round(3 * u)), joint="curve")
+    for seg in ([(22, 29.5), (32, 35), (42, 29.5)], [(32, 35), (32, 46)]):
+        d.line(
+            [(x * u, y * u) for x, y in seg], fill=ink, width=max(1, round(2.6 * u)), joint="curve"
+        )
+    r = 1.5 * u
+    for x, y in [*outline, (22, 29.5), (42, 29.5), (32, 46)]:
+        d.ellipse((x * u - r, y * u - r, x * u + r, y * u + r), fill=ink)
     out = io.BytesIO()
     img.resize((size, size), Image.LANCZOS).save(out, "PNG", optimize=True)
     return out.getvalue()
 
 
-ICON_SVG = (
-    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>"
-    "<path d='M32 6 54 19v26L32 58 10 45V19z' fill='#f0b429'/>"
-    "<path d='M32 20l12 7-12 7-12-7z' fill='#f7f6f2'/>"
-    "<path d='M20 27l12 7v14l-12-7z' fill='#1b1b19'/>"
-    "<path d='M44 27l-12 7v14l12-7z' fill='#3a3a37'/></svg>"
-)
+def _brand_svg(name: str) -> str:
+    return (BRAND / f"{name}.svg").read_text(encoding="utf-8")
 
 
 def _int(v: Any) -> int | None:
@@ -94,10 +98,11 @@ def build_app(studio: Studio) -> Starlette:
             {
                 "name": DISPLAY_NAME,
                 "short_name": "Shape Studio",
+                "description": "Presidium Shape Studio: free, local image-to-3D.",
                 "start_url": "/",
                 "display": "standalone",
                 "background_color": "#0f1012",
-                "theme_color": "#0f1012",
+                "theme_color": "#D5582F",
                 "icons": [
                     {"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"},
                     {"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"},
@@ -113,7 +118,19 @@ def build_app(studio: Studio) -> Starlette:
         )
 
     async def icon(_: Request) -> Response:
-        return Response(ICON_SVG, media_type="image/svg+xml")
+        return Response(_brand_svg("shape-tile"), media_type="image/svg+xml")
+
+    async def brand(request: Request) -> Response:
+        name = request.path_params["name"]
+        if name not in (
+            "shape-tile",
+            "shape-mark",
+            "shape-mono",
+            "shape-mono-light",
+            "shape-spinner",
+        ):
+            return JSONResponse({"error": "no such brand asset"}, status_code=404)
+        return Response(_brand_svg(name), media_type="image/svg+xml")
 
     _png_icons: dict[int, bytes] = {}
 
@@ -129,6 +146,7 @@ def build_app(studio: Studio) -> Starlette:
         return JSONResponse(
             {
                 "product": PRODUCT_NAME,
+                "family": "Presidium",
                 "display_name": DISPLAY_NAME,
                 "version": __version__,
                 "credit": "made with ♥ by Ratul Roy (royal-programmer)",
@@ -444,6 +462,7 @@ def build_app(studio: Studio) -> Starlette:
             Route("/manifest.webmanifest", manifest),
             Route("/icon.svg", icon),
             Route("/icon-{size}.png", icon_png),
+            Route("/brand/{name}.svg", brand),
             Route("/api/about", about),
             Route("/api/capabilities", capabilities),
             Route("/api/plan", plan),

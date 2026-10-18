@@ -3,25 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Shape Studio by Hivemind</title>
+<title>Presidium Shape Studio</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/icon-180.png">
-<meta name="theme-color" content="#0f1012">
+<meta name="theme-color" content="#D5582F">
 <style>
   :root {
     --bg: #f4f3ef; --surface: #ffffff; --surface2: #f8f7f4; --ink: #1b1b19; --ink2: #4b4a46; --muted: #7a7873; --line: #e4e2dc; --line2: #d6d4cd;
-    --accent: #2f6fed; --on-accent: #fff; --honey: #f0b429; --ok: #2e8b57; --warn: #c98a12; --bad: #c8463c; --track: #e7e5df;
+    --accent: #D5582F; --on-accent: #fff; --honey: #D5582F; --coral: #D5582F; --violet: #5B4FD1; --ok: #2e8b57; --warn: #c98a12; --bad: #c8463c; --track: #e7e5df;
     --r: 12px; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --shadow: 0 1px 2px rgba(0,0,0,.06), 0 12px 32px rgba(0,0,0,.10);
   }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
     --bg: #0f0f11; --surface: #18181b; --surface2: #1f1f23; --ink: #ededeb; --ink2: #c4c3be; --muted: #8e8d88; --line: #27272c; --line2: #35353b;
-    --accent: #7aa6ff; --on-accent: #0b1430; --ok: #52c17c; --warn: #e4b43c; --bad: #f06f63; --track: #2a2a30;
+    --accent: #E8734A; --on-accent: #1b0d08; --ok: #52c17c; --warn: #e4b43c; --bad: #f06f63; --track: #2a2a30;
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.45); } }
   :root[data-theme="dark"] {
     --bg: #0f0f11; --surface: #18181b; --surface2: #1f1f23; --ink: #ededeb; --ink2: #c4c3be; --muted: #8e8d88; --line: #27272c; --line2: #35353b;
-    --accent: #7aa6ff; --on-accent: #0b1430; --ok: #52c17c; --warn: #e4b43c; --bad: #f06f63; --track: #2a2a30;
+    --accent: #E8734A; --on-accent: #1b0d08; --ok: #52c17c; --warn: #e4b43c; --bad: #f06f63; --track: #2a2a30;
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.45); }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
@@ -31,12 +31,13 @@
   .top { height: 52px; display: flex; align-items: center; gap: 10px; padding: 0 14px; border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 5; }
   .brand { display: flex; align-items: center; gap: 9px; font-weight: 650; }
   .brand svg { width: 24px; height: 24px; }
-  .brand small { font-weight: 500; color: var(--muted); font-size: 11.5px; margin-left: 4px; }
+  .brand .lk { font-weight: 400; } .brand .lk b { font-weight: 500; margin-right: 5px; }
   .tabs { display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--line); }
   .tabs button { padding: 5px 13px; border-radius: 8px; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-weight: 500; }
   .tabs button.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
   .grow { flex: 1; }
   .chip { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface2); font-size: 12px; color: var(--ink2); white-space: nowrap; }
+  .chip .spin { width: 18px; height: 18px; margin: -2px 0; }
   .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
   .dot.busy { background: var(--accent); animation: pulse 1.1s infinite; } .dot.warn { background: var(--warn); } .dot.off { background: var(--muted); }
   @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
@@ -117,7 +118,7 @@
   .hidden { display: none !important; }
   @media (max-width: 700px) {
     .top { height: auto; flex-wrap: wrap; padding: 8px 10px; gap: 8px; }
-    .brand small { display: none; }
+    .brand .lk b { margin-right: 4px; }
     .tabs { order: 5; width: 100%; justify-content: space-between; }
     .tabs button { flex: 1; padding: 6px 4px; }
     #statuschip { max-width: 55vw; overflow: hidden; } #statuschip span { overflow: hidden; text-overflow: ellipsis; }
@@ -131,10 +132,10 @@
 </head>
 <body>
 <header class="top">
-  <div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6 54 19v26L32 58 10 45V19z" fill="#f0b429"/><path d="M32 20l12 7-12 7-12-7z" fill="#f7f6f2"/><path d="M20 27l12 7v14l-12-7z" fill="#1b1b19"/><path d="M44 27l-12 7v14l12-7z" fill="#3a3a37"/></svg>Shape Studio <small>by Hivemind</small></div>
+  <div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="53.1" cy="18.2" r="3.6" fill="#D5582F"/><circle cx="58.3" cy="41" r="3.6" fill="#D5582F"/><circle cx="43.7" cy="59.3" r="3.6" fill="#D5582F"/><circle cx="20.3" cy="59.3" r="3.6" fill="#D5582F"/><circle cx="5.7" cy="41" r="3.6" fill="#D5582F"/><circle cx="10.9" cy="18.2" r="3.6" fill="#D5582F"/><circle cx="32" cy="8" r="5.5" fill="#D5582F"/><path d="M32 24 L42 29.5 V40.5 L32 46 L22 40.5 V29.5 Z" fill="none" stroke="#D5582F" stroke-width="3" stroke-linejoin="round"/><path d="M22 29.5 L32 35 L42 29.5 M32 35 V46" fill="none" stroke="#D5582F" stroke-width="2.6" stroke-linejoin="round"/></svg><span class="lk"><b>Presidium</b> Shape Studio</span></div>
   <nav class="tabs" id="tabs"><button data-tab="home">Home</button><button data-tab="create" class="active">Create</button><button data-tab="gallery">Gallery</button><button data-tab="settings">Settings</button></nav>
   <div class="grow"></div>
-  <span class="chip" id="statuschip"><i class="dot off"></i><span>starting…</span></span>
+  <span class="chip" id="statuschip"><i class="dot off"></i><img class="spin hidden" src="/brand/shape-spinner.svg" alt="" width="18" height="18"><span>starting…</span></span>
   <button class="ib" id="theme" title="Theme">◐</button>
 </header>
 
@@ -239,7 +240,7 @@
   </div>
 </div></section>
 
-<footer class="credit">Shape Studio by Hivemind · made with ♥ by <a href="https://github.com/royal-programmer" target="_blank" rel="noopener">Ratul Roy (royal-programmer)</a></footer>
+<footer class="credit">Presidium Shape Studio · made with ♥ by <a href="https://github.com/royal-programmer" target="_blank" rel="noopener">Ratul Roy (royal-programmer)</a></footer>
 
 <dialog id="viewer"><button class="ib close" id="vclose">✕</button><div class="viewer"><div class="stage" id="stage"></div><div class="side" id="vside"></div></div></dialog>
 <dialog id="askdlg"><div class="ask" id="askbody"></div></dialog>
@@ -302,7 +303,7 @@ $("#go").onclick = async () => {
 };
 // ---------- jobs
 async function pollJobs() { try { const j = await api("/api/jobs"); S.jobs = j.jobs; S.workerHere = j.worker_in_this_process; S.paused = j.paused; } catch { return; } renderQueue(); renderStatus(); if ($("#gallery").classList.contains("active")) renderGallery(); }
-function renderStatus() { const running = S.jobs.find(j=>j.status==="running"), queued = S.jobs.filter(j=>j.status==="queued").length; const chip = $("#statuschip"); const dot = chip.firstElementChild, txt = chip.lastElementChild; if (running) { dot.className="dot busy"; txt.textContent = running.summary + (queued?` · ${queued} queued`:""); } else if (S.paused) { dot.className="dot warn"; txt.textContent = "paused"; } else if (queued) { dot.className="dot warn"; txt.textContent = `${queued} queued · no worker?`; } else { dot.className="dot"; txt.textContent = S.workerHere===false ? "idle · another studio runs the jobs" : "idle"; } }
+function renderStatus() { const running = S.jobs.find(j=>j.status==="running"), queued = S.jobs.filter(j=>j.status==="queued").length; const chip = $("#statuschip"); const dot = chip.firstElementChild, txt = chip.lastElementChild; const spin = $(".spin", chip); spin.classList.toggle("hidden", !running); dot.classList.toggle("hidden", !!running); if (running) { dot.className="dot busy"; txt.textContent = running.summary + (queued?` · ${queued} queued`:""); } else if (S.paused) { dot.className="dot warn"; txt.textContent = "paused"; } else if (queued) { dot.className="dot warn"; txt.textContent = `${queued} queued · no worker?`; } else { dot.className="dot"; txt.textContent = S.workerHere===false ? "idle · another studio runs the jobs" : "idle"; } }
 function renderQueue() { const live = S.jobs.filter(j=>j.status==="queued"||j.status==="running"||(j.finished_at && Date.now()-Date.parse(j.finished_at) < 120000)); $("#queue").innerHTML = live.slice(0,8).map(j => `<div class="qcard"><div class="t">${esc(j.title)}</div><div class="bar"><i style="width:${Math.round((j.progress||0)*100)}%"></i></div><div class="row small" style="justify-content:space-between"><span class="${j.status==="failed"?"muted":""}">${esc(j.summary)}${j.error?` · ${esc(j.error)}`:""}</span>${j.status==="queued"||j.status==="running"?`<button class="btn sm" onclick="cancelJob('${j.id}')">Cancel</button>`:j.status==="done"?`<button class="btn sm" onclick="openViewer('${j.id}')">View</button>`:""}</div></div>`).join(""); }
 window.cancelJob = async id => { await post(`/api/jobs/${id}/cancel`); pollJobs(); };
 // ---------- gallery

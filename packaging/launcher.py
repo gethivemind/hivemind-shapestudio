@@ -33,7 +33,7 @@ from pathlib import Path
 HOST = "127.0.0.1"
 PORT = int(os.environ.get("SHAPESTUDIO_PORT", "8776"))
 CONTROL_PORT = PORT + 1  # single-instance handshake
-TITLE = "Shape Studio by Hivemind"
+TITLE = "Presidium Shape Studio"
 WEBVIEW2_URL = "https://go.microsoft.com/fwlink/p/?LinkId=2124703"
 # the tray icon needs a GUI loop of its own; on macOS that loop and the window's are the same
 # main thread, so the tray is Windows-only. Linux runs in the browser (see the docstring).
@@ -357,10 +357,10 @@ class App:
             image = (
                 Image.open(icon_path)
                 if icon_path.exists()
-                else Image.new("RGB", (64, 64), "#f0b429")
+                else Image.new("RGB", (64, 64), "#D5582F")
             )
             menu = pystray.Menu(
-                pystray.MenuItem("Open Shape Studio", lambda: self.focus(), default=True),
+                pystray.MenuItem("Open Presidium Shape Studio", lambda: self.focus(), default=True),
                 pystray.MenuItem("Open in browser", lambda: self.open_in_browser()),
                 pystray.MenuItem(
                     lambda item: (

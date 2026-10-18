@@ -14,7 +14,7 @@ certificate is built instead so the packaging path is exercised on every release
 ## Store steps, once
 
 1. In Partner Center (the same free individual account as Image Studio), create the app with
-   the name **Shape Studio by Hivemind**. Reserving the name is the trademark-relevant step.
+   the name **Presidium Shape Studio**. Reserving the name is the trademark-relevant step.
 2. Open *Product management → Product identity* and copy `Package/Identity/Name`,
    `Package/Identity/Publisher` and `Package/Properties/PublisherDisplayName`.
 3. Add them to this repository as Actions **variables**: `MSIX_IDENTITY_NAME`,

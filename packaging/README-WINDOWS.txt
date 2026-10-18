@@ -1,5 +1,5 @@
-Shape Studio by Hivemind - Windows app
-======================================
+Presidium Shape Studio - Windows app
+====================================
 
 1. Unzip this folder anywhere (for example C:\Apps\ShapeStudio), or run the Setup.exe.
 2. Run ShapeStudio.exe. The studio opens in a window of its own. Closing it during a job

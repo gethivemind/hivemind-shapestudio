@@ -49,7 +49,7 @@ def write_glb(
     colors: np.ndarray | None = None,
     normals: np.ndarray | None = None,
     name: str = "mesh",
-    generator: str = "Shape Studio by Hivemind",
+    generator: str = "Presidium Shape Studio",
 ) -> Path:
     """``vertices`` (N,3) float, ``faces`` (M,3) int, ``colors`` (N,3) float 0-1 or uint8."""
     v = np.ascontiguousarray(vertices, dtype=np.float32)
@@ -171,7 +171,7 @@ def write_obj(
     faces: np.ndarray,
     colors: np.ndarray | None = None,
     normals: np.ndarray | None = None,
-    comment: str = "Shape Studio by Hivemind",
+    comment: str = "Presidium Shape Studio",
 ) -> Path:
     """OBJ with the common ``v x y z r g b`` vertex-colour extension (read by Blender,
     MeshLab and most viewers) and per-vertex normals."""

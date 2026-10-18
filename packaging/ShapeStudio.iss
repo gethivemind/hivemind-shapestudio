@@ -1,4 +1,4 @@
-; Inno Setup script for Shape Studio by Hivemind.
+; Inno Setup script for Presidium Shape Studio.
 ; Compiled by the release workflow on windows-latest:
 ;   iscc /DMyAppVersion=0.3.4 /DSourceDir=..\dist\ShapeStudio /DOutDir=..\dist packaging\ShapeStudio.iss
 ; Installs per user by default (no administrator prompt; %LOCALAPPDATA%\Programs), registers the
@@ -14,9 +14,9 @@
   #define OutDir "..\dist"
 #endif
 
-#define MyAppName "Shape Studio by Hivemind"
+#define MyAppName "Presidium Shape Studio"
 #define MyAppShort "Shape Studio"
-#define MyAppPublisher "Hivemind"
+#define MyAppPublisher "Presidium"
 #define MyAppURL "https://gethivemind.github.io/shapestudio/"
 #define MyAppExeName "ShapeStudio.exe"
 
@@ -30,7 +30,7 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL=https://github.com/gethivemind/shapestudio/issues
 AppUpdatesURL=https://github.com/gethivemind/shapestudio/releases
 AppCopyright=Copyright (C) 2026 Ratul Roy (royal-programmer) and the Hivemind contributors
-DefaultDirName={autopf}\Shape Studio by Hivemind
+DefaultDirName={autopf}\Presidium Shape Studio
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest

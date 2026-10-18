@@ -1,8 +1,16 @@
 # Changelog
 
-All notable changes to Hivemind Shape Studio. The format follows Keep a Changelog; versions
+All notable changes to Presidium Shape Studio. The format follows Keep a Changelog; versions
 follow semantic versioning. Official builds: GitHub Releases (the PyPI package follows the
 upcoming rename).
+
+## Unreleased
+
+### Changed
+- Brand: the product is now **Presidium Shape Studio** (ADR-065/066): new mark (six seats
+  around one table, a cube on the table), coral #D5582F, lockup "Presidium" medium + "Shape
+  Studio" regular, loading spinner. Module, command, data folder and release file names are
+  unchanged; the PyPI name will be `presidium-shapestudio` when the package is first published.
 
 ## 0.1.1 — 2026-10-18
 
@@ -14,7 +22,7 @@ upcoming rename).
 
 ## 0.1.0 — 2026-10-18
 
-First release, built as a sibling of Image Studio by Hivemind on the same architecture.
+First release, built as a sibling of Presidium Image Studio (then "Image Studio by Hivemind") on the same architecture.
 
 ### Added
 - Image-to-3D with TripoSR (MIT) as the `standard` tier: background removal (IS-Net or U²-Net

@@ -87,7 +87,7 @@ if MAC:
         icon=str(ROOT / "packaging" / "store-assets" / "display-1x1-300.png"),
         bundle_identifier="com.hivemind.shapestudio",
         info_plist={
-            "CFBundleDisplayName": "Shape Studio by Hivemind",
+            "CFBundleDisplayName": "Presidium Shape Studio",
             "CFBundleShortVersionString": os.environ.get("SHAPESTUDIO_VERSION", "0.0.0"),
             "NSHighResolutionCapable": True,
             "LSMinimumSystemVersion": "13.0",

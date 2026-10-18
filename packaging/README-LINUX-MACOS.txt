@@ -1,5 +1,5 @@
-Shape Studio by Hivemind - macOS and Linux builds
-==================================================
+Presidium Shape Studio - macOS and Linux builds
+================================================
 
 macOS (Apple silicon)
 ---------------------
