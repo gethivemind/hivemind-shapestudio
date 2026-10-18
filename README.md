@@ -52,7 +52,7 @@ accounts.
 
 **Measured, not promised.** Every time estimate comes from runs on your machine (per model,
 per device) and is labelled `not measured yet` until the first one. This README contains no
-timing claim this project has not measured: as of 0.1.0 the real model has not been run by
+timing claim this project has not measured: as of 0.1.1 the real model has not been run by
 the project yet (see Status).
 
 ## Status, stated plainly
