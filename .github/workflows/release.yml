@@ -1,0 +1,201 @@
+name: Release
+
+# ADR-056 (Hivemind): a tag `vX.Y.Z` builds the wheel and sdist, publishes them to PyPI
+# through Trusted Publishing (no long-lived token anywhere), and attaches them to a GitHub
+# release, together with the desktop app for Windows (installer, portable zip, Store MSIX),
+# macOS (arm64 .app, zipped) and Linux (x86_64 folder, tarball), each with its SHA-256. The
+# macOS and Linux builds are new and must not block a release: their job may fail without
+# failing the release, which then simply lacks those files.
+# The tag must match the version in pyproject.toml; the job refuses otherwise.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Tag matches pyproject version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          ver="$(uv run --no-project python -c 'import tomllib,sys; print(tomllib.load(open("pyproject.toml","rb"))["project"]["version"])')"
+          test "$tag" = "$ver" || { echo "tag v$tag != pyproject $ver"; exit 1; }
+      - name: Build
+        run: uv build
+      - name: Check metadata
+        run: |
+          uv venv --clear --python 3.12
+          uv pip install twine
+          uv run twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  windows-app:
+    name: Windows app
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Build
+        shell: bash
+        run: |
+          uv venv --clear --python 3.12
+          uv pip install -e ".[app]" pyinstaller
+          uv run pyinstaller packaging/ShapeStudio.spec --noconfirm --log-level WARN
+          ver="${GITHUB_REF_NAME#v}"
+          cp LICENSE NOTICE TRADEMARK.md CHANGELOG.md packaging/README-WINDOWS.txt dist/ShapeStudio/
+          cd dist && 7z a -tzip "ShapeStudio-$ver-windows-x64.zip" ShapeStudio >/dev/null
+          sha256sum "ShapeStudio-$ver-windows-x64.zip" > "ShapeStudio-$ver-windows-x64.zip.sha256"
+          cat "ShapeStudio-$ver-windows-x64.zip.sha256"
+      - name: Setup installer (Inno Setup)
+        # pwsh: Git Bash rewrites /D options into paths
+        shell: pwsh
+        run: |
+          $ver = $env:GITHUB_REF_NAME.TrimStart("v")
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "/DMyAppVersion=$ver" "/DSourceDir=..\dist\ShapeStudio" "/DOutDir=..\dist" "packaging\ShapeStudio.iss"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $exe = "dist\ShapeStudio-$ver-Setup.exe"
+          $h = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLower()
+          "$h *ShapeStudio-$ver-Setup.exe" | Set-Content -Encoding ascii "$exe.sha256"
+          Get-Content "$exe.sha256"
+      - name: MSIX for the Microsoft Store
+        # unsigned; the Store signs it. Identity comes from repository variables set up once
+        # (see packaging/STORE.md). Without them a sideload package with a dev certificate is
+        # built instead, so the packaging path is exercised on every release either way.
+        shell: bash
+        env:
+          MSIX_IDENTITY_NAME: ${{ vars.MSIX_IDENTITY_NAME }}
+          MSIX_PUBLISHER: ${{ vars.MSIX_PUBLISHER }}
+          MSIX_PUBLISHER_DISPLAY: ${{ vars.MSIX_PUBLISHER_DISPLAY }}
+        run: |
+          ver="${GITHUB_REF_NAME#v}"
+          if [ -n "$MSIX_IDENTITY_NAME" ]; then
+            uv run python packaging/build_msix.py --version "$ver" --store
+          else
+            echo "::notice::MSIX identity variables not set; building a sideload (dev-signed) package"
+            uv run python packaging/build_msix.py --version "$ver" --sideload
+          fi
+          cd dist && sha256sum *.msix > msix.sha256 && cat msix.sha256
+      - name: Smoke test
+        shell: bash
+        run: |
+          ./dist/ShapeStudio/ShapeStudio.exe --version
+          ./dist/ShapeStudio/ShapeStudio.exe cli doctor || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-app
+          path: |
+            dist/*.zip
+            dist/*.sha256
+            dist/*.msix
+            dist/*.cer
+            dist/*-Setup.exe
+
+  posix-app:
+    name: ${{ matrix.label }} app
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            label: macOS
+            artifact: macos-app
+          - os: ubuntu-latest
+            label: Linux
+            artifact: linux-app
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - name: Build
+        shell: bash
+        env:
+          SHAPESTUDIO_VERSION: ${{ github.ref_name }}
+        run: |
+          ver="${GITHUB_REF_NAME#v}"
+          export SHAPESTUDIO_VERSION="$ver"
+          uv venv --clear --python 3.12
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            uv pip install -e ".[app]" pyinstaller
+          else
+            uv pip install -e . pyinstaller
+          fi
+          uv run pyinstaller packaging/ShapeStudio.spec --noconfirm --log-level WARN
+          cp LICENSE NOTICE TRADEMARK.md CHANGELOG.md packaging/README-LINUX-MACOS.txt dist/ShapeStudio/
+          cd dist
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            cp ../LICENSE ../NOTICE ../TRADEMARK.md ../packaging/README-LINUX-MACOS.txt .
+            ditto -c -k --sequesterRsrc --keepParent "Shape Studio.app" "ShapeStudio-$ver-macos-arm64.zip"
+            zip -q -g "ShapeStudio-$ver-macos-arm64.zip" LICENSE NOTICE TRADEMARK.md README-LINUX-MACOS.txt
+            shasum -a 256 "ShapeStudio-$ver-macos-arm64.zip" > "ShapeStudio-$ver-macos-arm64.zip.sha256"
+            cat "ShapeStudio-$ver-macos-arm64.zip.sha256"
+          else
+            mv ShapeStudio "ShapeStudio-$ver"
+            tar -czf "ShapeStudio-$ver-linux-x86_64.tar.gz" "ShapeStudio-$ver"
+            mv "ShapeStudio-$ver" ShapeStudio
+            sha256sum "ShapeStudio-$ver-linux-x86_64.tar.gz" > "ShapeStudio-$ver-linux-x86_64.tar.gz.sha256"
+            cat "ShapeStudio-$ver-linux-x86_64.tar.gz.sha256"
+          fi
+      - name: Smoke test
+        shell: bash
+        run: |
+          ./dist/ShapeStudio/ShapeStudio --version
+          ./dist/ShapeStudio/ShapeStudio cli doctor || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            dist/*.zip
+            dist/*.tar.gz
+            dist/*.sha256
+
+  publish:
+    name: publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: GitHub release
+    needs: [publish, windows-app, posix-app]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: "*-app"
+          merge-multiple: true
+          path: dist/
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true

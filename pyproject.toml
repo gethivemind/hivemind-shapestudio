@@ -1,0 +1,78 @@
+[project]
+name = "hivemind-shapestudio"
+version = "0.1.0"
+description = "Free, local image-to-3D studio and MCP server. Quality is a setting, never a consequence."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE", "third_party/*"]
+requires-python = ">=3.11"
+authors = [{ name = "Ratul Roy (royal-programmer)" }, { name = "Hivemind" }]
+maintainers = [{ name = "Ratul Roy (royal-programmer)" }]
+keywords = ["mcp", "image-to-3d", "triposr", "3d-reconstruction", "local", "glb"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Topic :: Multimedia :: Graphics :: 3D Modeling",
+]
+dependencies = [
+  "mcp>=1.2",
+  "pydantic>=2.6",
+  "psutil>=5.9",
+  "httpx>=0.27",
+  "truststore>=0.9",
+  "pillow>=10",
+  "uvicorn>=0.30",
+  "starlette>=0.37",
+  "onnxruntime>=1.17",
+  "numpy>=1.26",
+  "torch>=2.4",
+  "scikit-image>=0.22",
+]
+
+[project.urls]
+Homepage = "https://github.com/gethivemind/hivemind-shapestudio"
+Source = "https://github.com/gethivemind/hivemind-shapestudio"
+Issues = "https://github.com/gethivemind/hivemind-shapestudio/issues"
+Changelog = "https://github.com/gethivemind/hivemind-shapestudio/releases"
+Author = "https://github.com/royal-programmer"
+Trademark = "https://github.com/gethivemind/hivemind-shapestudio/blob/main/TRADEMARK.md"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.6"]
+# cross-checks the vendored DINO ViT against the reference implementation (random weights)
+verify = ["transformers>=4.40"]
+e2e = ["playwright>=1.45"]
+app = ["pywebview>=5", "pystray>=0.19"]  # the windowed desktop app (packaging/launcher.py)
+
+[project.scripts]
+shapestudio = "shapestudio.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/shapestudio"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "W", "N", "SIM", "RUF"]
+ignore = ["RUF012"]
+allowed-confusables = ["×", "²", "·"]
+
+[tool.ruff.lint.per-file-ignores]
+# vendored TripoSR (MIT): kept close to upstream for review against the original
+"src/shapestudio/engine/tsr/*" = ["N803", "N806", "N812", "E501", "RUF002", "RUF003", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = [
+  # scikit-image 0.26 sets .shape on arrays, which NumPy 2.5 deprecates; not ours to fix
+  "ignore:Setting the shape on a NumPy array has been deprecated:DeprecationWarning",
+]

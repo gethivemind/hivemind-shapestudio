@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use Hivemind Shape Studio, please cite it as below."
+title: "Hivemind Shape Studio"
+type: software
+authors:
+  - family-names: Roy
+    given-names: Ratul
+    alias: royal-programmer
+repository-code: "https://github.com/gethivemind/hivemind-shapestudio"
+license: Apache-2.0
+version: 0.1.0
+date-released: 2026-10-18
+abstract: >-
+  A free, local image-to-3D studio and MCP server: single-image reconstruction to GLB and OBJ
+  meshes with permissively licensed models (TripoSR, TRELLIS) on the user's own machine.
+  Quality is a setting, never a consequence.
+references:
+  - type: software
+    title: "TripoSR"
+    authors:
+      - name: "Tripo AI and Stability AI"
+    license: MIT
+    url: "https://github.com/VAST-AI-Research/TripoSR"

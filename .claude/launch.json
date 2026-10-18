@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "shapestudio-ui",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "shapestudio.cli", "ui", "--port", "8776"],
+      "port": 8776
+    }
+  ]
+}

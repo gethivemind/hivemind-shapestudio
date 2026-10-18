@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MSIX manifest for Shape Studio by Hivemind (desktop app, full trust).
+  packaging/build_msix.py fills the placeholders:
+    {{IDENTITY_NAME}}  Partner Center "Package/Identity/Name" (e.g. 12345Hivemind.ShapeStudio);
+                       a sideload build uses Hivemind.ShapeStudio
+    {{PUBLISHER}}      Partner Center "Package/Identity/Publisher" (CN=GUID); sideload uses the
+                       self-signed certificate subject
+    {{PUBLISHER_DISPLAY}}  the display name shown in the Store and in Settings > Apps
+    {{VERSION}}        four-part version, e.g. 0.3.2.0
+-->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap10 rescap">
+
+  <Identity Name="{{IDENTITY_NAME}}" Publisher="{{PUBLISHER}}" Version="{{VERSION}}" ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>Shape Studio by Hivemind</DisplayName>
+    <PublisherDisplayName>{{PUBLISHER_DISPLAY}}</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+    <Description>Free, local image-to-3D studio: one picture in, a textured GLB or OBJ mesh out, with permissively licensed models, on your own machine. Quality is a setting, never a consequence.</Description>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+
+  <Applications>
+    <Application Id="ShapeStudio" Executable="ShapeStudio\ShapeStudio.exe" EntryPoint="Windows.FullTrustApplication" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="mediumIL">
+      <uap:VisualElements
+        DisplayName="Shape Studio by Hivemind"
+        Description="Your own 3D studio. Free, local, honest."
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\Square71x71Logo.png" Square310x310Logo="Assets\Square310x310Logo.png" ShortName="Shape Studio" />
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

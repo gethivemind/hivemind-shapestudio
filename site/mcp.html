@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For agents · Shape Studio by Hivemind</title>
+<meta name="description" content="Shape Studio by Hivemind is an MCP server: Claude, Cursor, VS Code and any MCP client can turn pictures into meshes on your own machine, offline.">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<style>
+  :root { --bg: #0f1012; --surface: #17181b; --line: #2a2b31; --ink: #f2f2f0; --ink2: #c9c9c4; --muted: #8f9096; --accent: #7aa6ff; }
+  @media (prefers-color-scheme: light) { :root { --bg: #f7f6f2; --surface: #fff; --line: #e2e1da; --ink: #1b1b19; --ink2: #3a3a37; --muted: #6b6b68; --accent: #2f6fed; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 40px 20px 60px; }
+  h1 { font-size: 30px; letter-spacing: -.5px; margin: 0 0 6px; } h2 { font-size: 19px; margin: 30px 0 8px; }
+  p, li { color: var(--ink2); } .muted { color: var(--muted); font-size: 14px; } a { color: var(--accent); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin: 18px 0; }
+  pre { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; overflow: auto; font: 13px/1.5 ui-monospace, Consolas, monospace; color: var(--ink); }
+  code { font: 13.5px ui-monospace, Consolas, monospace; background: var(--surface); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; } th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; } th { color: var(--muted); font-weight: 600; }
+  ol li { margin: 6px 0; }
+</style>
+</head>
+<body><div class="wrap">
+  <p class="muted"><a href="./">← Shape Studio by Hivemind</a></p>
+  <h1>Shape Studio for agents</h1>
+  <p>Shape Studio is an <b>MCP server</b> as well as an app. Claude, Cursor, VS Code and any other Model Context Protocol client can turn a picture into a GLB or OBJ mesh on your own machine, offline, with the same rules as the window: quality is a setting, never a consequence; every estimate is measured or says it is not; nothing is uploaded.</p>
+  <div class="card"><b>Install once:</b> <code>pipx install hivemind-shapestudio</code>, then point your client at the command <code>shapestudio serve</code>. The Windows app is the same server: <code>ShapeStudio.exe cli serve</code> (the exact path is shown under Settings → About in the app).</div>
+
+  <h2>Client configuration</h2>
+  <table>
+    <tr><th>Client</th><th>Where</th><th>Config</th></tr>
+    <tr><td>Claude Desktop</td><td><code>claude_desktop_config.json</code> (Windows: <code>%APPDATA%\Claude</code>, macOS: <code>~/Library/Application Support/Claude</code>)</td><td><pre>{ "mcpServers": { "shapestudio":
+    { "command": "shapestudio", "args": ["serve"] } } }</pre></td></tr>
+    <tr><td>Claude Code</td><td>in the project</td><td><pre>claude mcp add shapestudio -- shapestudio serve</pre></td></tr>
+    <tr><td>Cursor</td><td><code>.cursor/mcp.json</code></td><td><pre>{ "mcpServers": { "shapestudio":
+    { "command": "shapestudio", "args": ["serve"] } } }</pre></td></tr>
+    <tr><td>VS Code (agent mode)</td><td><code>.vscode/mcp.json</code></td><td><pre>{ "servers": { "shapestudio":
+    { "type": "stdio", "command": "shapestudio", "args": ["serve"] } } }</pre></td></tr>
+  </table>
+
+  <h2>Tools</h2>
+  <table>
+    <tr><th>Tool</th><th>What it does</th></tr>
+    <tr><td><code>capabilities()</code></td><td>hardware, PyTorch runtime (CPU or CUDA), both tiers with download and fit state, presets with expected times (labelled "not measured yet" until a run), policy, licences, exclusions</td></tr>
+    <tr><td><code>plan(tier?, preset, resolution?)</code></td><td>dry run: model, device, grid, estimate with its basis, load meter, fit note and warnings; explains a refusal before anything is queued</td></tr>
+    <tr><td><code>reconstruct(image, tier?, preset, resolution?, remove_background, foreground_ratio?)</code></td><td>queue a job for a PNG/JPEG/WebP path; returns the job id and estimate at once</td></tr>
+    <tr><td><code>job_status(job_id)</code></td><td>phase, progress, one honest summary line, ETA or null, paths and counts when done</td></tr>
+    <tr><td><code>job_result(job_id, as_base64?, format)</code></td><td>GLB (default) or OBJ path, turntable PNG, vertex and face counts; the bytes on request</td></tr>
+    <tr><td><code>jobs()</code>, <code>cancel_job(job_id)</code></td><td>list and cancel</td></tr>
+    <tr><td><code>download_model(name, consent)</code></td><td>files, sizes, SHA-256 and licence first; the download only with <code>consent=true</code>. The only tool that touches the network.</td></tr>
+  </table>
+
+  <h2>A typical flow</h2>
+  <ol>
+    <li><code>capabilities()</code> once. If TripoSR is missing, tell the user the size (1.56 GiB) and licence (MIT) and call <code>download_model("triposr", consent=true)</code>; likewise <code>isnet-general-use</code> (170 MB) for the background cutout.</li>
+    <li><code>reconstruct(image)</code>. Quote the returned estimate and its basis to the user; on a CPU the first run is "not measured yet".</li>
+    <li>Poll <code>job_status</code> every 10 to 15 seconds. Never wait inside one call.</li>
+    <li><code>job_result</code> for the GLB path; <code>format="obj"</code> for the OBJ. Both carry vertex colours.</li>
+  </ol>
+
+  <h2>Who runs the jobs</h2>
+  <p>Only one process runs jobs at a time (a lock in the data folder). The first studio to start takes the worker role; a client that launches <code>shapestudio serve</code> first becomes the worker and the window shows its queue. Pause holds every submitter, including agents.</p>
+
+  <h2>What to tell users about time</h2>
+  <p>Nothing has been measured by this project on real hardware yet, so quote <code>capabilities()</code> for the machine you are on, after its benchmark or first run, and say "not measured yet" when the studio does.</p>
+</div></body>
+</html>

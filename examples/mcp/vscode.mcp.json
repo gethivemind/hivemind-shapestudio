@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "shapestudio": {
+      "type": "stdio",
+      "command": "shapestudio",
+      "args": ["serve"]
+    }
+  }
+}

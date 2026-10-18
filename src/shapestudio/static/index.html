@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shape Studio by Hivemind</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<meta name="theme-color" content="#0f1012">
+<style>
+  :root {
+    --bg: #f4f3ef; --surface: #ffffff; --surface2: #f8f7f4; --ink: #1b1b19; --ink2: #4b4a46; --muted: #7a7873; --line: #e4e2dc; --line2: #d6d4cd;
+    --accent: #2f6fed; --on-accent: #fff; --honey: #f0b429; --ok: #2e8b57; --warn: #c98a12; --bad: #c8463c; --track: #e7e5df;
+    --r: 12px; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --shadow: 0 1px 2px rgba(0,0,0,.06), 0 12px 32px rgba(0,0,0,.10);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #0f0f11; --surface: #18181b; --surface2: #1f1f23; --ink: #ededeb; --ink2: #c4c3be; --muted: #8e8d88; --line: #27272c; --line2: #35353b;
+    --accent: #7aa6ff; --on-accent: #0b1430; --ok: #52c17c; --warn: #e4b43c; --bad: #f06f63; --track: #2a2a30;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.45); } }
+  :root[data-theme="dark"] {
+    --bg: #0f0f11; --surface: #18181b; --surface2: #1f1f23; --ink: #ededeb; --ink2: #c4c3be; --muted: #8e8d88; --line: #27272c; --line2: #35353b;
+    --accent: #7aa6ff; --on-accent: #0b1430; --ok: #52c17c; --warn: #e4b43c; --bad: #f06f63; --track: #2a2a30;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.45); }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; min-height: 100dvh; display: flex; flex-direction: column; background: var(--bg); color: var(--ink); font: 14px/1.45 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: var(--accent); }
+  .top { height: 52px; display: flex; align-items: center; gap: 10px; padding: 0 14px; border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 5; }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 650; }
+  .brand svg { width: 24px; height: 24px; }
+  .brand small { font-weight: 500; color: var(--muted); font-size: 11.5px; margin-left: 4px; }
+  .tabs { display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--line); }
+  .tabs button { padding: 5px 13px; border-radius: 8px; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-weight: 500; }
+  .tabs button.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .grow { flex: 1; }
+  .chip { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface2); font-size: 12px; color: var(--ink2); white-space: nowrap; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+  .dot.busy { background: var(--accent); animation: pulse 1.1s infinite; } .dot.warn { background: var(--warn); } .dot.off { background: var(--muted); }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
+  .ib { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; border: 1px solid var(--line); background: var(--surface2); color: var(--ink2); cursor: pointer; }
+  .btn { height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { border-color: var(--line2); } .btn:disabled { opacity: .45; cursor: default; }
+  .btn.primary { background: var(--accent); color: var(--on-accent); border-color: transparent; font-weight: 600; }
+  .btn.danger { color: var(--bad); }
+  .btn.sm { height: 28px; padding: 0 10px; font-size: 12px; border-radius: 8px; }
+  .seg { display: inline-flex; padding: 2px; border-radius: 9px; background: var(--surface2); border: 1px solid var(--line); }
+  .seg button { height: 28px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); cursor: pointer; font-size: 12.5px; font-weight: 500; }
+  .seg button.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+  .view { display: none; flex: 1; min-height: 0; }
+  .view.active { display: block; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 18px 16px 60px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
+  .card h3 { margin: 0 0 8px; font-size: 14px; } .card h2 { margin: 0 0 6px; font-size: 18px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .muted { color: var(--muted); } .small { font-size: 12px; } .mono { font-family: var(--mono); font-size: 12px; }
+  label.f { display: block; font-size: 11px; letter-spacing: .6px; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 14px 0 6px; }
+  select, input[type=text], input[type=number], textarea { width: 100%; height: 34px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface2); padding: 0 10px; }
+  textarea { height: auto; padding: 8px 10px; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .meter { height: 8px; border-radius: 6px; background: var(--track); overflow: hidden; }
+  .meter i { display: block; height: 100%; background: var(--ok); transition: width .3s; }
+  .meter i.tight { background: var(--warn); } .meter i.swap, .meter i.over { background: var(--bad); }
+  .alert { border-radius: 10px; padding: 8px 12px; font-size: 12.5px; background: color-mix(in srgb, var(--warn) 14%, transparent); border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); margin-top: 8px; }
+  .alert.bad { background: color-mix(in srgb, var(--bad) 12%, transparent); border-color: color-mix(in srgb, var(--bad) 40%, transparent); }
+  .alert.ok { background: color-mix(in srgb, var(--ok) 12%, transparent); border-color: color-mix(in srgb, var(--ok) 40%, transparent); }
+  .drop { border: 2px dashed var(--line2); border-radius: 16px; padding: 22px; text-align: center; background: var(--surface2); cursor: pointer; min-height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+  .drop.over { border-color: var(--accent); }
+  .drop img { max-width: 100%; max-height: 300px; border-radius: 10px; }
+  .create { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr); gap: 16px; }
+  @media (max-width: 860px) { .create { grid-template-columns: 1fr; } }
+  .queue { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-top: 16px; }
+  .qcard { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+  .qcard .t { font-weight: 600; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar { height: 5px; border-radius: 4px; background: var(--track); margin: 8px 0 6px; overflow: hidden; } .bar i { display: block; height: 100%; background: var(--accent); transition: width .5s; }
+  .gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  @media (max-width: 600px) { .gal { grid-template-columns: repeat(2, 1fr); } }
+  .gcard { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer; position: relative; }
+  .gcard.picked { outline: 2px solid var(--accent); }
+  .gcard .img { aspect-ratio: 1; background: #18181b; display: grid; place-items: center; }
+  .gcard img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .gcard .meta { padding: 8px 10px; font-size: 12px; }
+  .gcard .meta b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tag { display: inline-block; font-size: 10.5px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); margin-right: 4px; }
+  .star { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,.45); color: #fff; border: 0; border-radius: 999px; width: 28px; height: 28px; cursor: pointer; }
+  .star.on { color: var(--honey); }
+  dialog { border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--ink); padding: 0; max-width: min(96vw, 1100px); width: 100%; box-shadow: var(--shadow); }
+  dialog::backdrop { background: rgba(0,0,0,.55); }
+  .viewer { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr); min-height: min(80vh, 720px); }
+  @media (max-width: 860px) { .viewer { grid-template-columns: 1fr; } }
+  .stage { background: #141416; display: grid; place-items: center; position: relative; min-height: 320px; }
+  model-viewer { width: 100%; height: 100%; min-height: 320px; background: #141416; --poster-color: transparent; }
+  .stage img { max-width: 100%; max-height: 100%; }
+  .side { padding: 16px 18px; overflow: auto; }
+  .side h2 { margin: 0 0 4px; font-size: 16px; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 12.5px; margin: 10px 0; } .kv span:nth-child(odd) { color: var(--muted); }
+  .close { position: absolute; top: 10px; right: 10px; z-index: 2; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+  .pill { font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink2); }
+  .pill.ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 50%, transparent); } .pill.warn { color: var(--warn); } .pill.bad { color: var(--bad); }
+  .toasts { position: fixed; right: 14px; bottom: 14px; display: flex; flex-direction: column; gap: 8px; z-index: 20; }
+  .toast { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; box-shadow: var(--shadow); font-size: 13px; max-width: 360px; }
+  .ask { padding: 18px 20px; max-width: 520px; }
+  .ask h3 { margin: 0 0 8px; } .ask p { margin: 6px 0; color: var(--ink2); font-size: 13px; }
+  .guide li { margin: 6px 0; } .guide li.done { color: var(--muted); text-decoration: line-through; }
+  .tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .tiers .card { border-left: 3px solid var(--honey); }
+  footer.credit { text-align: center; color: var(--muted); font-size: 12px; padding: 20px; border-top: 1px solid var(--line); }
+  .sw { position: relative; width: 38px; height: 22px; border-radius: 999px; background: var(--track); border: 0; cursor: pointer; }
+  .sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }
+  .sw.on { background: var(--accent); } .sw.on::after { left: 19px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6 54 19v26L32 58 10 45V19z" fill="#f0b429"/><path d="M32 20l12 7-12 7-12-7z" fill="#f7f6f2"/><path d="M20 27l12 7v14l-12-7z" fill="#1b1b19"/><path d="M44 27l-12 7v14l12-7z" fill="#3a3a37"/></svg>Shape Studio <small>by Hivemind</small></div>
+  <nav class="tabs" id="tabs"><button data-tab="home">Home</button><button data-tab="create" class="active">Create</button><button data-tab="gallery">Gallery</button><button data-tab="settings">Settings</button></nav>
+  <div class="grow"></div>
+  <span class="chip" id="statuschip"><i class="dot off"></i><span>starting…</span></span>
+  <button class="ib" id="theme" title="Theme">◐</button>
+</header>
+
+<section class="view" id="home"><div class="wrap">
+  <div class="card" style="margin-bottom:14px">
+    <h2>Your own 3D studio. Free, local, honest.</h2>
+    <p class="muted">One picture in, a textured mesh out (GLB and OBJ), on the machine in front of you. Nothing is uploaded, nothing is paid for.</p>
+    <ol class="guide" id="guide"></ol>
+  </div>
+  <div class="tiers" id="tiers"></div>
+  <div class="card" style="margin-top:14px">
+    <h3>The policy</h3>
+    <p class="small"><b>Quality is a setting, never a consequence.</b> The default preset is <code>best</code>: the finest surface grid on the strongest permissively licensed model that fits your machine. The machine decides how long it takes, never how good it is. <b>Faster only with consent:</b> <code>balanced</code> and <code>fast</code> must be chosen, and each says what it trades. <b>Permissive licences only:</b> MIT, Apache-2.0, BSD; Hunyuan3D 2 (non-commercial licence) and Stable Fast 3D (revenue-gated) are excluded by policy. <b>Offline after setup.</b> <b>Measured, not promised:</b> every time estimate comes from runs on this machine; until then it says "not measured yet".</p>
+  </div>
+</div></section>
+
+<section class="view active" id="create"><div class="wrap">
+  <div class="create">
+    <div>
+      <div class="drop" id="drop">
+        <input type="file" id="file" accept="image/png,image/jpeg,image/webp" class="hidden">
+        <div id="dropempty"><div style="font-size:30px">⬡</div><div><b>Drop a picture here</b> or click to choose</div><div class="muted small">PNG, JPEG or WebP · one object, centred · the background is cut out for you</div></div>
+        <img id="dropimg" class="hidden" alt="">
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" id="go" disabled>Reconstruct</button>
+        <span class="muted small" id="planline">choose a picture</span>
+      </div>
+      <div id="planalerts"></div>
+      <div class="queue" id="queue"></div>
+    </div>
+    <div class="card">
+      <label class="f">Tier</label>
+      <select id="tier"><option value="">Auto: the strongest that is downloaded and fits</option></select>
+      <div class="muted small" id="tiernote" style="margin-top:6px"></div>
+      <label class="f">Preset</label>
+      <div class="seg" id="preset"><button data-v="best" class="active">best · 256³</button><button data-v="balanced">balanced · 192³</button><button data-v="fast">fast · 128³</button></div>
+      <div class="muted small" id="presetnote" style="margin-top:6px"></div>
+      <label class="f">Surface grid <span class="mono" id="resv">256</span></label>
+      <input type="range" id="res" min="64" max="512" step="32" value="256">
+      <label class="f">Object size in frame <span class="mono" id="fgv">0.85</span></label>
+      <input type="range" id="fg" min="0.5" max="1" step="0.05" value="0.85">
+      <div class="row" style="margin-top:14px"><button class="sw on" id="rmbg"></button><span class="small">Remove the background first</span></div>
+      <div class="muted small" style="margin-top:6px">Off only for pictures that already have a transparent background.</div>
+      <label class="f">Expected on this machine</label>
+      <div class="meter"><i id="meter" style="width:0"></i></div>
+      <div class="small" id="loadline" style="margin-top:6px"></div>
+      <div class="muted small" id="basis"></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="view" id="gallery"><div class="wrap">
+  <div class="row" style="margin-bottom:12px">
+    <input type="text" id="search" placeholder="Search by name or note" style="max-width:260px">
+    <select id="prjfilter" style="max-width:220px"><option value="">All projects</option></select>
+    <button class="btn sm" id="favfilter">★ Favourites</button>
+    <button class="btn sm" id="pick">Select</button>
+    <span id="batch" class="row hidden"><button class="btn sm" id="bzip">Download zip</button><button class="btn sm" id="bproject">File in project…</button><button class="btn sm danger" id="btrash">Trash</button><span class="muted small" id="bcount"></span></span>
+    <div class="grow"></div>
+    <button class="btn sm" id="newproject">＋ Project</button>
+    <button class="btn sm" id="trashbtn">Trash</button>
+  </div>
+  <div class="gal" id="gal"></div>
+  <p class="muted small" id="galempty" style="text-align:center;margin-top:40px">No meshes yet. Make one on Create.</p>
+</div></section>
+
+<section class="view" id="settings"><div class="wrap grid" style="align-items:start">
+  <div class="card" style="grid-column:1/-1">
+    <h3>This machine</h3>
+    <div class="kv" id="hw"></div>
+    <div class="row"><button class="btn sm" id="bench">Run benchmark (one fast reconstruction)</button><span class="muted small" id="benchnote"></span></div>
+    <div id="profile" class="small" style="margin-top:8px"></div>
+  </div>
+  <div class="card" style="grid-column:1/-1">
+    <h3>Models, tools and runtime</h3>
+    <div style="overflow-x:auto"><table id="comps"><thead><tr><th>Component</th><th>Tier</th><th>Licence</th><th>Size</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
+    <div id="tasks" class="small" style="margin-top:8px"></div>
+  </div>
+  <div class="card">
+    <h3>Preferences</h3>
+    <label class="f">Device</label>
+    <select id="device"><option value="auto">Auto (GPU when it fits, else CPU)</option><option value="cpu">CPU</option><option value="cuda">CUDA GPU</option></select>
+    <label class="f">Memory limit (GiB, blank = automatic)</label>
+    <input type="number" id="memlimit" min="2" max="1024" step="1">
+    <label class="f">CPU threads (blank = PyTorch's choice)</label>
+    <input type="number" id="threads" min="1" max="256" step="1">
+    <div class="row" style="margin-top:14px"><button class="sw" id="overbudget"></button><span class="small">Allow runs over the memory budget (may swap for a long time)</span></div>
+    <div class="row" style="margin-top:10px"><button class="sw" id="paused"></button><span class="small">Pause the queue</span></div>
+    <div class="row" style="margin-top:14px"><button class="btn sm" id="saveprefs">Save</button><span class="muted small" id="prefnote"></span></div>
+  </div>
+  <div class="card">
+    <h3>Projects</h3>
+    <div id="projects"></div>
+    <h3 style="margin-top:16px">Trash</h3>
+    <div id="trashlist" class="small"></div>
+    <button class="btn sm danger" id="emptytrash" style="margin-top:8px">Empty trash</button>
+  </div>
+  <div class="card" style="grid-column:1/-1">
+    <h3>About</h3>
+    <div class="small" id="about"></div>
+  </div>
+</div></section>
+
+<footer class="credit">Shape Studio by Hivemind · made with ♥ by <a href="https://github.com/royal-programmer" target="_blank" rel="noopener">Ratul Roy (royal-programmer)</a></footer>
+
+<dialog id="viewer"><button class="ib close" id="vclose">✕</button><div class="viewer"><div class="stage" id="stage"></div><div class="side" id="vside"></div></div></dialog>
+<dialog id="askdlg"><div class="ask" id="askbody"></div></dialog>
+<div class="toasts" id="toasts"></div>
+
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.1.0/dist/model-viewer.min.js" onerror="window.__mvFailed=true"></script>
+<script>
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const S = { caps: null, jobs: [], file: null, preset: "best", res: 256, fg: 0.85, rmbg: true, tier: "", plan: null, picked: new Set(), picking: false, fav: false, prjFilter: "", search: "", projects: [], current: null, comps: [], tasks: {} };
+const api = async (url, opts={}) => { const r = await fetch(url, opts); const j = await r.json().catch(()=>({})); if (!r.ok) throw new Error(j.error || r.statusText); return j; };
+const post = (url, body) => api(url, { method: "POST", headers: {"content-type":"application/json"}, body: JSON.stringify(body||{}) });
+const toast = (m, ms=4500) => { const d = document.createElement("div"); d.className="toast"; d.textContent=m; $("#toasts").append(d); setTimeout(()=>d.remove(), ms); };
+const human = s => s==null ? "—" : s<60 ? `${Math.round(s)} s` : s<3600 ? `${Math.floor(s/60)} min ${String(Math.round(s%60)).padStart(2,"0")} s` : `${Math.floor(s/3600)} h ${String(Math.floor(s%3600/60)).padStart(2,"0")} min`;
+const gib = b => (b/2**30).toFixed(b>2**30?2:3) + " GiB";
+const esc = s => String(s??"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function ask(title, html, buttons) { return new Promise(res => { const dlg=$("#askdlg"); $("#askbody").innerHTML = `<h3>${esc(title)}</h3>${html}<div class="row" style="justify-content:flex-end;margin-top:14px">${buttons.map((b,i)=>`<button class="btn ${b.primary?"primary":""} ${b.danger?"danger":""}" data-i="${i}">${esc(b.label)}</button>`).join("")}</div>`; $$("button[data-i]", dlg).forEach(b=>b.onclick=()=>{dlg.close(); res(buttons[+b.dataset.i].value);}); dlg.onclose=()=>res(undefined); dlg.showModal(); }); }
+// theme
+const theme = localStorage.getItem("theme"); if (theme) document.documentElement.dataset.theme = theme;
+$("#theme").onclick = () => { const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark":"light"); const next = cur==="dark"?"light":"dark"; document.documentElement.dataset.theme = next; localStorage.setItem("theme", next); };
+// tabs
+$$("#tabs button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+function showTab(t) { $$("#tabs button").forEach(x=>x.classList.toggle("active", x.dataset.tab===t)); $$(".view").forEach(v=>v.classList.toggle("active", v.id===t)); location.hash = t; if (t==="settings") loadSettings(); if (t==="gallery") renderGallery(); if (t==="home") renderHome(); }
+if (location.hash.slice(1)) showTab(location.hash.slice(1));
+
+// ---------- capabilities & plan
+async function loadCaps() { S.caps = await api("/api/capabilities"); fillTiers(); renderHome(); refreshPlan(); }
+function fillTiers() { const sel = $("#tier"); sel.innerHTML = `<option value="">Auto: the strongest that is downloaded and fits</option>` + S.caps.models.map(m => `<option value="${m.name}">${esc(m.display_name)} · ${m.tier}${m.installed?"":" · not downloaded"}${m.fits_this_machine?"":" · does not fit"}</option>`).join(""); sel.value = S.tier; }
+let planTimer; function refreshPlan() { clearTimeout(planTimer); planTimer = setTimeout(doPlan, 150); }
+async function doPlan() {
+  const q = new URLSearchParams({ preset: S.preset, resolution: S.res, foreground: S.fg, remove_background: S.rmbg }); if (S.tier) q.set("tier", S.tier);
+  try { S.plan = await api("/api/plan?"+q); } catch (e) { S.plan = null; $("#planalerts").innerHTML = `<div class="alert bad">${esc(e.message)}</div>`; $("#planline").textContent = "refused"; $("#meter").style.width="100%"; $("#meter").className="over"; $("#loadline").textContent=""; $("#basis").textContent=""; $("#go").disabled = true; return; }
+  const p = S.plan; const m = S.caps.models.find(x=>x.name===p.model);
+  $("#planline").textContent = `${p.display_name} (${p.tier}) on ${p.device.toUpperCase()}, ${p.resolution}³ grid · about ${p.estimate.human}${p.estimate.calibrated?"":" (not measured yet)"}`;
+  $("#tiernote").textContent = m ? `${m.description}` : "";
+  $("#meter").style.width = Math.min(100, p.load.score) + "%"; $("#meter").className = p.load.label.replace(" ", "");
+  $("#loadline").textContent = `${p.load.label}: needs about ${p.load.required_gib} GiB of the ${p.load.device.toUpperCase()}'s ${p.load.budget_gib} GiB budget (${p.load.available_gib} GiB free now)`;
+  $("#basis").textContent = p.estimate.basis;
+  let alerts = ""; if (p.fit_note) alerts += `<div class="alert">${esc(p.fit_note)}</div>`; (p.warnings||[]).forEach(w=>alerts += `<div class="alert">${esc(w)}</div>`); if (!p.installed) alerts += `<div class="alert bad">${esc(p.display_name)} is not downloaded. <a href="#settings" onclick="showTab('settings')">Install it under Settings</a>.</div>`; if (p.verified && /not run yet|tests only/.test(p.verified)) alerts += `<div class="alert small">Status: ${esc(p.verified)}</div>`;
+  $("#planalerts").innerHTML = alerts; $("#go").disabled = !(S.file && p.installed);
+  const presetNotes = {best: "Finest surface grid TripoSR's field resolves; most triangles, longest extraction.", balanced: "About half the extraction work; slightly softer small details.", fast: "Preview-grade surface in a fraction of the time; thin parts may break up."};
+  $("#presetnote").textContent = presetNotes[S.preset] + " The network pass is identical at every preset.";
+}
+$("#tier").onchange = e => { S.tier = e.target.value; refreshPlan(); };
+$$("#preset button").forEach(b => b.onclick = () => { S.preset = b.dataset.v; $$("#preset button").forEach(x=>x.classList.toggle("active", x===b)); S.res = {best:256, balanced:192, fast:128}[S.preset]; $("#res").value = S.res; $("#resv").textContent = S.res; refreshPlan(); });
+$("#res").oninput = e => { S.res = +e.target.value; $("#resv").textContent = S.res; refreshPlan(); };
+$("#fg").oninput = e => { S.fg = +e.target.value; $("#fgv").textContent = S.fg.toFixed(2); refreshPlan(); };
+$("#rmbg").onclick = () => { S.rmbg = !S.rmbg; $("#rmbg").classList.toggle("on", S.rmbg); refreshPlan(); };
+// file
+const drop = $("#drop"); drop.onclick = () => $("#file").click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add("over"); }; drop.ondragleave = () => drop.classList.remove("over");
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); };
+$("#file").onchange = e => { if (e.target.files[0]) setFile(e.target.files[0]); };
+function setFile(f) { S.file = f; const url = URL.createObjectURL(f); $("#dropimg").src = url; $("#dropimg").classList.remove("hidden"); $("#dropempty").classList.add("hidden"); refreshPlan(); }
+$("#go").onclick = async () => {
+  const fd = new FormData(); fd.append("file", S.file, S.file.name); fd.append("preset", S.preset); fd.append("resolution", S.res); fd.append("foreground", S.fg); fd.append("remove_background", S.rmbg); if (S.tier) fd.append("tier", S.tier);
+  $("#go").disabled = true;
+  try { const j = await api("/api/reconstruct", { method:"POST", body: fd }); toast(`Queued ${j.title}: ${j.summary}`); await pollJobs(); } catch (e) { toast("Not queued: " + e.message, 8000); }
+  $("#go").disabled = false;
+};
+// ---------- jobs
+async function pollJobs() { try { const j = await api("/api/jobs"); S.jobs = j.jobs; S.workerHere = j.worker_in_this_process; S.paused = j.paused; } catch { return; } renderQueue(); renderStatus(); if ($("#gallery").classList.contains("active")) renderGallery(); }
+function renderStatus() { const running = S.jobs.find(j=>j.status==="running"), queued = S.jobs.filter(j=>j.status==="queued").length; const chip = $("#statuschip"); const dot = chip.firstElementChild, txt = chip.lastElementChild; if (running) { dot.className="dot busy"; txt.textContent = running.summary + (queued?` · ${queued} queued`:""); } else if (S.paused) { dot.className="dot warn"; txt.textContent = "paused"; } else if (queued) { dot.className="dot warn"; txt.textContent = `${queued} queued · no worker?`; } else { dot.className="dot"; txt.textContent = S.workerHere===false ? "idle · another studio runs the jobs" : "idle"; } }
+function renderQueue() { const live = S.jobs.filter(j=>j.status==="queued"||j.status==="running"||(j.finished_at && Date.now()-Date.parse(j.finished_at) < 120000)); $("#queue").innerHTML = live.slice(0,8).map(j => `<div class="qcard"><div class="t">${esc(j.title)}</div><div class="bar"><i style="width:${Math.round((j.progress||0)*100)}%"></i></div><div class="row small" style="justify-content:space-between"><span class="${j.status==="failed"?"muted":""}">${esc(j.summary)}${j.error?` · ${esc(j.error)}`:""}</span>${j.status==="queued"||j.status==="running"?`<button class="btn sm" onclick="cancelJob('${j.id}')">Cancel</button>`:j.status==="done"?`<button class="btn sm" onclick="openViewer('${j.id}')">View</button>`:""}</div></div>`).join(""); }
+window.cancelJob = async id => { await post(`/api/jobs/${id}/cancel`); pollJobs(); };
+// ---------- gallery
+function filteredJobs() { return S.jobs.filter(j => j.status==="done" && (!S.fav || j.favorite) && (!S.prjFilter || j.project===S.prjFilter) && (!S.search || (j.source_name+" "+(j.note||"")).toLowerCase().includes(S.search.toLowerCase()))); }
+function renderGallery() { const rows = filteredJobs(); $("#galempty").classList.toggle("hidden", rows.length>0); $("#gal").innerHTML = rows.map(j => `<div class="gcard ${S.picked.has(j.id)?"picked":""}" data-id="${j.id}"><div class="img"><img src="/api/files/${j.id}/thumb" alt="" loading="lazy" onerror="this.remove()"></div><button class="star ${j.favorite?"on":""}" data-fav="${j.id}" title="Favourite">★</button><div class="meta"><b title="${esc(j.source_name)}">${esc(j.source_name)}</b><span class="tag">${j.tier}</span><span class="tag">${j.preset} · ${j.resolution}³</span><span class="tag">${j.device}</span><div class="muted">${j.vertices?.toLocaleString()} v · ${j.faces?.toLocaleString()} f · ${human(j.total_seconds)}</div></div></div>`).join("");
+  $$("#gal .gcard").forEach(c => c.onclick = e => { if (e.target.dataset.fav) return; const id = c.dataset.id; if (S.picking) { S.picked.has(id)?S.picked.delete(id):S.picked.add(id); renderGallery(); $("#bcount").textContent = `${S.picked.size} picked`; } else openViewer(id); });
+  $$("#gal .star").forEach(b => b.onclick = async e => { e.stopPropagation(); const j = S.jobs.find(x=>x.id===b.dataset.fav); await post(`/api/jobs/${j.id}/favorite`, {favorite: !j.favorite}); pollJobs(); }); }
+$("#search").oninput = e => { S.search = e.target.value; renderGallery(); };
+$("#prjfilter").onchange = e => { S.prjFilter = e.target.value; renderGallery(); };
+$("#favfilter").onclick = () => { S.fav = !S.fav; $("#favfilter").classList.toggle("primary", S.fav); renderGallery(); };
+$("#pick").onclick = () => { S.picking = !S.picking; S.picked.clear(); $("#pick").textContent = S.picking ? "Done" : "Select"; $("#batch").classList.toggle("hidden", !S.picking); renderGallery(); };
+$("#bzip").onclick = async () => { if (!S.picked.size) return toast("Pick some meshes first"); const r = await fetch("/api/export", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ids:[...S.picked], title:"meshes"}) }); if (!r.ok) return toast((await r.json()).error); const a = document.createElement("a"); a.href = URL.createObjectURL(await r.blob()); a.download = "meshes.zip"; a.click(); };
+$("#btrash").onclick = async () => { if (!S.picked.size) return; if (await ask("Move to trash", `<p>${S.picked.size} mesh(es) move to the trash; you can restore them under Settings.</p>`, [{label:"Cancel"},{label:"Trash", value:true, danger:true}])) { for (const id of S.picked) await fetch(`/api/jobs/${id}`, {method:"DELETE"}); S.picked.clear(); pollJobs(); } };
+$("#bproject").onclick = async () => { if (!S.picked.size) return; const pid = await pickProject(); if (pid===undefined) return; for (const id of S.picked) await post(`/api/jobs/${id}/project`, {project: pid}); toast("Filed"); pollJobs(); };
+$("#trashbtn").onclick = () => { showTab("settings"); };
+async function pickProject() { await loadProjects(); return ask("File in project", `<select id="pp">${["<option value=''>No project</option>", ...S.projects.map(p=>`<option value="${p.id}">${esc(p.name)} (${p.count})</option>`)].join("")}</select>`, [{label:"Cancel"},{label:"File", value:"__pick", primary:true}]).then(v => v==="__pick" ? ($("#pp")?.value ?? "") : undefined); }
+$("#newproject").onclick = async () => { const v = await ask("New project", `<input type="text" id="pn" placeholder="Name"><textarea id="pd" placeholder="Description (optional)" style="margin-top:8px"></textarea>`, [{label:"Cancel"},{label:"Create", value:"__c", primary:true}]); if (v!=="__c") return; try { await post("/api/projects", {name: $("#pn")?.value||"", description: $("#pd")?.value||""}); toast("Project created and selected"); loadProjects(); } catch(e) { toast(e.message); } };
+async function loadProjects() { const j = await api("/api/projects"); S.projects = j.projects; S.current = j.current; $("#prjfilter").innerHTML = `<option value="">All projects</option>` + S.projects.map(p=>`<option value="${p.id}">${esc(p.name)} (${p.count})</option>`).join(""); $("#prjfilter").value = S.prjFilter; }
+// ---------- viewer
+window.openViewer = async id => {
+  const j = await api(`/api/jobs/${id}`); const dlg = $("#viewer"); const stage = $("#stage");
+  const useMV = !window.__mvFailed && customElements.get("model-viewer");
+  stage.innerHTML = useMV ? `<model-viewer src="/api/files/${id}/glb" camera-controls auto-rotate shadow-intensity="1" exposure="1" alt="${esc(j.source_name)}"></model-viewer>` : `<img src="/api/files/${id}/preview" alt="turntable"><div class="small muted" style="position:absolute;bottom:8px;left:12px">3D viewer not loaded (offline?): showing the turntable sheet</div>`;
+  $("#vside").innerHTML = `<h2>${esc(j.title)}</h2><div class="muted small">${esc(j.source_name)}</div>
+    <div class="kv"><span>Model</span><span>${esc(j.model)} · ${j.tier} tier · ${j.device.toUpperCase()}</span><span>Preset</span><span>${j.preset} · ${j.resolution}³ grid · object ${j.foreground_ratio}</span><span>Mesh</span><span>${j.vertices?.toLocaleString()} vertices · ${j.faces?.toLocaleString()} faces</span><span>Time</span><span>${human(j.total_seconds)} (load ${human(j.load_seconds)}, network ${human(j.network_seconds)}, grid ${human(j.grid_seconds)})${j.peak_rss_gib?` · peak ${j.peak_rss_gib} GiB`:""}</span>${j.fit_note?`<span>Fit</span><span>${esc(j.fit_note)}</span>`:""}</div>
+    <div class="row"><a class="btn sm" href="/api/files/${id}/glb?download=1">Download GLB</a><a class="btn sm" href="/api/files/${id}/obj?download=1">Download OBJ</a><a class="btn sm" href="/api/files/${id}/preview?download=1">Turntable PNG</a></div>
+    <div class="row" style="margin-top:8px"><button class="btn sm" id="vfav">${j.favorite?"★ Favourite":"☆ Favourite"}</button><button class="btn sm" id="vproj">Project…</button><button class="btn sm" id="vinput">Show input</button><button class="btn sm" id="vcut">Show cutout</button><button class="btn sm" id="vmesh">Show mesh</button><button class="btn sm danger" id="vtrash">Trash</button></div>
+    <label class="f">Note</label><textarea id="vnote" rows="2">${esc(j.note||"")}</textarea><div class="row" style="margin-top:6px"><button class="btn sm" id="vsave">Save note</button></div>
+    ${j.warnings?.length?`<div class="alert small">${j.warnings.map(esc).join("<br>")}</div>`:""}`;
+  $("#vfav").onclick = async () => { await post(`/api/jobs/${id}/favorite`, {favorite: !j.favorite}); pollJobs(); openViewer(id); };
+  $("#vproj").onclick = async () => { const pid = await pickProject(); if (pid===undefined) return; await post(`/api/jobs/${id}/project`, {project: pid}); toast("Filed"); pollJobs(); };
+  $("#vinput").onclick = () => stage.innerHTML = `<img src="/api/files/${id}/input" alt="input">`;
+  $("#vcut").onclick = () => stage.innerHTML = `<img src="/api/files/${id}/cutout" alt="cutout" style="background:repeating-conic-gradient(#666 0 25%, #999 0 50%) 0 0/20px 20px">`;
+  $("#vmesh").onclick = () => openViewer(id);
+  $("#vsave").onclick = async () => { await post(`/api/jobs/${id}/note`, {note: $("#vnote").value}); toast("Saved"); pollJobs(); };
+  $("#vtrash").onclick = async () => { if (await ask("Move to trash", "<p>The mesh moves to the trash; restore it under Settings.</p>", [{label:"Cancel"},{label:"Trash", value:true, danger:true}])) { await fetch(`/api/jobs/${id}`, {method:"DELETE"}); dlg.close(); pollJobs(); } };
+  dlg.showModal();
+};
+$("#vclose").onclick = () => $("#viewer").close();
+// ---------- home
+function renderHome() { if (!S.caps) return; const c = S.caps; const std = c.models.find(m=>m.tier==="standard"), best = c.models.find(m=>m.tier==="best"); const bg = c.background_engine.models.some(m=>m.installed); const done = S.jobs.some(j=>j.status==="done"&&j.tool==="reconstruct");
+  const steps = [[c.runtime.torch.installed, `PyTorch runtime ${c.runtime.torch.installed?`${c.runtime.torch.version} (${c.runtime.torch.flavor})`:"is not importable"}`], [std.installed, `Download ${std.display_name} (${std.download_gib} GiB, ${std.licence}) under Settings`], [bg, "Download a background-removal model (IS-Net, 170 MB, Apache-2.0)"], [done, "Reconstruct your first object on Create"], [!!c.profile, "Run the benchmark so estimates are measured, not guessed"]];
+  $("#guide").innerHTML = steps.map(([ok, t]) => `<li class="${ok?"done":""}">${ok?"✓ ":""}${esc(t)}</li>`).join("");
+  $("#tiers").innerHTML = c.models.map(m => `<div class="card"><h3>${esc(m.display_name)} · <span class="muted">${m.tier} tier</span></h3><p class="small">${esc(m.description)}</p><div class="small"><span class="pill ${m.installed?"ok":""}">${m.installed?"downloaded":`${m.download_gib} GiB to download`}</span> <span class="pill ${m.fits_this_machine?"ok":"bad"}">${m.fits_this_machine?`fits · runs on ${m.device.toUpperCase()}`:"does not fit this machine"}</span> <span class="pill">${esc(m.licence)}</span></div>${m.fit_note?`<div class="alert small">${esc(m.fit_note)}</div>`:""}<div class="muted small" style="margin-top:6px">Status: ${esc(m.verified)}</div></div>`).join("");
+}
+// ---------- settings
+async function loadSettings() {
+  const c = S.caps || await api("/api/capabilities"); const h = c.hardware, t = c.runtime.torch;
+  $("#hw").innerHTML = `<span>CPU</span><span>${esc(h.cpu_name)} · ${h.physical_cores} cores / ${h.logical_cores} threads</span><span>RAM</span><span>${h.ram_total_gib} GiB total · ${h.ram_available_gib} GiB free now</span><span>GPU</span><span>${h.gpus.length?h.gpus.map(g=>`${esc(g.name)} [${g.kind}${g.vram_gib?`, ${g.vram_gib} GiB`:""}]`).join("<br>"):"none found"}</span><span>PyTorch</span><span>${t.installed?`${t.version} · ${t.flavor}${t.cuda_available?` · CUDA ${t.cuda_version} on ${esc(t.device_name)} (${t.device_vram_gib} GiB)`:""}${t.from_runtime_dir?" · from the studio's runtime folder":""}`:`not importable: ${esc(t.error)}`}</span><span>Memory budget</span><span>${c.config.memory_budget_gib} GiB for the CPU path</span>`;
+  const p = c.profile; $("#profile").innerHTML = p ? `Measured ${esc(p.measured_at)}: ${esc(p.model)} on ${p.device}, ${p.resolution}³ grid: wall ${human(p.wall_seconds)} (load ${human(p.load_seconds)}, network ${human(p.network_seconds)}, grid ${human(p.grid_seconds)}), peak ${p.peak_rss_gib} GiB, ${p.vertices?.toLocaleString()} vertices. Expected now: ${Object.entries(p.expected_seconds_per_preset).map(([k,v])=>`${k} ${human(v)}`).join(" · ")}` : `<span class="muted">No benchmark yet: estimates are heuristics labelled "not measured yet".</span>`;
+  const cfg = c.config; $("#device").value = cfg.device; $("#memlimit").value = cfg.max_memory_gib ?? ""; $("#threads").value = cfg.default_threads ?? ""; $("#overbudget").classList.toggle("on", cfg.allow_over_budget); $("#paused").classList.toggle("on", cfg.paused);
+  const a = await api("/api/about"); $("#about").innerHTML = `${esc(a.product)} ${esc(a.version)} · ${esc(a.licence)} · <a href="${a.homepage}" target="_blank" rel="noopener">website</a> · <a href="${a.source}" target="_blank" rel="noopener">source</a><br>MCP server command: <code>${esc(a.mcp_command)}</code><br>Data folder: <code>${esc(c.paths.data_dir)}</code><br>${esc(a.credit)}`;
+  loadComponents(); loadProjects().then(renderProjects); loadTrash();
+}
+async function loadComponents() { const j = await api("/api/components"); S.comps = j.components; const tb = $("#comps tbody"); tb.innerHTML = S.comps.map(cmp => { const inst = cmp.installed; let action = "";
+    if (cmp.kind==="runtime") { const ci = cmp.cuda_install||{}; action = cmp.cuda ? `<span class="pill ok">CUDA active</span>` : ci.possible ? `<button class="btn sm" onclick="installRuntime()">Install CUDA build…</button>` : `<span class="muted small">${esc(ci.reason||"")}</span>`; if (cmp.runtime_installed) action += ` <button class="btn sm" onclick="removeComp('runtime','torch')">Remove</button>`; }
+    else action = inst ? `<button class="btn sm" onclick="reveal('${esc(cmp.path).replace(/\\/g,"\\\\")}')">Show</button> <button class="btn sm danger" ${cmp.in_use?"disabled":""} onclick="removeComp('${cmp.kind}','${cmp.name}')">Remove</button>` : `<button class="btn sm primary" onclick="installComp('${cmp.name}')">Install…</button>`;
+    const status = cmp.kind==="runtime" ? (inst?`${cmp.flavor}${cmp.device?` · ${esc(cmp.device)}`:""}`:"not importable") : inst ? `<span class="pill ok">installed</span>` : `<span class="pill">not downloaded</span>`;
+    return `<tr><td><b>${esc(cmp.display_name)}</b>${cmp.verified?`<div class="muted small">${esc(cmp.verified)}</div>`:""}${cmp.note?`<div class="muted small">${esc(cmp.note)}</div>`:""}</td><td>${esc(cmp.tier)}</td><td>${esc(cmp.licence)}</td><td class="mono">${cmp.size?gib(cmp.size):"—"}</td><td>${status}</td><td class="row">${action}</td></tr>`; }).join(""); }
+window.installComp = async name => { const info = await api("/api/models/download?name="+name); const ok = await ask(`Download ${info.display_name}`, `<p>${esc(info.licence)} · ${info.total_gib} GiB total. Files, from their original hosts, SHA-256 verified:</p><ul class="small">${info.files.map(f=>`<li><code>${esc(f.filename)}</code> ${f.size_gib} GiB<br><span class="muted">${esc(f.source)} · sha256 ${f.sha256.slice(0,16)}…</span></li>`).join("")}</ul>${info.verified?`<p><b>Status:</b> ${esc(info.verified)}</p>`:""}${info.note?`<p>${esc(info.note)}</p>`:""}<p>Nothing else is fetched; after this the model runs offline.</p>`, [{label:"Cancel"},{label:"Download", value:true, primary:true}]); if (!ok) return; try { await post("/api/models/download", {name, consent:true}); toast("Download started"); watchTasks(); } catch (e) { toast(e.message); } };
+window.installRuntime = async () => { const rt = await api("/api/runtime"); const ci = rt.cuda_install; const ok = await ask("Install the CUDA build of PyTorch", `<p>Method: <b>${esc(ci.method)}</b>${ci.gib?` · about ${ci.gib} GiB`:""}.</p><p>${esc(ci.note||"")}</p>${ci.wheel?`<p class="small mono">${esc(ci.wheel)}<br>sha256 ${esc(ci.sha256)}</p>`:""}<p>Pinned PyTorch ${esc(rt.pinned_version)} (${esc(rt.cuda_label)}), BSD-3-Clause; the CUDA libraries inside are under NVIDIA's EULA. Not yet verified by this project on a GPU machine: please report what you see.</p>`, [{label:"Cancel"},{label:"Install", value:true, primary:true}]); if (!ok) return; try { await post("/api/runtime/install", {consent:true}); toast("Runtime install started"); watchTasks(); } catch (e) { toast(e.message, 8000); } };
+window.removeComp = async (kind, name) => { if (!await ask("Remove", `<p>Delete the files of <b>${esc(name)}</b> from disk? You can download them again later.</p>`, [{label:"Cancel"},{label:"Remove", value:true, danger:true}])) return; try { const r = await post("/api/components/remove", {kind, name}); toast(`Removed, ${gib(r.freed_bytes)} freed`); loadComponents(); } catch (e) { toast(e.message); } };
+window.reveal = async path => { try { await post("/api/reveal", {path}); } catch (e) { toast(e.message); } };
+let taskTimer; async function watchTasks() { clearTimeout(taskTimer); const t = await api("/api/tasks"); S.tasks = t; const rows = Object.values(t); $("#tasks").innerHTML = rows.map(x => `${esc(x.label)}: ${x.status}${x.progress!=null?` ${Math.round(x.progress*100)}%`:""}${x.current_file?` · ${esc(x.current_file)}`:""}${x.message?` · ${esc(x.message)}`:""}${x.error?` · <span style="color:var(--bad)">${esc(x.error)}</span>`:""}`).join("<br>"); if (rows.some(x=>x.status==="running")) taskTimer = setTimeout(watchTasks, 1500); else { loadComponents(); S.caps = await api("/api/capabilities"); fillTiers(); refreshPlan(); } }
+$("#bench").onclick = async () => { try { await post("/api/benchmark", {preset:"fast"}); $("#benchnote").textContent = "running: one fast reconstruction of the built-in test image…"; watchTasks(); const wait = setInterval(async () => { const t = await api("/api/tasks"); if (t.benchmark && t.benchmark.status!=="running") { clearInterval(wait); $("#benchnote").textContent = t.benchmark.error || "done"; S.caps = await api("/api/capabilities"); loadSettings(); } }, 2000); } catch (e) { toast(e.message, 8000); } };
+$("#overbudget").onclick = () => $("#overbudget").classList.toggle("on"); $("#paused").onclick = () => $("#paused").classList.toggle("on");
+$("#saveprefs").onclick = async () => { try { await post("/api/config", {device: $("#device").value, max_memory_gib: $("#memlimit").value || null, default_threads: $("#threads").value || null, allow_over_budget: $("#overbudget").classList.contains("on"), paused: $("#paused").classList.contains("on")}); $("#prefnote").textContent = "saved"; S.caps = await api("/api/capabilities"); refreshPlan(); pollJobs(); } catch (e) { $("#prefnote").textContent = e.message; } };
+function renderProjects() { $("#projects").innerHTML = S.projects.length ? S.projects.map(p => `<div class="row small" style="justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)"><span><b>${esc(p.name)}</b> · ${p.count} mesh(es)${S.current===p.id?' <span class="pill ok">current</span>':""}</span><span class="row"><a class="btn sm" href="/api/projects/${p.id}/export">Zip</a><button class="btn sm" onclick="setCurrent('${p.id}')">Use</button><button class="btn sm danger" onclick="removeProject('${p.id}')">Forget</button></span></div>`).join("") + `<div class="row small" style="margin-top:6px"><button class="btn sm" onclick="setCurrent('')">No current project</button></div>` : `<span class="muted small">No projects yet. New meshes are filed in the current project.</span>`; }
+window.setCurrent = async id => { await post("/api/projects/current", {id}); await loadProjects(); renderProjects(); };
+window.removeProject = async id => { if (await ask("Forget project", "<p>The meshes stay in the gallery, unfiled.</p>", [{label:"Cancel"},{label:"Forget", value:true, danger:true}])) { await post("/api/projects/remove", {id}); await loadProjects(); renderProjects(); } };
+async function loadTrash() { const t = await api("/api/trash"); $("#trashlist").innerHTML = t.jobs.length ? t.jobs.map(j => `<div class="row" style="justify-content:space-between;padding:4px 0"><span>${esc(j.title)}</span><button class="btn sm" onclick="restoreJob('${j.id}')">Restore</button></div>`).join("") : `<span class="muted">Empty.</span>`; }
+window.restoreJob = async id => { await post(`/api/jobs/${id}/restore`); loadTrash(); pollJobs(); };
+$("#emptytrash").onclick = async () => { if (await ask("Empty trash", "<p>Deletes the trashed meshes permanently.</p>", [{label:"Cancel"},{label:"Delete", value:true, danger:true}])) { const r = await post("/api/trash/empty"); toast(`${r.emptied} removed`); loadTrash(); } };
+// ---------- boot
+(async () => { await pollJobs(); await loadCaps(); await loadProjects(); setInterval(pollJobs, 2000); document.body.dataset.booted = "1"; })();
+</script>
+</body>
+</html>

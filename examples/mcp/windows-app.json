@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "shapestudio": {
+      "command": "C:\\Users\\you\\AppData\\Local\\Programs\\Shape Studio by Hivemind\\ShapeStudio.exe",
+      "args": ["cli", "serve"]
+    }
+  }
+}

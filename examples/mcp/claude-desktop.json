@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "shapestudio": {
+      "command": "shapestudio",
+      "args": ["serve"]
+    }
+  }
+}

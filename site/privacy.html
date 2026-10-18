@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy · Shape Studio by Hivemind</title>
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<style>
+  :root { --bg: #0f1012; --ink: #f2f2f0; --ink2: #c9c9c4; --muted: #8f9096; --accent: #7aa6ff; }
+  @media (prefers-color-scheme: light) { :root { --bg: #f7f6f2; --ink: #1b1b19; --ink2: #3a3a37; --muted: #6b6b68; --accent: #2f6fed; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 40px 20px 60px; } p, li { color: var(--ink2); } a { color: var(--accent); } .muted { color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body><div class="wrap">
+  <p class="muted"><a href="./">← Shape Studio by Hivemind</a></p>
+  <h1>Privacy</h1>
+  <p>Shape Studio by Hivemind runs entirely on your computer. It has no account, no telemetry, no analytics and no server of its own.</p>
+  <h2>What leaves your computer</h2>
+  <ul>
+    <li><b>Model and runtime downloads</b>, only when you ask for them and approve the size: the studio fetches the pinned files from their original hosts (Hugging Face for TripoSR and TRELLIS, GitHub Releases for the background-removal models, download.pytorch.org for the CUDA build of PyTorch) and verifies their SHA-256. Those hosts see an ordinary download request from your IP address, as any browser download would.</li>
+    <li><b>The 3D viewer script</b> (model-viewer, Apache-2.0) is loaded from the jsdelivr CDN at a pinned version when you open the gallery; jsdelivr sees that request. Without it the gallery shows the turntable PNG rendered locally.</li>
+  </ul>
+  <p>Nothing else connects anywhere. Your pictures, meshes, settings and job history stay in the studio's data folder on your disk (<code>%LOCALAPPDATA%\shapestudio</code> on Windows) and are yours to delete.</p>
+  <h2>The MCP server</h2>
+  <p>When an agent (Claude, Cursor, VS Code or another MCP client) uses the studio, that client decides what it sends to its own model provider; the studio itself only reads and writes files on your machine.</p>
+  <p class="muted">Contact: <a href="https://github.com/gethivemind/hivemind-shapestudio/issues">GitHub issues</a>. Last updated 2026-10-18.</p>
+</div></body>
+</html>
