@@ -53,7 +53,9 @@ jobs:
         shell: bash
         run: |
           uv venv --clear --python 3.12
+          uv pip install "torch==2.14.1" --index-url https://download.pytorch.org/whl/cpu
           uv pip install -e ".[app]" pyinstaller
+          uv run python -c "import torch; print('torch', torch.__version__)"
           uv run pyinstaller packaging/ShapeStudio.spec --noconfirm --log-level WARN
           ver="${GITHUB_REF_NAME#v}"
           cp LICENSE NOTICE TRADEMARK.md CHANGELOG.md packaging/README-WINDOWS.txt dist/ShapeStudio/
@@ -131,11 +133,15 @@ jobs:
           ver="${GITHUB_REF_NAME#v}"
           export SHAPESTUDIO_VERSION="$ver"
           uv venv --clear --python 3.12
+          # the CPU build of PyTorch, pinned: PyPI's default Linux wheel is the CUDA build and
+          # would make the tarball 3 GB (see registry.RUNTIME_WHEELS for the sizes stated)
+          uv pip install "torch==2.14.1" --index-url https://download.pytorch.org/whl/cpu
           if [ "$RUNNER_OS" = "macOS" ]; then
             uv pip install -e ".[app]" pyinstaller
           else
             uv pip install -e . pyinstaller
           fi
+          uv run python -c "import torch; print('torch', torch.__version__); assert 'cu' not in torch.__version__"
           uv run pyinstaller packaging/ShapeStudio.spec --noconfirm --log-level WARN
           cp LICENSE NOTICE TRADEMARK.md CHANGELOG.md packaging/README-LINUX-MACOS.txt dist/ShapeStudio/
           cd dist

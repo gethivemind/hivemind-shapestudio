@@ -8,7 +8,7 @@ authors:
     alias: royal-programmer
 repository-code: "https://github.com/gethivemind/hivemind-shapestudio"
 license: Apache-2.0
-version: 0.1.0
+version: 0.1.1
 date-released: 2026-10-18
 abstract: >-
   A free, local image-to-3D studio and MCP server: single-image reconstruction to GLB and OBJ

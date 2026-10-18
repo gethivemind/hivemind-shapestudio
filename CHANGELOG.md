@@ -4,6 +4,14 @@ All notable changes to Hivemind Shape Studio. The format follows Keep a Changelo
 follow semantic versioning. Official builds: GitHub Releases and the `hivemind-shapestudio`
 package on PyPI.
 
+## 0.1.1 — 2026-10-18
+
+### Fixed
+- Release builds pin the CPU build of PyTorch on every platform. 0.1.0's Linux tarball had pulled
+  PyPI's CUDA build and weighed 3 GB; it was not published. Windows and macOS were unaffected.
+- CLI output survives cp1252 consoles; the engine's progress text is plain ASCII.
+- Settings offers the CUDA runtime only when an NVIDIA GPU is present; phone layout.
+
 ## 0.1.0 — 2026-10-18
 
 First release, built as a sibling of Image Studio by Hivemind on the same architecture.
