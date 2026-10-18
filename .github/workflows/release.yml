@@ -187,7 +187,10 @@ jobs:
 
   github-release:
     name: GitHub release
-    needs: [publish, windows-app, posix-app]
+    needs: [build, publish, windows-app, posix-app]
+    # a failed or pending PyPI publish must not hide the installers: the release is made from
+    # the build artifacts whenever the build itself succeeded
+    if: ${{ !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
