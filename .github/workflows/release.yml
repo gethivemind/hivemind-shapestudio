@@ -35,7 +35,7 @@ jobs:
         run: |
           uv venv --clear --python 3.12
           uv pip install twine
-          uv run twine check dist/*
+          uv run --no-sync twine check dist/*
       - uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -54,8 +54,8 @@ jobs:
         run: |
           uv venv --clear --python 3.12
           uv pip install -e ".[app]" pyinstaller "torch==2.14.1+cpu"             --extra-index-url https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match
-          uv run python -c "import torch; print('torch', torch.__version__); assert not torch.version.cuda"
-          uv run pyinstaller packaging/ShapeStudio.spec --noconfirm --log-level WARN
+          uv run --no-sync python -c "import torch; print('torch', torch.__version__); assert not torch.version.cuda"
+          uv run --no-sync pyinstaller packaging/ShapeStudio.spec --noconfirm --log-level WARN
           ver="${GITHUB_REF_NAME#v}"
           cp LICENSE NOTICE TRADEMARK.md CHANGELOG.md packaging/README-WINDOWS.txt dist/ShapeStudio/
           cd dist && 7z a -tzip "ShapeStudio-$ver-windows-x64.zip" ShapeStudio >/dev/null
@@ -84,10 +84,10 @@ jobs:
         run: |
           ver="${GITHUB_REF_NAME#v}"
           if [ -n "$MSIX_IDENTITY_NAME" ]; then
-            uv run python packaging/build_msix.py --version "$ver" --store
+            uv run --no-sync python packaging/build_msix.py --version "$ver" --store
           else
             echo "::notice::MSIX identity variables not set; building a sideload (dev-signed) package"
-            uv run python packaging/build_msix.py --version "$ver" --sideload
+            uv run --no-sync python packaging/build_msix.py --version "$ver" --sideload
           fi
           cd dist && sha256sum *.msix > msix.sha256 && cat msix.sha256
       - name: Smoke test
@@ -140,8 +140,8 @@ jobs:
           extra=""; pin="torch==2.14.1+cpu"
           if [ "$RUNNER_OS" = "macOS" ]; then extra="[app]"; pin="torch==2.14.1"; fi
           uv pip install -e ".$extra" pyinstaller "$pin"             --extra-index-url https://download.pytorch.org/whl/cpu --index-strategy unsafe-best-match
-          uv run python -c "import torch; print('torch', torch.__version__); assert not torch.version.cuda"
-          uv run pyinstaller packaging/ShapeStudio.spec --noconfirm --log-level WARN
+          uv run --no-sync python -c "import torch; print('torch', torch.__version__); assert not torch.version.cuda"
+          uv run --no-sync pyinstaller packaging/ShapeStudio.spec --noconfirm --log-level WARN
           cp LICENSE NOTICE TRADEMARK.md CHANGELOG.md packaging/README-LINUX-MACOS.txt dist/ShapeStudio/
           cd dist
           if [ "$RUNNER_OS" = "macOS" ]; then
