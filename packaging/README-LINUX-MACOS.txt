@@ -25,7 +25,7 @@ Linux (x86_64, glibc 2.28 or newer)
    Logs: ~/.local/share/shapestudio/logs/app.log
 3. The CPU build of PyTorch is inside. For an NVIDIA GPU, the packaged Linux build cannot swap
    in the CUDA runtime (the Linux CUDA wheels depend on separate nvidia-* packages); install
-   with pipx instead:  pipx install hivemind-shapestudio  then  shapestudio install-runtime --cuda
+   with pipx instead (the wheel from the GitHub release)  then  shapestudio install-runtime --cuda
 
 Everything runs on this machine. Nothing is uploaded.
 
@@ -34,4 +34,5 @@ Command line (both)
 ./ShapeStudio cli doctor
 ./ShapeStudio cli reconstruct ~/pictures/chair.png --out ~/meshes
 
-Prefer Python?  pipx install hivemind-shapestudio   then   shapestudio ui
+Prefer Python?  pipx install <the .whl from the GitHub release>   then   shapestudio ui
+(the PyPI package follows the upcoming rename)

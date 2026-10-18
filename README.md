@@ -1,6 +1,6 @@
 # Hivemind Shape Studio
 
-**Website:** https://gethivemind.github.io/hivemind-shapestudio/ · **PyPI:** https://pypi.org/project/hivemind-shapestudio/ · **Releases:** https://github.com/gethivemind/hivemind-shapestudio/releases
+**Website:** https://gethivemind.github.io/hivemind-shapestudio/ · **Releases:** https://github.com/gethivemind/hivemind-shapestudio/releases
 
 A free, local image-to-3D studio and MCP server. One picture in, a textured mesh out (GLB
 and OBJ with vertex colours, plus a turntable PNG), with permissively licensed models on your
@@ -98,10 +98,12 @@ studio in your browser. Details in `packaging/README-LINUX-MACOS.txt`.
 **Everywhere else** (and for the MCP server and CLI), Python 3.11 or newer:
 
 ```bash
-pipx install hivemind-shapestudio
+pipx install https://github.com/gethivemind/hivemind-shapestudio/releases/latest/download/hivemind_shapestudio-0.1.1-py3-none-any.whl
 ```
 
-or `pip install hivemind-shapestudio` / `uv tool install hivemind-shapestudio`. PyTorch is a
+or the same wheel with `pip install` / `uv tool install`. The PyPI package is not published yet:
+a brand rename is coming and PyPI names are permanent, so it will be registered once under the
+final name; until then the wheel on the GitHub release is the Python distribution. PyTorch is a
 dependency and comes along (see Sizes). Then:
 
 ```bash
@@ -137,7 +139,7 @@ installs the pinned CUDA build of PyTorch (pip into the same interpreter; in the
 Windows app a hash-verified wheel unpacked under the data folder). It is offered, never
 automatic, and `doctor` says which build actually loaded.
 
-The GitHub Releases of this repository and the `hivemind-shapestudio` package on PyPI are the
+The GitHub Releases of this repository (and, after the rename, the PyPI package) are the
 official builds (see NOTICE and TRADEMARK.md).
 
 ## The app

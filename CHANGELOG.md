@@ -1,8 +1,8 @@
 # Changelog
 
 All notable changes to Hivemind Shape Studio. The format follows Keep a Changelog; versions
-follow semantic versioning. Official builds: GitHub Releases and the `hivemind-shapestudio`
-package on PyPI.
+follow semantic versioning. Official builds: GitHub Releases (the PyPI package follows the
+upcoming rename).
 
 ## 0.1.1 — 2026-10-18
 

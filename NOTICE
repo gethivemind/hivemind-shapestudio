@@ -11,8 +11,8 @@ You may use the code under the licence, fork it, and ship it; please do not call
 fork or a derived service "Hivemind" or "Hivemind Shape Studio", or present it as
 official. "A fork of Hivemind Shape Studio" is fine.
 
-Official channel. GitHub Releases of gethivemind/hivemind-shapestudio and the PyPI
-package hivemind-shapestudio are the official builds; anything else is unverified.
+Official channel. GitHub Releases of gethivemind/hivemind-shapestudio (and, once published after
+the rename, the PyPI package) are the official builds; anything else is unverified.
 
 Third-party code included in this distribution:
 - src/shapestudio/engine/tsr: derived from TripoSR, Copyright (c) 2024 Tripo AI &
