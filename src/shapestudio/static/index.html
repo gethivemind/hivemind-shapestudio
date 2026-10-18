@@ -115,6 +115,18 @@
   .sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }
   .sw.on { background: var(--accent); } .sw.on::after { left: 19px; }
   .hidden { display: none !important; }
+  @media (max-width: 700px) {
+    .top { height: auto; flex-wrap: wrap; padding: 8px 10px; gap: 8px; }
+    .brand small { display: none; }
+    .tabs { order: 5; width: 100%; justify-content: space-between; }
+    .tabs button { flex: 1; padding: 6px 4px; }
+    #statuschip { max-width: 55vw; overflow: hidden; } #statuschip span { overflow: hidden; text-overflow: ellipsis; }
+    .wrap { padding: 12px 12px 48px; }
+    #comps th:nth-child(2), #comps td:nth-child(2), #comps th:nth-child(3), #comps td:nth-child(3) { display: none; }
+    #comps td .muted.small { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .kv { grid-template-columns: 1fr; gap: 2px; } .kv span:nth-child(odd) { margin-top: 6px; }
+    .viewer { min-height: auto; } model-viewer { min-height: 260px; }
+  }
 </style>
 </head>
 <body>
