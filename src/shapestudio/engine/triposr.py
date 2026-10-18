@@ -160,7 +160,7 @@ class TripoSREngine:
         self._check()
         rgb, cutout = self._prepare(spec, on_progress)
         if on_progress:
-            on_progress(Progress("encoding", 0.2, "network pass: image → triplane"))
+            on_progress(Progress("encoding", 0.2, "network pass: image to triplane"))
         import torch
 
         with torch.no_grad():

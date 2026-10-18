@@ -6,6 +6,7 @@ ui, serve."""
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import shutil
 import sys
@@ -558,6 +559,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     from shapestudio import runtime
+
+    # legacy Windows consoles are cp1252: keep ≈ · ³ from crashing a print
+    for stream in (sys.stdout, sys.stderr):
+        with contextlib.suppress(Exception):
+            stream.reconfigure(errors="replace")
 
     runtime.activate_runtime(Settings.load())
     args = build_parser().parse_args(argv)
