@@ -4,6 +4,11 @@ All notable changes to Presidium Shape Studio. The format follows Keep a Changel
 follow semantic versioning. Official builds: GitHub Releases and the `presidium-shapestudio`
 package on PyPI.
 
+## 0.1.4 — 2026-10-20
+
+### Changed
+- Store MSIX built with the real Partner Center identity (repository variables set); no code changes.
+
 ## 0.1.3 — 2026-10-19
 
 ### Changed

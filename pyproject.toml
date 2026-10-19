@@ -1,6 +1,6 @@
 [project]
 name = "presidium-shapestudio"
-version = "0.1.3"
+version = "0.1.4"
 description = "Free, local image-to-3D studio and MCP server. Quality is a setting, never a consequence."
 readme = "README.md"
 license = "Apache-2.0"

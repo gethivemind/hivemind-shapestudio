@@ -32,5 +32,5 @@ certificate is built instead so the packaging path is exercised on every release
 
 ## Status
 
-Not submitted yet (0.1.0). The app is about 400 MB unpacked because PyTorch's CPU build and
+Identity variables set 2026-10-20; 0.1.4 is the first Store package with the real identity. Not submitted yet. The app is about 400 MB unpacked because PyTorch's CPU build and
 scikit-image are inside; the Store accepts packages up to 25 GB.

@@ -8,8 +8,8 @@ authors:
     alias: royal-programmer
 repository-code: "https://github.com/presidiumdev/presidium-shapestudio"
 license: Apache-2.0
-version: 0.1.3
-date-released: 2026-10-19
+version: 0.1.4
+date-released: 2026-10-20
 abstract: >-
   A free, local image-to-3D studio and MCP server: single-image reconstruction to GLB and OBJ
   meshes with permissively licensed models (TripoSR, TRELLIS) on the user's own machine.
