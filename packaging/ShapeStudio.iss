@@ -17,7 +17,7 @@
 #define MyAppName "Presidium Shape Studio"
 #define MyAppShort "Shape Studio"
 #define MyAppPublisher "Presidium"
-#define MyAppURL "https://gethivemind.github.io/shapestudio/"
+#define MyAppURL "https://presidiumdev.github.io/presidium-shapestudio/"
 #define MyAppExeName "ShapeStudio.exe"
 
 [Setup]
@@ -27,8 +27,8 @@ AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
-AppSupportURL=https://github.com/gethivemind/shapestudio/issues
-AppUpdatesURL=https://github.com/gethivemind/shapestudio/releases
+AppSupportURL=https://github.com/presidiumdev/presidium-shapestudio/issues
+AppUpdatesURL=https://github.com/presidiumdev/presidium-shapestudio/releases
 AppCopyright=Copyright (C) 2026 Ratul Roy (royal-programmer) and the Hivemind contributors
 DefaultDirName={autopf}\Presidium Shape Studio
 DefaultGroupName={#MyAppName}
