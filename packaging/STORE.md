@@ -26,7 +26,7 @@ certificate is built instead so the packaging path is exercised on every release
 2. Partner Center → the app → new submission → *Packages* → upload the `.msix`.
 3. Listing: category *Developer tools* or *Photo & video*; the description is the hero text on
    the website; `internetClient` capability means a privacy policy URL is required:
-   https://gethivemind.github.io/hivemind-shapestudio/privacy.html. `runFullTrust`
+   https://presidiumdev.github.io/presidium-shapestudio/privacy.html. `runFullTrust`
    justification: a PyInstaller desktop app that runs PyTorch locally and writes meshes under
    `%LOCALAPPDATA%\shapestudio`.
 

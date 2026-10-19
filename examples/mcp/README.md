@@ -12,7 +12,7 @@ quality is a setting, never a consequence; estimates are measured; nothing is up
 | VS Code (Copilot agent mode) | `vscode.mcp.json` | `.vscode/mcp.json` |
 | Windows app instead of pip | `windows-app.json` | the installed `ShapeStudio.exe cli serve` is the same server |
 
-The command must be on PATH: `pipx install https://github.com/gethivemind/hivemind-shapestudio/releases/latest/download/hivemind_shapestudio-0.1.1-py3-none-any.whl` (the release wheel; the PyPI package `presidium-shapestudio` follows once its publisher exists) puts `shapestudio` there.
+The command must be on PATH: `pipx install https://github.com/presidiumdev/presidium-shapestudio/releases/latest/download/hivemind_shapestudio-0.1.1-py3-none-any.whl` (the release wheel; the PyPI package `presidium-shapestudio` follows once its publisher exists) puts `shapestudio` there.
 
 ## A typical agent flow
 

@@ -31,12 +31,12 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/gethivemind/hivemind-shapestudio"
-Source = "https://github.com/gethivemind/hivemind-shapestudio"
-Issues = "https://github.com/gethivemind/hivemind-shapestudio/issues"
-Changelog = "https://github.com/gethivemind/hivemind-shapestudio/releases"
+Homepage = "https://github.com/presidiumdev/presidium-shapestudio"
+Source = "https://github.com/presidiumdev/presidium-shapestudio"
+Issues = "https://github.com/presidiumdev/presidium-shapestudio/issues"
+Changelog = "https://github.com/presidiumdev/presidium-shapestudio/releases"
 Author = "https://github.com/royal-programmer"
-Trademark = "https://github.com/gethivemind/hivemind-shapestudio/blob/main/TRADEMARK.md"
+Trademark = "https://github.com/presidiumdev/presidium-shapestudio/blob/main/TRADEMARK.md"
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.6"]

@@ -2,7 +2,7 @@
 
 <img src="site/assets/shape-tile.svg" width="96" height="96" alt="The Presidium Shape Studio mark" align="right">
 
-**Website:** https://gethivemind.github.io/hivemind-shapestudio/ · **Releases:** https://github.com/gethivemind/hivemind-shapestudio/releases
+**Website:** https://presidiumdev.github.io/presidium-shapestudio/ · **Releases:** https://github.com/presidiumdev/presidium-shapestudio/releases
 
 A free, local image-to-3D studio and MCP server. One picture in, a textured mesh out (GLB
 and OBJ with vertex colours, plus a turntable PNG), with permissively licensed models on your
@@ -85,7 +85,7 @@ unlock them. TRELLIS is budgeted at 16 GiB of GPU memory, the authors' figure.
 ## Install
 
 **Windows app:** download `ShapeStudio-<version>-Setup.exe` from the
-[latest release](https://github.com/gethivemind/hivemind-shapestudio/releases/latest) and run
+[latest release](https://github.com/presidiumdev/presidium-shapestudio/releases/latest) and run
 it: Start menu entry, uninstall from Settings → Apps, no administrator rights. Prefer
 portable? `…-windows-x64.zip` is the same app: unzip, run `ShapeStudio.exe`. The build is not
 code-signed yet, so SmartScreen asks once per download ("More info" → "Run anyway"); the
@@ -100,7 +100,7 @@ studio in your browser. Details in `packaging/README-LINUX-MACOS.txt`.
 **Everywhere else** (and for the MCP server and CLI), Python 3.11 or newer:
 
 ```bash
-pipx install https://github.com/gethivemind/hivemind-shapestudio/releases/latest/download/hivemind_shapestudio-0.1.1-py3-none-any.whl
+pipx install https://github.com/presidiumdev/presidium-shapestudio/releases/latest/download/hivemind_shapestudio-0.1.1-py3-none-any.whl
 ```
 
 or the same wheel with `pip install` / `uv tool install`. The PyPI package is not published yet:

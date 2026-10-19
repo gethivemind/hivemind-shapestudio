@@ -27,4 +27,4 @@ ShapeStudio.exe cli reconstruct C:\pictures\chair.png --out C:\meshes
 ShapeStudio.exe cli --help
 
 Licence: Apache-2.0 (LICENSE, NOTICE). The name and logo are trademarks (TRADEMARK.md).
-Made with love by Ratul Roy (royal-programmer). https://gethivemind.github.io/hivemind-shapestudio/
+Made with love by Ratul Roy (royal-programmer). https://presidiumdev.github.io/presidium-shapestudio/

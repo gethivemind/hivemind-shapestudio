@@ -151,8 +151,8 @@ def build_app(studio: Studio) -> Starlette:
                 "version": __version__,
                 "credit": "made with ♥ by Ratul Roy (royal-programmer)",
                 "licence": "Apache-2.0",
-                "homepage": "https://gethivemind.github.io/hivemind-shapestudio/",
-                "source": "https://github.com/gethivemind/hivemind-shapestudio",
+                "homepage": "https://presidiumdev.github.io/presidium-shapestudio/",
+                "source": "https://github.com/presidiumdev/presidium-shapestudio",
                 "mcp_command": (
                     f"{sys.executable} cli serve"
                     if getattr(sys, "frozen", False)

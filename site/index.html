@@ -7,7 +7,7 @@
 <meta name="description" content="A free, local image-to-3D studio and MCP server. One picture in, a textured GLB or OBJ mesh out, with permissively licensed models, on your own machine. Quality is a setting, never a consequence.">
 <meta property="og:title" content="Presidium Shape Studio">
 <meta property="og:description" content="Free, local, permissively licensed image-to-3D. Quality is a setting, never a consequence.">
-<meta property="og:image" content="https://gethivemind.github.io/hivemind-shapestudio/assets/icon-512.png">
+<meta property="og:image" content="https://presidiumdev.github.io/presidium-shapestudio/assets/icon-512.png">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#D5582F">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
@@ -68,7 +68,7 @@
 <body>
 <header class="top"><div class="wrap">
   <a class="brand" href="#"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="53.1" cy="18.2" r="3.6" fill="#D5582F"/><circle cx="58.3" cy="41" r="3.6" fill="#D5582F"/><circle cx="43.7" cy="59.3" r="3.6" fill="#D5582F"/><circle cx="20.3" cy="59.3" r="3.6" fill="#D5582F"/><circle cx="5.7" cy="41" r="3.6" fill="#D5582F"/><circle cx="10.9" cy="18.2" r="3.6" fill="#D5582F"/><circle cx="32" cy="8" r="5.5" fill="#D5582F"/><path d="M32 24 L42 29.5 V40.5 L32 46 L22 40.5 V29.5 Z" fill="none" stroke="#D5582F" stroke-width="3" stroke-linejoin="round"/><path d="M22 29.5 L32 35 L42 29.5 M32 35 V46" fill="none" stroke="#D5582F" stroke-width="2.6" stroke-linejoin="round"/></svg><span class="lk"><b>Presidium</b> Shape Studio</span></a>
-  <nav><a href="#policy">Policy</a><a href="#tiers">Tiers</a><a href="#status">Status</a><a href="#install">Install</a><a href="#licences">Licences</a><a href="mcp.html">Agents</a><a href="https://github.com/gethivemind/hivemind-shapestudio" target="_blank" rel="noopener">GitHub</a></nav>
+  <nav><a href="#policy">Policy</a><a href="#tiers">Tiers</a><a href="#status">Status</a><a href="#install">Install</a><a href="#licences">Licences</a><a href="mcp.html">Agents</a><a href="https://github.com/presidiumdev/presidium-shapestudio" target="_blank" rel="noopener">GitHub</a></nav>
 </div></header>
 
 <main class="wrap">
@@ -78,7 +78,7 @@
       <p class="lead">One picture in, a textured mesh out: GLB and OBJ with vertex colours and a turntable preview, with permissively licensed models, on the machine in front of you. Nothing is uploaded. Nothing is paid for.</p>
       <div class="cta">
         <a class="btn primary" href="#install">Install</a>
-        <a class="btn" href="https://github.com/gethivemind/hivemind-shapestudio/releases" target="_blank" rel="noopener">Releases</a>
+        <a class="btn" href="https://github.com/presidiumdev/presidium-shapestudio/releases" target="_blank" rel="noopener">Releases</a>
       </div>
       <div class="pills"><span class="pill ok">Apache-2.0</span><span class="pill">Windows · Linux · macOS</span><span class="pill">CPU, or NVIDIA GPU</span><span class="pill">MCP server inside</span><span class="pill">Works offline after setup</span></div>
     </div>
@@ -125,10 +125,10 @@
     <p class="sub">A Windows, macOS or Linux app, or Python 3.11 or newer on any OS. The models are downloaded by the studio itself, with your consent, hash-verified.</p>
     <div class="install">
       <div class="card"><h3>Windows app</h3><pre>ShapeStudio-x.y.z-Setup.exe
-→ Next, Next, done</pre><p class="note">From the <a href="https://github.com/gethivemind/hivemind-shapestudio/releases/latest" target="_blank" rel="noopener">latest release</a>. Start menu, uninstall from Settings, no administrator rights. A portable zip is there too. Not code-signed yet: SmartScreen asks once per download ("More info" → "Run anyway"). The SHA-256 is next to the download. PyTorch's CPU build (124 MB) is inside; the CUDA build (1.9 GiB) is offered on NVIDIA machines.</p></div>
+→ Next, Next, done</pre><p class="note">From the <a href="https://github.com/presidiumdev/presidium-shapestudio/releases/latest" target="_blank" rel="noopener">latest release</a>. Start menu, uninstall from Settings, no administrator rights. A portable zip is there too. Not code-signed yet: SmartScreen asks once per download ("More info" → "Run anyway"). The SHA-256 is next to the download. PyTorch's CPU build (124 MB) is inside; the CUDA build (1.9 GiB) is offered on NVIDIA machines.</p></div>
       <div class="card"><h3>macOS and Linux</h3><pre>ShapeStudio-x.y.z-macos-arm64.zip
 ShapeStudio-x.y.z-linux-x86_64.tar.gz</pre><p class="note">Apple silicon: unzip, right-click "Shape Studio.app" → Open the first time (not notarized yet). Linux x86_64: unpack, run <code>ShapeStudio</code>; it opens in your browser. The SHA-256 is next to each download.</p></div>
-      <div class="card"><h3>With pipx or pip</h3><pre>pipx install https://github.com/gethivemind/hivemind-shapestudio/releases/latest/download/hivemind_shapestudio-0.1.1-py3-none-any.whl
+      <div class="card"><h3>With pipx or pip</h3><pre>pipx install https://github.com/presidiumdev/presidium-shapestudio/releases/latest/download/hivemind_shapestudio-0.1.1-py3-none-any.whl
 shapestudio ui</pre><p class="note">The wheel on the GitHub release; the PyPI package comes with the upcoming rename (PyPI names are permanent). PyTorch comes along as a dependency: 124 MB on Windows, 127 MB on macOS; on Linux the PyPI default is the CUDA build (about 3 GB with its libraries), so add <code>--pip-args "--extra-index-url https://download.pytorch.org/whl/cpu"</code> for the CPU build.</p></div>
       <div class="card"><h3>First run</h3><pre>shapestudio doctor
 shapestudio download-model triposr --yes
@@ -137,7 +137,7 @@ shapestudio reconstruct chair.png --out meshes/</pre><p class="note">Or do the s
       <div class="card"><h3>As an MCP server</h3><pre>{ "mcpServers": { "shapestudio":
     { "command": "shapestudio", "args": ["serve"] } } }</pre><p class="note">Tools: capabilities, plan, reconstruct, job_status, job_result, jobs, cancel_job, download_model. Client configs and a typical agent flow: <a href="mcp.html">For agents</a>.</p></div>
     </div>
-    <p class="note">Official builds are the <a href="https://github.com/gethivemind/hivemind-shapestudio/releases" target="_blank" rel="noopener">GitHub Releases</a> of the repository (the PyPI package follows the rename).</p>
+    <p class="note">Official builds are the <a href="https://github.com/presidiumdev/presidium-shapestudio/releases" target="_blank" rel="noopener">GitHub Releases</a> of the repository (the PyPI package follows the rename).</p>
   </section>
 
   <section id="licences">
@@ -146,14 +146,14 @@ shapestudio reconstruct chair.png --out meshes/</pre><p class="note">Or do the s
     <div class="grid">
       <div class="card"><h3>Code: Apache-2.0</h3><p>Use it, fork it, ship it, in products and at work. Keep the NOTICE file and the author lines, as the licence asks. The vendored TripoSR code is MIT; its attention blocks derive from Hugging Face diffusers (Apache-2.0).</p></div>
       <div class="card"><h3>Models and runtime</h3><p>TripoSR and TRELLIS weights are MIT. PyTorch is BSD-3-Clause (the CUDA libraries inside its CUDA build are under NVIDIA's EULA). scikit-image is BSD; ONNX Runtime MIT; IS-Net and U²-Net Apache-2.0; model-viewer Apache-2.0.</p></div>
-      <div class="card"><h3>Name: a trademark</h3><p>"Presidium" and "Presidium Shape Studio" and the mark identify the official project. Forks are welcome under their own name and may say "based on Presidium Shape Studio". The policy is in <a href="https://github.com/gethivemind/hivemind-shapestudio/blob/main/TRADEMARK.md" target="_blank" rel="noopener">TRADEMARK.md</a>.</p></div>
+      <div class="card"><h3>Name: a trademark</h3><p>"Presidium" and "Presidium Shape Studio" and the mark identify the official project. Forks are welcome under their own name and may say "based on Presidium Shape Studio". The policy is in <a href="https://github.com/presidiumdev/presidium-shapestudio/blob/main/TRADEMARK.md" target="_blank" rel="noopener">TRADEMARK.md</a>.</p></div>
     </div>
   </section>
 </main>
 
 <footer><div class="wrap">
   <div class="credit">Presidium Shape Studio · made with ♥ by <a href="https://github.com/royal-programmer" target="_blank" rel="noopener">Ratul Roy (royal-programmer)</a></div>
-  <div><a href="https://github.com/gethivemind/hivemind-shapestudio" target="_blank" rel="noopener">Source</a> · <a href="https://github.com/gethivemind/hivemind-shapestudio/issues" target="_blank" rel="noopener">Issues</a> · <a href="https://github.com/gethivemind/hivemind-shapestudio/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a> · <a href="https://github.com/gethivemind/hivemind-shapestudio/blob/main/CITATION.cff" target="_blank" rel="noopener">Cite</a> · <a href="https://gethivemind.github.io/hivemind-imagestudio/" target="_blank" rel="noopener">Presidium Image Studio</a> · <a href="privacy.html">Privacy</a> · © 2026 Ratul Roy and the Hivemind contributors</div>
+  <div><a href="https://github.com/presidiumdev/presidium-shapestudio" target="_blank" rel="noopener">Source</a> · <a href="https://github.com/presidiumdev/presidium-shapestudio/issues" target="_blank" rel="noopener">Issues</a> · <a href="https://github.com/presidiumdev/presidium-shapestudio/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a> · <a href="https://github.com/presidiumdev/presidium-shapestudio/blob/main/CITATION.cff" target="_blank" rel="noopener">Cite</a> · <a href="https://gethivemind.github.io/hivemind-imagestudio/" target="_blank" rel="noopener">Presidium Image Studio</a> · <a href="privacy.html">Privacy</a> · © 2026 Ratul Roy and the Hivemind contributors</div>
 </div></footer>
 </body>
 </html>
