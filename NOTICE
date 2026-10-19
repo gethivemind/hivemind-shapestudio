@@ -11,8 +11,8 @@ You may use the code under the licence, fork it, and ship it; please do not call
 or a derived service "Presidium" or "Presidium Shape Studio", or present it as official.
 "A fork of Presidium Shape Studio" is fine.
 
-Official channel. GitHub Releases of presidiumdev/presidium-shapestudio (and, once published
-under the final name, the PyPI package) are the official builds; anything else is unverified.
+Official channel. GitHub Releases of presidiumdev/presidium-shapestudio and the PyPI package
+presidium-shapestudio are the official builds; anything else is unverified.
 
 Third-party code included in this distribution:
 - src/shapestudio/engine/tsr: derived from TripoSR, Copyright (c) 2024 Tripo AI &

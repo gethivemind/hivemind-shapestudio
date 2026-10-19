@@ -79,6 +79,7 @@
       <div class="cta">
         <a class="btn primary" href="#install">Install</a>
         <a class="btn" href="https://github.com/presidiumdev/presidium-shapestudio/releases" target="_blank" rel="noopener">Releases</a>
+        <a class="btn" href="https://pypi.org/project/presidium-shapestudio/" target="_blank" rel="noopener">PyPI</a>
       </div>
       <div class="pills"><span class="pill ok">Apache-2.0</span><span class="pill">Windows · Linux · macOS</span><span class="pill">CPU, or NVIDIA GPU</span><span class="pill">MCP server inside</span><span class="pill">Works offline after setup</span></div>
     </div>
@@ -128,8 +129,8 @@
 → Next, Next, done</pre><p class="note">From the <a href="https://github.com/presidiumdev/presidium-shapestudio/releases/latest" target="_blank" rel="noopener">latest release</a>. Start menu, uninstall from Settings, no administrator rights. A portable zip is there too. Not code-signed yet: SmartScreen asks once per download ("More info" → "Run anyway"). The SHA-256 is next to the download. PyTorch's CPU build (124 MB) is inside; the CUDA build (1.9 GiB) is offered on NVIDIA machines.</p></div>
       <div class="card"><h3>macOS and Linux</h3><pre>ShapeStudio-x.y.z-macos-arm64.zip
 ShapeStudio-x.y.z-linux-x86_64.tar.gz</pre><p class="note">Apple silicon: unzip, right-click "Shape Studio.app" → Open the first time (not notarized yet). Linux x86_64: unpack, run <code>ShapeStudio</code>; it opens in your browser. The SHA-256 is next to each download.</p></div>
-      <div class="card"><h3>With pipx or pip</h3><pre>pipx install https://github.com/presidiumdev/presidium-shapestudio/releases/latest/download/hivemind_shapestudio-0.1.1-py3-none-any.whl
-shapestudio ui</pre><p class="note">The wheel on the GitHub release; the PyPI package comes with the upcoming rename (PyPI names are permanent). PyTorch comes along as a dependency: 124 MB on Windows, 127 MB on macOS; on Linux the PyPI default is the CUDA build (about 3 GB with its libraries), so add <code>--pip-args "--extra-index-url https://download.pytorch.org/whl/cpu"</code> for the CPU build.</p></div>
+      <div class="card"><h3>With pipx or pip</h3><pre>pipx install presidium-shapestudio
+shapestudio ui</pre><p class="note">PyTorch comes along as a dependency: 124 MB on Windows, 127 MB on macOS; on Linux the PyPI default is the CUDA build (about 3 GB with its libraries), so add <code>--pip-args "--extra-index-url https://download.pytorch.org/whl/cpu"</code> for the CPU build.</p></div>
       <div class="card"><h3>First run</h3><pre>shapestudio doctor
 shapestudio download-model triposr --yes
 shapestudio download-model isnet-general-use --yes
@@ -137,7 +138,7 @@ shapestudio reconstruct chair.png --out meshes/</pre><p class="note">Or do the s
       <div class="card"><h3>As an MCP server</h3><pre>{ "mcpServers": { "shapestudio":
     { "command": "shapestudio", "args": ["serve"] } } }</pre><p class="note">Tools: capabilities, plan, reconstruct, job_status, job_result, jobs, cancel_job, download_model. Client configs and a typical agent flow: <a href="mcp.html">For agents</a>.</p></div>
     </div>
-    <p class="note">Official builds are the <a href="https://github.com/presidiumdev/presidium-shapestudio/releases" target="_blank" rel="noopener">GitHub Releases</a> of the repository (the PyPI package follows the rename).</p>
+    <p class="note">Official builds are the <a href="https://github.com/presidiumdev/presidium-shapestudio/releases" target="_blank" rel="noopener">GitHub Releases</a> of the repository and the <a href="https://pypi.org/project/presidium-shapestudio/" target="_blank" rel="noopener">presidium-shapestudio</a> package on PyPI.</p>
   </section>
 
   <section id="licences">

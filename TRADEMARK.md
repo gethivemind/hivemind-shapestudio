@@ -10,7 +10,7 @@ the Apache License says so explicitly.
 - **Presidium Shape Studio** (formerly "Shape Studio by Hivemind")
 - the Presidium mark (six seats around one table, the chair at the head) and the Shape Studio
   variant with the cube on the table
-- the executable name **ShapeStudio** and the package names of the official builds
+- the package name **presidium-shapestudio** on PyPI and the executable name **ShapeStudio**
 
 These are trademarks of Ratul Roy (GitHub: royal-programmer), creator of Presidium. They are
 not registered marks yet; unregistered marks are still protected against passing off and

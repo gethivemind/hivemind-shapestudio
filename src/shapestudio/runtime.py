@@ -166,7 +166,7 @@ def cuda_install_plan(settings: Settings) -> dict:
                 "possible": False,
                 "method": "none",
                 "reason": "no self-contained CUDA wheel is pinned for this platform; install "
-                "with pipx instead (pipx install hivemind-shapestudio, then shapestudio "
+                "with pipx instead (pipx install presidium-shapestudio, then shapestudio "
                 "install-runtime --cuda).",
             }
         if wheel.python != py:
@@ -226,7 +226,7 @@ def install_cuda_runtime(
             raise RuntimeError(f"could not run pip: {e}") from e
         if r.returncode != 0:
             raise RuntimeError(
-                "pip failed. If this is a pipx install, run: pipx inject hivemind-shapestudio "
+                "pip failed. If this is a pipx install, run: pipx inject presidium-shapestudio "
                 f"'torch=={TORCH_VERSION}' --pip-args='--index-url {TORCH_CUDA_INDEX}' "
                 "(or --force to replace the CPU build)."
             )

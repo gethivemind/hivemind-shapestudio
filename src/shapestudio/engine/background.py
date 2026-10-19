@@ -4,7 +4,7 @@ Two models are in the catalogue: IS-Net general use (Apache-2.0, 1024 px input, 
 one) and U²-Net (Apache-2.0, 320 px input, smaller and faster). The image is resized to the
 model's input, the predicted matte is scaled back to the original size and used as the alpha
 channel. Nothing leaves the machine. onnxruntime is an optional dependency (``pip install
-hivemind-shapestudio``).
+presidium-shapestudio``).
 """
 # Copyright 2026 Ratul Roy (royal-programmer) and the Hivemind contributors
 # SPDX-License-Identifier: Apache-2.0
@@ -35,7 +35,7 @@ def _ensure_runtime():
     except ImportError as e:  # pragma: no cover - depends on the environment
         raise EngineError(
             "background removal needs onnxruntime, numpy and Pillow: "
-            "pip install 'hivemind-shapestudio'"
+            "pip install 'presidium-shapestudio'"
         ) from e
     return np, ort, Image
 

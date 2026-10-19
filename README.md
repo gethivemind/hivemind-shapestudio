@@ -2,7 +2,7 @@
 
 <img src="site/assets/shape-tile.svg" width="96" height="96" alt="The Presidium Shape Studio mark" align="right">
 
-**Website:** https://presidiumdev.github.io/presidium-shapestudio/ · **Releases:** https://github.com/presidiumdev/presidium-shapestudio/releases
+**Website:** https://presidiumdev.github.io/presidium-shapestudio/ · **PyPI:** https://pypi.org/project/presidium-shapestudio/ · **Releases:** https://github.com/presidiumdev/presidium-shapestudio/releases
 
 A free, local image-to-3D studio and MCP server. One picture in, a textured mesh out (GLB
 and OBJ with vertex colours, plus a turntable PNG), with permissively licensed models on your
@@ -100,7 +100,7 @@ studio in your browser. Details in `packaging/README-LINUX-MACOS.txt`.
 **Everywhere else** (and for the MCP server and CLI), Python 3.11 or newer:
 
 ```bash
-pipx install https://github.com/presidiumdev/presidium-shapestudio/releases/latest/download/hivemind_shapestudio-0.1.1-py3-none-any.whl
+pipx install presidium-shapestudio
 ```
 
 or the same wheel with `pip install` / `uv tool install`. The PyPI package is not published yet:
@@ -140,7 +140,7 @@ installs the pinned CUDA build of PyTorch (pip into the same interpreter; in the
 Windows app a hash-verified wheel unpacked under the data folder). It is offered, never
 automatic, and `doctor` says which build actually loaded.
 
-The GitHub Releases of this repository (and, after the rename, the PyPI package) are the
+The GitHub Releases of this repository and the `presidium-shapestudio` package on PyPI are the
 official builds (see NOTICE and TRADEMARK.md).
 
 ## The app

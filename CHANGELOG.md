@@ -1,8 +1,15 @@
 # Changelog
 
 All notable changes to Presidium Shape Studio. The format follows Keep a Changelog; versions
-follow semantic versioning. Official builds: GitHub Releases (the PyPI package follows the
-upcoming rename).
+follow semantic versioning. Official builds: GitHub Releases and the `presidium-shapestudio`
+package on PyPI.
+
+## 0.1.3 — 2026-10-19
+
+### Changed
+- Distribution renamed to `presidium-shapestudio` and published to PyPI for the first time
+  (`pipx install presidium-shapestudio`). Module and command stay `shapestudio`; a
+  `presidium-shapestudio` command is added. Store posters, hero and box art on the family template.
 
 ## 0.1.2 — 2026-10-19
 

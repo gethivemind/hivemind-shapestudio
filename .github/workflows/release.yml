@@ -172,9 +172,6 @@ jobs:
   publish:
     name: publish to PyPI
     needs: build
-    # off until the rename: PyPI names are permanent, so the package is registered once under
-    # the final name. Set the repository variable PYPI_PUBLISH=true to turn it on.
-    if: ${{ vars.PYPI_PUBLISH == 'true' }}
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
