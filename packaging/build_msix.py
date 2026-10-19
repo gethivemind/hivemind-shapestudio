@@ -74,9 +74,14 @@ def main() -> int:
     if args.store:
         ident = os.environ.get("MSIX_IDENTITY_NAME")
         publisher = os.environ.get("MSIX_PUBLISHER")
-        display = os.environ.get("MSIX_PUBLISHER_DISPLAY", "Presidium")
+        display = os.environ.get("MSIX_PUBLISHER_DISPLAY") or "Ratul Roy"
         if not ident or not publisher:
-            sys.exit("--store needs MSIX_IDENTITY_NAME and MSIX_PUBLISHER (from Partner Center)")
+            # Partner Center has not assigned the identity yet: build the unsigned Store
+            # package with visible placeholders so the manifest, assets and layout can be
+            # checked; the Store rejects it until the real identity variables are set.
+            print("::notice::MSIX identity variables not set; PLACEHOLDER Store identity used")
+            ident = ident or "PLACEHOLDER.PresidiumShapeStudio"
+            publisher = publisher or "CN=00000000-0000-0000-0000-000000000000"
     else:
         ident, publisher, display = (
             "Hivemind.ShapeStudio",

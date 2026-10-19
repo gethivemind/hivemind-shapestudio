@@ -4,9 +4,12 @@ All notable changes to Presidium Shape Studio. The format follows Keep a Changel
 follow semantic versioning. Official builds: GitHub Releases (the PyPI package follows the
 upcoming rename).
 
-## Unreleased
+## 0.1.2 — 2026-10-19
 
 ### Changed
+- Repository moved to presidiumdev/presidium-shapestudio; website at
+  https://presidiumdev.github.io/presidium-shapestudio/. Every release now builds both the Store
+  MSIX (placeholder identity until Partner Center assigns one) and the dev-signed sideload MSIX.
 - Brand: the product is now **Presidium Shape Studio** (ADR-065/066): new mark (six seats
   around one table, a cube on the table), coral #D5582F, lockup "Presidium" medium + "Shape
   Studio" regular, loading spinner. Module, command, data folder and release file names are

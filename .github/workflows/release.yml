@@ -83,12 +83,11 @@ jobs:
           MSIX_PUBLISHER_DISPLAY: ${{ vars.MSIX_PUBLISHER_DISPLAY }}
         run: |
           ver="${GITHUB_REF_NAME#v}"
-          if [ -n "$MSIX_IDENTITY_NAME" ]; then
-            uv run --no-sync python packaging/build_msix.py --version "$ver" --store
-          else
-            echo "::notice::MSIX identity variables not set; building a sideload (dev-signed) package"
-            uv run --no-sync python packaging/build_msix.py --version "$ver" --sideload
-          fi
+          # both packages every release: the Store one (real identity from the repository
+          # variables, PLACEHOLDER identity until Partner Center assigns it) and a dev-signed
+          # sideload one for local testing
+          uv run --no-sync python packaging/build_msix.py --version "$ver" --store
+          uv run --no-sync python packaging/build_msix.py --version "$ver" --sideload
           cd dist && sha256sum *.msix > msix.sha256 && cat msix.sha256
       - name: Smoke test
         shell: bash

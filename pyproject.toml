@@ -1,6 +1,6 @@
 [project]
 name = "hivemind-shapestudio"
-version = "0.1.1"
+version = "0.1.2"
 description = "Free, local image-to-3D studio and MCP server. Quality is a setting, never a consequence."
 readme = "README.md"
 license = "Apache-2.0"
