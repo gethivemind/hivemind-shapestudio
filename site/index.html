@@ -38,6 +38,10 @@
   .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
   .pill { font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink2); }
   .pill.ok { border-color: color-mix(in srgb, var(--ok) 40%, transparent); color: var(--ok); }
+  .shot { border-radius: 16px; border: 1px solid var(--line); overflow: hidden; background: var(--surface); box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+  .shot img { display: block; width: 100%; height: auto; }
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 22px; }
+  .shots figure { margin: 0; } .shots figcaption { color: var(--muted); font-size: 13px; margin-top: 8px; }
   .art { border-radius: 16px; border: 1px solid var(--line); background: var(--surface); padding: 30px; display: grid; place-items: center; }
   .art svg { width: 100%; max-width: 320px; height: auto; }
   section { padding: 48px 0; border-top: 1px solid var(--line); }
@@ -83,7 +87,7 @@
       </div>
       <div class="pills"><span class="pill ok">Apache-2.0</span><span class="pill">Windows · Linux · macOS</span><span class="pill">CPU, or NVIDIA GPU</span><span class="pill">MCP server inside</span><span class="pill">Works offline after setup</span></div>
     </div>
-    <div class="art"><img src="assets/shape-tile.svg" alt="The Presidium Shape Studio mark: six seats around a table, a cube on the table" width="320" height="320" style="border-radius:22%"><p class="note">Part of the Presidium family. Screenshots follow once the first real reconstruction has been run; this page shows no mesh this project has not made.</p></div>
+    <div class="shot"><img src="assets/shot-create.png" alt="The Create screen: a picture dropped, tier and preset, the expected time with its basis and the load meter" width="1440" height="900"><p class="note" style="padding:8px 12px 10px">Part of the Presidium family. The meshes in these screenshots are demonstration objects from the studio's own mesh pipeline, not TripoSR reconstructions, which this project has not run yet.</p></div>
   </div>
 
   <section id="policy">
@@ -110,7 +114,7 @@
 
   <section id="status">
     <h2>Status, stated plainly</h2>
-    <p class="sub">Version 0.1.1. What is proven, what is written, what still waits for a GPU machine.</p>
+    <p class="sub">Version 0.1.5. What is proven, what is written, what still waits for a GPU machine.</p>
     <div class="tablewrap"><table class="status">
       <tr><th>Part</th><th>State</th></tr>
       <tr><td>Queue, planner, downloads, UI, CLI, MCP server, GLB/OBJ, turntable</td><td class="ok">proven by the test suite with a fake engine</td></tr>
@@ -118,17 +122,25 @@
       <tr><td>TripoSR with the real weights</td><td class="bad">not run by this project yet</td></tr>
       <tr><td>TRELLIS engine</td><td class="bad">not integrated; the studio says so</td></tr>
       <tr><td>CUDA runtime download in the Windows app</td><td class="bad">written, not verified on a GPU machine</td></tr>
+      <tr><td>Desktop window (Windows, macOS, Linux apps)</td><td class="ok">starts in 0.1.5; every earlier app build crashed at launch (the CLI and web UI were unaffected), so update if you have 0.1.4 or older</td></tr>
     </table></div>
+    <div class="shots">
+      <figure class="shot"><img src="assets/shot-home.png" alt="Home: getting-started checklist, the two tiers and the policy" loading="lazy"><figcaption>Home: checklist, the two tiers with their state on this machine, the policy.</figcaption></figure>
+      <figure class="shot"><img src="assets/shot-gallery.png" alt="Gallery of meshes with counts, favourites and project filter" loading="lazy"><figcaption>Gallery: meshes with vertex and face counts, favourites, projects.</figcaption></figure>
+      <figure class="shot"><img src="assets/shot-viewer.png" alt="The 3D viewer with mesh stats and downloads" loading="lazy"><figcaption>Viewer: the model in 3D, mesh stats, GLB, OBJ and turntable downloads.</figcaption></figure>
+      <figure class="shot"><img src="assets/shot-settings.png" alt="Settings: hardware, runtime, every model with licence and status" loading="lazy"><figcaption>Settings: hardware and runtime, benchmark, every model with licence, size and status.</figcaption></figure>
+    </div>
+    <p class="note">Demonstration objects, captured from the running app; real TripoSR output follows the first GPU run.</p>
   </section>
 
   <section id="install">
     <h2>Install</h2>
     <p class="sub">A Windows, macOS or Linux app, or Python 3.11 or newer on any OS. The models are downloaded by the studio itself, with your consent, hash-verified.</p>
     <div class="install">
-      <div class="card"><h3>Windows app</h3><pre>ShapeStudio-x.y.z-Setup.exe
-→ Next, Next, done</pre><p class="note">From the <a href="https://github.com/presidiumdev/presidium-shapestudio/releases/latest" target="_blank" rel="noopener">latest release</a>. Start menu, uninstall from Settings, no administrator rights. A portable zip is there too. Not code-signed yet: SmartScreen asks once per download ("More info" → "Run anyway"). The SHA-256 is next to the download. PyTorch's CPU build (124 MB) is inside; the CUDA build (1.9 GiB) is offered on NVIDIA machines.</p></div>
-      <div class="card"><h3>macOS and Linux</h3><pre>ShapeStudio-x.y.z-macos-arm64.zip
-ShapeStudio-x.y.z-linux-x86_64.tar.gz</pre><p class="note">Apple silicon: unzip, right-click "Shape Studio.app" → Open the first time (not notarized yet). Linux x86_64: unpack, run <code>ShapeStudio</code>; it opens in your browser. The SHA-256 is next to each download.</p></div>
+      <div class="card"><h3>Windows app</h3><pre>ShapeStudio-0.1.5-Setup.exe
+→ Next, Next, done</pre><p class="note"><b>Use 0.1.5 or newer.</b> Builds 0.1.0 to 0.1.4 crash at start with "unexpected keyword argument 'on_remote_change'"; 0.1.5 fixes it. A Microsoft Store listing is in certification; until it carries 0.1.5, install from the release below.</p><p class="note">From the <a href="https://github.com/presidiumdev/presidium-shapestudio/releases/latest" target="_blank" rel="noopener">latest release</a>. Start menu, uninstall from Settings, no administrator rights. A portable zip is there too. Not code-signed yet: SmartScreen asks once per download ("More info" → "Run anyway"). The SHA-256 is next to the download. PyTorch's CPU build (124 MB) is inside; the CUDA build (1.9 GiB) is offered on NVIDIA machines.</p></div>
+      <div class="card"><h3>macOS and Linux</h3><pre>ShapeStudio-0.1.5-macos-arm64.zip
+ShapeStudio-0.1.5-linux-x86_64.tar.gz</pre><p class="note">Apple silicon: unzip, right-click "Shape Studio.app" → Open the first time (not notarized yet). Linux x86_64: unpack, run <code>ShapeStudio</code>; it opens in your browser. The SHA-256 is next to each download.</p></div>
       <div class="card"><h3>With pipx or pip</h3><pre>pipx install presidium-shapestudio
 shapestudio ui</pre><p class="note">PyTorch comes along as a dependency: 124 MB on Windows, 127 MB on macOS; on Linux the PyPI default is the CUDA build (about 3 GB with its libraries), so add <code>--pip-args "--extra-index-url https://download.pytorch.org/whl/cpu"</code> for the CPU build.</p></div>
       <div class="card"><h3>First run</h3><pre>shapestudio doctor
