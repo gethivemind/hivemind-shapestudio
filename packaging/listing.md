@@ -55,7 +55,7 @@ Part of the Presidium family, alongside Presidium Image Studio. Open source unde
 | --- | --- |
 | Website | https://presidiumdev.github.io/presidium-shapestudio/ |
 | Privacy policy | https://presidiumdev.github.io/presidium-shapestudio/privacy.html |
-| Support | https://github.com/presidiumdev/presidium-shapestudio/issues |
+| Support | https://github.com/presidiumdev/presidium-releases/issues |
 | Source | https://github.com/presidiumdev/presidium-shapestudio |
 
 ## Category and search terms

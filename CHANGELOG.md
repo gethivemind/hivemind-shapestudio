@@ -4,6 +4,19 @@ All notable changes to Presidium Shape Studio. The format follows Keep a Changel
 follow semantic versioning. Official builds: GitHub Releases and the `presidium-shapestudio`
 package on PyPI.
 
+## 0.1.5 — 2026-10-21
+
+### Fixed
+- The desktop window crashed at start ("build_app() got an unexpected keyword argument
+  'on_remote_change'"): the launcher still called the web app builder with Image Studio's
+  remote-access hook. Affected every 0.1.x Windows, macOS and Linux app build; the CLI, web UI
+  and MCP server were unaffected. A test now starts the launcher's server.
+- The window's close question while a job runs now has its dialog in the page.
+
+### Changed
+- Support links point at the family's single public issue tracker,
+  https://github.com/presidiumdev/presidium-releases/issues.
+
 ## 0.1.4 — 2026-10-20
 
 ### Changed

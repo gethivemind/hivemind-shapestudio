@@ -98,13 +98,13 @@ class Server:
                         break
             except Exception:
                 logging.getLogger("app").info("another studio is rendering; submitting to it")
-        self.app = build_app(self.studio, on_remote_change=self.rebind)
+        self.app = build_app(self.studio)
         self._listen()
 
     def _listen(self) -> None:
         import uvicorn
 
-        host = "0.0.0.0" if self.studio.settings.remote_enabled else HOST
+        host = HOST  # loopback only; Shape Studio has no remote (phone) access yet
         config = uvicorn.Config(self.app, host=host, port=PORT, log_level="warning", lifespan="off")
         self.server = uvicorn.Server(config)
         self.thread = threading.Thread(target=self.server.run, name="ui-server", daemon=True)
@@ -115,21 +115,6 @@ class Server:
                 return
             time.sleep(0.1)
         raise RuntimeError("the studio server did not start")
-
-    def rebind(self, enabled: bool) -> bool:
-        """Remote access toggled: restart the listener on the right interface. Runs on its
-        own thread because the call arrives from a request on the server's own loop."""
-
-        def later() -> None:
-            time.sleep(0.5)  # let the response go out first
-            if self.server is not None:
-                self.server.should_exit = True
-                if self.thread is not None:
-                    self.thread.join(10)
-            self._listen()
-
-        threading.Thread(target=later, name="rebind", daemon=True).start()
-        return True
 
     def rendering(self) -> bool:
         if self.studio is None:

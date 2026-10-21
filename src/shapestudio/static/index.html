@@ -377,6 +377,15 @@ window.removeProject = async id => { if (await ask("Forget project", "<p>The mes
 async function loadTrash() { const t = await api("/api/trash"); $("#trashlist").innerHTML = t.jobs.length ? t.jobs.map(j => `<div class="row" style="justify-content:space-between;padding:4px 0"><span>${esc(j.title)}</span><button class="btn sm" onclick="restoreJob('${j.id}')">Restore</button></div>`).join("") : `<span class="muted">Empty.</span>`; }
 window.restoreJob = async id => { await post(`/api/jobs/${id}/restore`); loadTrash(); pollJobs(); };
 $("#emptytrash").onclick = async () => { if (await ask("Empty trash", "<p>Deletes the trashed meshes permanently.</p>", [{label:"Cancel"},{label:"Delete", value:true, danger:true}])) { const r = await post("/api/trash/empty"); toast(`${r.emptied} removed`); loadTrash(); } };
+// ---------- the desktop window asks before closing while a job runs (pywebview api)
+window.askClose = async () => {
+  const api = window.pywebview && window.pywebview.api; const info = api ? await api.app_info().catch(()=>({})) : {};
+  const buttons = [{label:"Cancel", value:"cancel"}];
+  if (info.tray) buttons.push({label:"Keep working in the background", value:"tray", primary:true});
+  buttons.push({label:"Stop and quit", value:"quit", danger:true});
+  const v = await ask("A job is still running", "<p>Closing now stops the job and discards its partial work." + (info.tray ? " You can keep the studio working in the background instead; its icon stays in the tray." : "") + "</p>", buttons);
+  if (api) api.close_decision(v || "cancel");
+};
 // ---------- boot
 (async () => { await pollJobs(); await loadCaps(); await loadProjects(); setInterval(pollJobs, 2000); document.body.dataset.booted = "1"; })();
 </script>
