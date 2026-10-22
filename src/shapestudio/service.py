@@ -25,7 +25,15 @@ from shapestudio.config import ENV_ALLOW_OVER_BUDGET, Settings
 from shapestudio.hardware import GIB, Hardware, detect
 from shapestudio.jobs import FINAL, Job, JobStore, Worker
 from shapestudio.models import ModelStore
-from shapestudio.planner import Plan, PlanError, Planner, cuda_gpu, fit_for, memory_budget
+from shapestudio.planner import (
+    Plan,
+    PlanError,
+    Planner,
+    cuda_gpu,
+    fit_for,
+    max_fitting_resolution,
+    memory_budget,
+)
 from shapestudio.registry import (
     DEFAULT_MODEL,
     EXCLUDED_BY_POLICY,
@@ -53,8 +61,8 @@ def job_title(job: Job) -> str:
         stamp = when.strftime("%b %d, %H:%M")
     except ValueError:
         stamp = job.created_at
-    name = Path(job.source_name).stem[:32] if job.source_name else job.id
-    return f"{stamp} · {job.preset} · {job.resolution}³ · {name}"
+    name = Path(job.source_name).stem[:40] if job.source_name else job.id
+    return f"{name} · {job.preset} {job.resolution}³ · {stamp}"
 
 
 class BackgroundTask:
@@ -133,6 +141,7 @@ class Studio:
         )
         self.worker_wanted = start_worker
         self.tasks: dict[str, BackgroundTask] = {}
+        self.on_restart = None  # the desktop launcher sets this; None = no in-app restart
         if start_worker:
             self.worker.start()
 
@@ -177,6 +186,10 @@ class Studio:
             job.network_seconds or 0.0,
             job.grid_seconds or 0.0,
         )
+        if self.profile() is None:
+            # the first real run is the benchmark nobody had to click
+            with contextlib.suppress(Exception):
+                self._write_profile(job, self.job_status(job.id), source="first reconstruction")
 
     # -- inputs -------------------------------------------------------------------------------
 
@@ -197,21 +210,25 @@ class Studio:
         p.write_bytes(data)
         return p
 
-    def _resolve_input(self, image: str) -> tuple[Path, str]:
-        """A job id (reuse its input), or a path to a PNG/JPEG/WebP on this machine. The file
-        is copied into the uploads folder so the gallery keeps the source."""
+    def _resolve_input(self, image: str, source_name: str | None = None) -> tuple[Path, str]:
+        """A job id (reuse its input), a sample name (``sample:box``), or a path to a
+        PNG/JPEG/WebP on this machine. The file is copied into the uploads folder so the
+        gallery keeps the source; ``source_name`` is the name the user knows the picture by."""
         if image in {j.id for j in self.jobs.all(include_deleted=True)}:
             job = next(j for j in self.jobs.all(include_deleted=True) if j.id == image)
-            return Path(job.input_path), job.source_name
+            return Path(job.input_path), source_name or job.source_name
+        if image.startswith("sample:"):
+            name = image.split(":", 1)[1]
+            return self.sample_image(name), source_name or f"sample-{name}.png"
         p = Path(image).expanduser()
         if not p.is_file():
             raise StudioError(f"image not found: {image}")
         if p.suffix.lower() not in IMAGE_SUFFIXES:
             raise StudioError(f"{p.name}: use a PNG, JPEG or WebP picture")
         if self.settings.uploads_dir in p.parents:
-            return p, p.name
+            return p, source_name or p.name
         stored = self.save_upload(p.read_bytes(), p.name)
-        return stored, p.name
+        return stored, source_name or p.name
 
     # -- planning and queuing -----------------------------------------------------------------
 
@@ -240,8 +257,9 @@ class Studio:
         threads: int | None = None,
         project: str | None = None,
         note: str = "",
+        source_name: str | None = None,
     ) -> Job:
-        input_path, source_name = self._resolve_input(image)
+        input_path, source_name = self._resolve_input(image, source_name)
         plan = self.plan(model, preset, resolution, foreground_ratio, remove_background)
         engine = self.engines.get(plan.model.engine)
         if engine is None or not engine.available():
@@ -311,7 +329,7 @@ class Studio:
 
     def reconstruct_upload(self, data: bytes, name: str, **kw) -> Job:
         p = self.save_upload(data, name)
-        return self.reconstruct(str(p), **kw)
+        return self.reconstruct(str(p), source_name=Path(name).name or p.name, **kw)
 
     def _spec_for(self, job: Job):
         from shapestudio.engine.base import MeshSpec
@@ -393,7 +411,60 @@ class Studio:
             "note": job.note,
             "deleted_at": job.deleted_at,
             "threads": job.threads,
+            "derived": self.derived_files(job) if job.status == "done" else [],
         }
+
+    def derived_files(self, job: Job) -> list[dict[str, Any]]:
+        """Files the mesh tools made from this job's mesh (``<id>.derived-<op>-<n>.<ext>``)."""
+        folder = Path(job.glb_path).parent if job.glb_path else self.settings.out_dir / job.id
+        if not folder.exists():
+            return []
+        out = []
+        for p in sorted(folder.glob(f"{job.id}.derived-*")):
+            label = p.name[len(job.id) + len(".derived-") :]
+            out.append(
+                {
+                    "name": p.name,
+                    "label": label.rsplit(".", 1)[0].replace("-", " "),
+                    "format": p.suffix.lstrip("."),
+                    "bytes": p.stat().st_size,
+                }
+            )
+        return out
+
+    def derived_path(self, job_id: str, name: str) -> Path:
+        j = next((x for x in self.jobs.all(include_deleted=True) if x.id == job_id), None)
+        if j is None:
+            raise StudioError(f"no such job {job_id!r}")
+        if not name.startswith(f"{job_id}.derived-") or "/" in name or "\\" in name:
+            raise StudioError("not a derived file of this job")
+        folder = Path(j.glb_path).parent if j.glb_path else self.settings.out_dir / j.id
+        p = folder / name
+        if not p.is_file():
+            raise StudioError("no such file")
+        return p
+
+    def mesh_tool(self, job_id: str, op: str, params: dict[str, Any] | None = None) -> dict:
+        """Run one mesh operation on a finished job's OBJ; the result is a new derived file."""
+        from shapestudio.engine import meshtools
+
+        job = self.jobs.get(job_id)
+        if job is None:
+            raise StudioError(f"no such job {job_id!r}")
+        if job.status != "done" or not job.obj_path or not Path(job.obj_path).exists():
+            raise StudioError("the mesh is not finished yet")
+        if op not in meshtools.OPS:
+            raise StudioError(f"unknown mesh operation {op!r}; one of {', '.join(meshtools.OPS)}")
+        folder = Path(job.obj_path).parent
+        n = 1 + sum(1 for _ in folder.glob(f"{job.id}.derived-{op}-*"))
+        stem = folder / f"{job.id}.derived-{op}-{n}"
+        try:
+            r = meshtools.apply(op, Path(job.obj_path), stem, params or {})
+        except (ValueError, OSError) as e:
+            raise StudioError(f"{op} failed: {e}") from e
+        r["name"] = Path(r["path"]).name
+        r["job"] = job.id
+        return r
 
     def job_result(self, job_id: str, as_base64: bool = False, fmt: str = "glb") -> dict[str, Any]:
         job = self.jobs.get(job_id)
@@ -697,6 +768,7 @@ class Studio:
         out: list[dict[str, Any]] = []
         for m in MODELS.values():
             files = [self.models.file_info(f) for f in m.files]
+            device, fit = self.planner.device_for(m, 256)
             out.append(
                 {
                     "kind": "model",
@@ -712,6 +784,13 @@ class Studio:
                     "verified": m.verified,
                     "note": m.note,
                     "homepage": m.homepage,
+                    "fits_this_machine": fit.fits,
+                    "fit_note": None if fit.fits else self._fit_words(fit),
+                    "device": device,
+                    "requirements": m.requirements.to_dict() if m.requirements else None,
+                    "requirements_met": self.requirements_met(m),
+                    "recommended": m is self.recommended_model(),
+                    "measured_runs": self.calibration.coefficients(m, device).samples,
                     "in_use": any(
                         j.model == m.name and j.status in ("queued", "running")
                         for j in self.jobs.all()
@@ -752,11 +831,87 @@ class Studio:
                 "device": rt["torch"].get("device_name"),
                 "cuda_install": rt["cuda_install"],
                 "nvidia_gpu": cuda_gpu(self.hardware) is not None,
+                "gpu_name": cuda_gpu(self.hardware).name if cuda_gpu(self.hardware) else None,
                 "runtime_installed": rt["runtime_installed"],
+                "override": rt["override"],
+                "can_restart": self.on_restart is not None,
                 "in_use": False,
             }
         )
         return out
+
+    @staticmethod
+    def _fit_words(fit) -> str:
+        return fit.reason or (
+            f"needs about {fit.required_bytes / GIB:.1f} GiB; this machine's budget is "
+            f"{fit.budget_bytes / GIB:.1f} GiB"
+        )
+
+    def recommended_model(self) -> MeshModel | None:
+        """The strongest catalogue model that fits this machine, downloaded or not."""
+        for m in sorted(MODELS.values(), key=lambda m: m.quality_rank):
+            if self.planner.device_for(m, 256)[1].fits:
+                return m
+        return None
+
+    def requirements_met(self, model: MeshModel) -> dict[str, Any] | None:
+        """Minimum / recommended against this machine, one verdict per line the UI shows."""
+        req = model.requirements
+        if req is None:
+            return None
+        ram = self.hardware.ram_total_bytes / GIB
+        g = cuda_gpu(self.hardware)
+        vram = (g.vram_bytes or 0) / GIB if g else 0.0
+
+        def grade(have: float, lo: float, hi: float) -> str:
+            if have >= hi:
+                return "recommended"
+            if have >= lo:
+                return "minimum"
+            return "below"
+
+        rows = [
+            {
+                "what": "RAM",
+                "have": f"{ram:.1f} GiB",
+                "minimum": f"{req.min_ram_gib:g} GiB",
+                "recommended": f"{req.rec_ram_gib:g} GiB",
+                "grade": grade(ram, req.min_ram_gib, req.rec_ram_gib),
+            }
+        ]
+        if req.min_vram_gib:
+            if g is None and not req.gpu_required:
+                vgrade = "optional"
+            else:
+                vgrade = grade(vram, req.min_vram_gib, req.rec_vram_gib)
+            rows.append(
+                {
+                    "what": "NVIDIA GPU memory",
+                    "have": f"{vram:.0f} GiB ({g.name})" if g else "no NVIDIA GPU",
+                    "minimum": f"{req.min_vram_gib:g} GiB"
+                    + ("" if req.gpu_required else " (optional, for speed)"),
+                    "recommended": f"{req.rec_vram_gib:g} GiB",
+                    "grade": vgrade,
+                }
+            )
+        rows.append(
+            {
+                "what": "CUDA build of PyTorch",
+                "have": "installed" if self._cuda_runtime else "not installed",
+                "minimum": "required" if req.gpu_required else "optional, for speed",
+                "recommended": "installed" if g else "no NVIDIA GPU here",
+                "grade": "recommended"
+                if self._cuda_runtime
+                else ("below" if req.gpu_required else "optional"),
+            }
+        )
+        if any(r["grade"] == "below" for r in rows):
+            overall = "below"
+        elif all(r["grade"] in ("recommended", "optional") for r in rows):
+            overall = "recommended"
+        else:
+            overall = "minimum"
+        return {"rows": rows, "overall": overall, "summary": req.summary}
 
     def remove_component(self, kind: str, name: str) -> dict[str, Any]:
         if kind == "model":
@@ -904,32 +1059,28 @@ class Studio:
 
     # -- benchmark ----------------------------------------------------------------------------
 
-    def sample_image(self) -> Path:
-        """A synthetic test object (a shaded sphere on white) drawn with Pillow, so the
-        benchmark needs no download and every machine measures the same input."""
-        from PIL import Image, ImageDraw
+    SAMPLES = {
+        "sphere": "a shaded sphere: the benchmark object, the easiest case",
+        "box": "a shaded box seen from a corner: flat faces and straight edges",
+        "mug": "a mug with a handle: a hole and a thin part, where meshes break first",
+    }
 
-        p = self.settings.data_dir / "benchmark-input.png"
-        if p.exists():
-            return p
-        size = 512
-        img = Image.new("RGB", (size, size), (255, 255, 255))
-        d = ImageDraw.Draw(img)
-        cx, cy, r = size // 2, size // 2, size // 3
-        for i in range(r, 0, -2):
-            t = i / r
-            shade = int(60 + 180 * (1 - t) ** 0.7)
-            d.ellipse(
-                (
-                    cx - i - int(20 * t),
-                    cy - i - int(20 * t),
-                    cx + i - int(20 * t),
-                    cy + i - int(20 * t),
-                ),
-                fill=(shade, int(shade * 0.55), int(shade * 0.25)),
-            )
-        img.save(p, "PNG")
+    def sample_image(self, name: str = "sphere") -> Path:
+        """Synthetic test objects drawn with Pillow (no download, same input on every
+        machine): the benchmark's sphere, a box and a mug. Names: ``SAMPLES``."""
+        from shapestudio.samples import draw_sample
+
+        if name not in self.SAMPLES:
+            raise StudioError(f"unknown sample {name!r}; one of {', '.join(self.SAMPLES)}")
+        p = self.settings.data_dir / (
+            "benchmark-input.png" if name == "sphere" else f"sample-{name}.png"
+        )
+        if not p.exists():
+            draw_sample(name).save(p, "PNG")
         return p
+
+    def samples(self) -> list[dict[str, str]]:
+        return [{"name": k, "description": v} for k, v in self.SAMPLES.items()]
 
     def benchmark(self, preset: str = "fast", wait: float = 2.0, on_status=None) -> dict[str, Any]:
         """One real reconstruction of the sample image, then write profile.json with what
@@ -944,6 +1095,9 @@ class Studio:
             time.sleep(wait)
         if st["status"] != "done":
             raise StudioError(f"benchmark {st['status']}: {st['error'] or st['message']}")
+        return self._write_profile(job, st, source="benchmark")
+
+    def _write_profile(self, job: Job, st: dict[str, Any], source: str) -> dict[str, Any]:
         model = MODELS[job.model]
         expected = {}
         for name in model.presets:
@@ -953,6 +1107,7 @@ class Studio:
                 expected[name] = None
         profile = {
             "measured_at": now_iso(),
+            "source": source,
             "studio_version": __version__,
             "cpu": self.hardware.cpu_name,
             "physical_cores": self.hardware.physical_cores,
@@ -1091,15 +1246,14 @@ class Studio:
             "engine_status": (engine.status() if engine and hasattr(engine, "status") else None),
             "fits_this_machine": chosen.fits,
             "device": device,
-            "fit_note": None
-            if chosen.fits
-            else (
-                chosen.reason
-                or (
-                    f"needs about {chosen.required_bytes / GIB:.1f} GiB; this machine's budget is "
-                    f"{chosen.budget_bytes / GIB:.1f} GiB"
-                )
+            "fit_note": None if chosen.fits else self._fit_words(chosen),
+            "recommended": model is self.recommended_model(),
+            "requirements": model.requirements.to_dict() if model.requirements else None,
+            "requirements_met": self.requirements_met(model),
+            "max_resolution_fits": max_fitting_resolution(
+                model, self.hardware, device, self._cap_bytes()
             ),
+            "measured_runs": self.calibration.coefficients(model, device).samples,
             "cpu": {
                 "possible": model.cpu_capable,
                 "fits": cpu.fits,
@@ -1164,6 +1318,11 @@ class Studio:
                 ],
             },
             "models": [self.model_report(m) for m in MODELS.values()],
+            "recommended_model": (
+                self.recommended_model().name if self.recommended_model() else None
+            ),
+            "setup": self.setup_state(),
+            "samples": self.samples(),
             "excluded_by_policy": [{"model": m, "reason": r} for m, r in EXCLUDED_BY_POLICY],
             "licences": list(LICENCES),
             "paths": {
@@ -1184,6 +1343,111 @@ class Studio:
                 "worker_started_at": lock.get("started_at"),
                 "worker_outdated": bool(lock and lock.get("version") != __version__),
             },
+        }
+
+    def setup_state(self) -> dict[str, Any]:
+        """What the first-run screen needs: is the studio ready, and which download(s) make
+        it ready on this machine."""
+        reco = self.recommended_model()
+        bg = default_tool_model("background")
+        missing = []
+        if reco is not None and not self.models.model_installed(reco):
+            missing.append(
+                {
+                    "name": reco.name,
+                    "display_name": reco.display_name,
+                    "kind": "model",
+                    "bytes": self.models.missing_bytes(reco),
+                    "licence": reco.licence,
+                }
+            )
+        if not any(self.models.tool_installed(t) for t in TOOL_MODELS.values()):
+            missing.append(
+                {
+                    "name": bg.name,
+                    "display_name": bg.display_name,
+                    "kind": "tool",
+                    "bytes": bg.file.size,
+                    "licence": bg.licence,
+                }
+            )
+        st = runtime.torch_status()
+        return {
+            "ready": not missing and st.installed and reco is not None,
+            "recommended_model": reco.name if reco else None,
+            "missing": missing,
+            "missing_bytes": sum(m["bytes"] for m in missing),
+            "torch_ok": st.installed,
+            "first_run_done": any(
+                j.status == "done" and j.tool == "reconstruct" for j in self.jobs.all()
+            ),
+            "measured": self.profile() is not None,
+        }
+
+    def request_restart(self) -> dict[str, Any]:
+        if self.on_restart is None:
+            return {
+                "restarted": False,
+                "reason": "restart the studio yourself: close it and start it again "
+                "(the web server and CLI have no in-app restart)",
+            }
+        return self.on_restart()
+
+    def report_bundle(self, job_id: str | None = None) -> dict[str, Any]:
+        """Everything a bug report needs, as text the user can read before sending: version,
+        machine, runtime, the failing job and the log tail. No picture contents."""
+        hw = self.hardware.to_dict()
+        rt = runtime.report(self.settings)
+        t = rt["torch"]
+        job = self.jobs.get(job_id) if job_id else None
+        if job is None:
+            failed = [j for j in self.jobs.all() if j.status == "failed"]
+            job = failed[-1] if failed else None
+        gpus = "; ".join(
+            f"{g['name']} [{g['kind']}" + (f", {g['vram_gib']} GiB" if g["vram_gib"] else "") + "]"
+            for g in hw["gpus"]
+        )
+        if t["installed"]:
+            torch_line = f"{t['version']} {t['flavor']}"
+            if t["from_runtime_dir"]:
+                torch_line += " from the runtime folder"
+            if t["cuda_available"]:
+                torch_line += f", CUDA device {t['device_name']}"
+        else:
+            torch_line = f"not importable ({t['error']})"
+        kind = " (packaged app)" if rt["frozen_app"] else f" (Python {rt['python']})"
+        lines = [
+            f"Presidium Shape Studio {__version__}{kind}",
+            f"OS: {hw['os']} {hw['arch']}",
+            f"CPU: {hw['cpu_name']} ({hw['physical_cores']} cores)",
+            f"RAM: {hw['ram_total_gib']} GiB",
+            f"GPU: {gpus or 'none'}",
+            f"PyTorch: {torch_line}",
+            f"CUDA override: {rt['override']}",
+            f"Models installed: {', '.join(self.models.installed_models()) or 'none'}; "
+            f"tools: {', '.join(self.models.installed_tools()) or 'none'}",
+        ]
+        if job is not None:
+            lines += [
+                "",
+                f"Job {job.id}: {job.status} - {job.model} {job.device} {job.preset} "
+                f"{job.resolution} grid - background {job.bg_model or 'off'}",
+                f"Error: {job.error or '-'}",
+                f"Phase: {job.phase} - message: {job.message}",
+            ]
+        log_path = self.settings.data_dir / "logs" / "app.log"
+        if log_path.exists():
+            try:
+                tail = log_path.read_text(encoding="utf-8", errors="replace").splitlines()[-40:]
+                lines += ["", "app.log (last 40 lines):", *tail]
+            except OSError:
+                pass
+        what = (job.error or "job failed")[:80] if job is not None else "problem report"
+        return {
+            "title": f"[Shape Studio {__version__}] {what}",
+            "body": "\n".join(lines),
+            "issues_url": "https://github.com/presidiumdev/presidium-releases/issues/new",
+            "job_id": job.id if job is not None else None,
         }
 
     # -- misc helpers for the UI --------------------------------------------------------------

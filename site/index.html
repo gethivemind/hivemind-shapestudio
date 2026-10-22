@@ -67,6 +67,7 @@
   footer .credit { font-size: 15px; color: var(--ink2); margin-bottom: 8px; }
   footer a { color: var(--ink2); }
   @media (max-width: 820px) { .hero { grid-template-columns: 1fr; padding-top: 40px; } header.top .wrap { height: auto; flex-wrap: wrap; padding: 10px 20px; gap: 6px; } nav { display: flex; flex-wrap: wrap; gap: 4px 0; } nav a { margin-left: 0; margin-right: 14px; } pre { white-space: pre-wrap; word-break: break-word; } }
+  .status td.warn { color: #e4b43c; }
 </style>
 </head>
 <body>
@@ -106,29 +107,30 @@
     <p class="sub">The planner picks the strongest tier that is downloaded and fits your machine, and says why when that is not the top one.</p>
     <div class="tablewrap"><table>
       <tr><th>Tier</th><th>Model</th><th>Runs on</th><th>Download</th><th>Licence</th><th>State</th></tr>
-      <tr><td><b>standard</b> (default)</td><td>TripoSR (Stability AI and Tripo AI): feed-forward single-image reconstruction, triplane NeRF, marching cubes, vertex colours</td><td>CPU, or an NVIDIA GPU with 4 GB</td><td>1.56 GiB</td><td>MIT</td><td>code vendored and tested on random weights; first real run pending</td></tr>
-      <tr><td><b>best</b></td><td>TRELLIS image-large (Microsoft): structured latents, textured mesh decoder</td><td>NVIDIA GPU with 16 GB or more; no CPU path</td><td>3.07 GiB plus the DINOv2 encoder</td><td>MIT</td><td>catalogue, hash pins and fit check only; engine not integrated yet, refuses honestly</td></tr>
+      <tr><td><b>standard</b> (default)</td><td>TripoSR (Stability AI and Tripo AI): feed-forward single-image reconstruction, triplane NeRF, marching cubes, vertex colours</td><td>CPU, or an NVIDIA GPU with 4 GB</td><td>1.56 GiB</td><td>MIT</td><td>code vendored and tested on random weights; loaded with the real weights on a user's laptop, complete measured run pending. Minimum 8 GiB RAM, recommended 16; NVIDIA 4 GiB optional</td></tr>
+      <tr><td><b>best</b></td><td>TRELLIS image-large (Microsoft): structured latents, textured mesh decoder</td><td>NVIDIA GPU with 16 GB or more; no CPU path</td><td>3.07 GiB plus the DINOv2 encoder</td><td>MIT</td><td>catalogue, hash pins and fit check only; engine not integrated yet, refuses honestly. Minimum NVIDIA 16 GiB, recommended 24; the studio asks "download anyway?" on machines below that</td></tr>
     </table></div>
     <p class="note">Presets change the surface grid only: <code>best</code> 256³, <code>balanced</code> 192³, <code>fast</code> 128³. The background is cut out with IS-Net (Apache-2.0, 170 MB) before the network sees the picture.</p>
   </section>
 
   <section id="status">
     <h2>Status, stated plainly</h2>
-    <p class="sub">Version 0.1.5. What is proven, what is written, what still waits for a GPU machine.</p>
+    <p class="sub">Version 0.1.6. What is proven, what a first user found, what still waits for a GPU report.</p>
     <div class="tablewrap"><table class="status">
       <tr><th>Part</th><th>State</th></tr>
       <tr><td>Queue, planner, downloads, UI, CLI, MCP server, GLB/OBJ, turntable</td><td class="ok">proven by the test suite with a fake engine</td></tr>
       <tr><td>Vendored TripoSR code</td><td class="ok">runs end to end on random weights; ViT matches the reference implementation</td></tr>
-      <tr><td>TripoSR with the real weights</td><td class="bad">not run by this project yet</td></tr>
+      <tr><td>TripoSR with the real weights</td><td class="warn">loaded on a user's GTX 1660 Ti laptop with 0.1.5; that run failed in the background remover (fixed in 0.1.6). A complete measured run is still to be reported</td></tr>
       <tr><td>TRELLIS engine</td><td class="bad">not integrated; the studio says so</td></tr>
-      <tr><td>CUDA runtime download in the Windows app</td><td class="bad">written, not verified on a GPU machine</td></tr>
-      <tr><td>Desktop window (Windows, macOS, Linux apps)</td><td class="ok">starts in 0.1.5; every earlier app build crashed at launch (the CLI and web UI were unaffected), so update if you have 0.1.4 or older</td></tr>
+      <tr><td>CUDA build in the Windows app</td><td class="warn">download and unpack verified by a user; loading it was broken until 0.1.6 (the app never activated it). Settings now says whether it loaded; a GPU run is still to be confirmed</td></tr>
+      <tr><td>Requirements, setup, mesh tools, problem reports</td><td class="ok">0.1.6: minimum and recommended requirements per model checked against your machine, a one-button first-run setup with sample pictures, STL export and mesh clean-up, "Report a problem"</td></tr>
+      <tr><td>Desktop window (Windows, macOS, Linux apps)</td><td class="ok">starts since 0.1.5; every earlier app build crashed at launch (the CLI and web UI were unaffected)</td></tr>
     </table></div>
     <div class="shots">
-      <figure class="shot"><img src="assets/shot-home.png" alt="Home: getting-started checklist, the two tiers and the policy" loading="lazy"><figcaption>Home: checklist, the two tiers with their state on this machine, the policy.</figcaption></figure>
+      <figure class="shot"><img src="assets/shot-home.png" alt="Home: getting-started checklist, the two tiers and the policy" loading="lazy"><figcaption>Home: the checklist with buttons, the models sorted by fit with requirements against this machine, the policy.</figcaption></figure>
       <figure class="shot"><img src="assets/shot-gallery.png" alt="Gallery of meshes with counts, favourites and project filter" loading="lazy"><figcaption>Gallery: meshes with vertex and face counts, favourites, projects.</figcaption></figure>
-      <figure class="shot"><img src="assets/shot-viewer.png" alt="The 3D viewer with mesh stats and downloads" loading="lazy"><figcaption>Viewer: the model in 3D, mesh stats, GLB, OBJ and turntable downloads.</figcaption></figure>
-      <figure class="shot"><img src="assets/shot-settings.png" alt="Settings: hardware, runtime, every model with licence and status" loading="lazy"><figcaption>Settings: hardware and runtime, benchmark, every model with licence, size and status.</figcaption></figure>
+      <figure class="shot"><img src="assets/shot-viewer.png" alt="The 3D viewer with mesh stats and downloads" loading="lazy"><figcaption>Viewer: the model in 3D, mesh stats, GLB, OBJ and turntable downloads, mesh tools (STL, lighter, smooth, flip, scale).</figcaption></figure>
+      <figure class="shot"><img src="assets/shot-settings.png" alt="Settings: hardware, runtime, every model with licence and status" loading="lazy"><figcaption>Settings: hardware, which PyTorch loaded, Installed / Available / Runtime with requirements, Report a problem.</figcaption></figure>
     </div>
     <p class="note">Demonstration objects, captured from the running app; real TripoSR output follows the first GPU run.</p>
   </section>
@@ -137,16 +139,16 @@
     <h2>Install</h2>
     <p class="sub">A Windows, macOS or Linux app, or Python 3.11 or newer on any OS. The models are downloaded by the studio itself, with your consent, hash-verified.</p>
     <div class="install">
-      <div class="card"><h3>Windows app</h3><pre>ShapeStudio-0.1.5-Setup.exe
-→ Next, Next, done</pre><p class="note"><b>Use 0.1.5 or newer.</b> Builds 0.1.0 to 0.1.4 crash at start with "unexpected keyword argument 'on_remote_change'"; 0.1.5 fixes it. A Microsoft Store listing is in certification; until it carries 0.1.5, install from the release below.</p><p class="note">From the <a href="https://github.com/presidiumdev/presidium-shapestudio/releases/latest" target="_blank" rel="noopener">latest release</a>. Start menu, uninstall from Settings, no administrator rights. A portable zip is there too. Not code-signed yet: SmartScreen asks once per download ("More info" → "Run anyway"). The SHA-256 is next to the download. PyTorch's CPU build (124 MB) is inside; the CUDA build (1.9 GiB) is offered on NVIDIA machines.</p></div>
-      <div class="card"><h3>macOS and Linux</h3><pre>ShapeStudio-0.1.5-macos-arm64.zip
-ShapeStudio-0.1.5-linux-x86_64.tar.gz</pre><p class="note">Apple silicon: unzip, right-click "Shape Studio.app" → Open the first time (not notarized yet). Linux x86_64: unpack, run <code>ShapeStudio</code>; it opens in your browser. The SHA-256 is next to each download.</p></div>
+      <div class="card"><h3>Windows app</h3><pre>ShapeStudio-0.1.6-Setup.exe
+→ Next, Next, done</pre><p class="note"><b>Use 0.1.6 or newer.</b> 0.1.0 to 0.1.4 crash at start; 0.1.5 starts but every reconstruction with background removal fails and the CUDA build never loads. 0.1.6 fixes both. A Microsoft Store listing is in certification; until it carries 0.1.6, install from the release below.</p><p class="note">From the <a href="https://github.com/presidiumdev/presidium-shapestudio/releases/latest" target="_blank" rel="noopener">latest release</a>. Start menu, uninstall from Settings, no administrator rights. A portable zip is there too. Not code-signed yet: SmartScreen asks once per download ("More info" → "Run anyway"). The SHA-256 is next to the download. PyTorch's CPU build (124 MB) is inside; the CUDA build (1.9 GiB) is offered on NVIDIA machines.</p></div>
+      <div class="card"><h3>macOS and Linux</h3><pre>ShapeStudio-0.1.6-macos-arm64.zip
+ShapeStudio-0.1.6-linux-x86_64.tar.gz</pre><p class="note">Apple silicon: unzip, right-click "Shape Studio.app" → Open the first time (not notarized yet). Linux x86_64: unpack, run <code>ShapeStudio</code>; it opens in your browser. The SHA-256 is next to each download.</p></div>
       <div class="card"><h3>With pipx or pip</h3><pre>pipx install presidium-shapestudio
 shapestudio ui</pre><p class="note">PyTorch comes along as a dependency: 124 MB on Windows, 127 MB on macOS; on Linux the PyPI default is the CUDA build (about 3 GB with its libraries), so add <code>--pip-args "--extra-index-url https://download.pytorch.org/whl/cpu"</code> for the CPU build.</p></div>
       <div class="card"><h3>First run</h3><pre>shapestudio doctor
 shapestudio download-model triposr --yes
 shapestudio download-model isnet-general-use --yes
-shapestudio reconstruct chair.png --out meshes/</pre><p class="note">Or do the same from Settings in the app: every model has an Install button and a getting-started checklist on Home. <code>shapestudio benchmark</code> measures your machine so every estimate is real.</p></div>
+shapestudio reconstruct chair.png --out meshes/</pre><p class="note">Or let the app do it: Home shows a setup card for your machine with one "Download and set up" button, then "Try the sample box". Your first reconstruction measures your machine; <code>shapestudio benchmark</code> does the same from the command line.</p></div>
       <div class="card"><h3>As an MCP server</h3><pre>{ "mcpServers": { "shapestudio":
     { "command": "shapestudio", "args": ["serve"] } } }</pre><p class="note">Tools: capabilities, plan, reconstruct, job_status, job_result, jobs, cancel_job, download_model. Client configs and a typical agent flow: <a href="mcp.html">For agents</a>.</p></div>
     </div>

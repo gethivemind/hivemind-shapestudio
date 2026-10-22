@@ -209,9 +209,19 @@ def build_app(studio: Studio) -> Starlette:
         try:
             if ctype.startswith("multipart/form-data"):
                 form = await request.form()
-                upload = form.get("file")
+                uploads = [u for u in form.getlist("file") if hasattr(u, "read")]
                 kw = _job_kwargs(form)
-                if upload is not None and hasattr(upload, "read"):
+                if len(uploads) > 1:
+                    jobs_out = []
+                    for u in uploads:
+                        data = await u.read()
+                        j = await run_in_threadpool(
+                            studio.reconstruct_upload, data, u.filename or "upload.png", **kw
+                        )
+                        jobs_out.append(studio.job_status(j.id))
+                    return JSONResponse({"jobs": jobs_out, **jobs_out[0]})
+                upload = uploads[0] if uploads else None
+                if upload is not None:
                     data = await upload.read()
                     job = await run_in_threadpool(
                         studio.reconstruct_upload, data, upload.filename or "upload.png", **kw
@@ -319,6 +329,50 @@ def build_app(studio: Studio) -> Starlette:
             stem = Path(j.source_name).stem or j.id
             headers["Content-Disposition"] = f'attachment; filename="{stem}-{j.id}{p.suffix}"'
         return FileResponse(str(p), media_type=media, headers=headers)
+
+    async def derived(request: Request) -> Response:
+        try:
+            p = studio.derived_path(request.path_params["job_id"], request.path_params["name"])
+        except StudioError as e:
+            return err(e, 404)
+        media = {
+            ".glb": "model/gltf-binary",
+            ".obj": "model/obj",
+            ".stl": "model/stl",
+        }.get(p.suffix, "application/octet-stream")
+        return FileResponse(
+            str(p),
+            media_type=media,
+            headers={"Content-Disposition": f'attachment; filename="{p.name}"'},
+        )
+
+    async def mesh_tool(request: Request) -> JSONResponse:
+        body = await request.json()
+        try:
+            r = await run_in_threadpool(
+                studio.mesh_tool,
+                request.path_params["job_id"],
+                str(body.get("op", "")),
+                body.get("params") or {},
+            )
+        except StudioError as e:
+            return err(e)
+        return JSONResponse(r)
+
+    async def sample(request: Request) -> Response:
+        try:
+            p = studio.sample_image(request.path_params["name"])
+        except StudioError as e:
+            return err(e, 404)
+        return FileResponse(str(p), media_type="image/png")
+
+    async def report(request: Request) -> JSONResponse:
+        return JSONResponse(
+            await run_in_threadpool(studio.report_bundle, request.query_params.get("job"))
+        )
+
+    async def restart(_: Request) -> JSONResponse:
+        return JSONResponse(studio.request_restart())
 
     async def trash(_: Request) -> JSONResponse:
         return JSONResponse({"jobs": studio.trash()})
@@ -479,6 +533,11 @@ def build_app(studio: Studio) -> Starlette:
             Route("/api/jobs/{job_id}/note", note, methods=["POST"]),
             Route("/api/jobs/{job_id}/project", job_project, methods=["POST"]),
             Route("/api/files/{job_id}/{kind}", file),
+            Route("/api/derived/{job_id}/{name}", derived),
+            Route("/api/jobs/{job_id}/mesh", mesh_tool, methods=["POST"]),
+            Route("/api/sample/{name}", sample),
+            Route("/api/report", report),
+            Route("/api/restart", restart, methods=["POST"]),
             Route("/api/trash", trash),
             Route("/api/trash/empty", empty_trash, methods=["POST"]),
             Route("/api/export", export_jobs, methods=["POST"]),

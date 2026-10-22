@@ -213,6 +213,10 @@ class JsApi:
         """The page's themed dialog answers the close question: tray | quit | cancel."""
         return self._app.close_decision(choice)
 
+    def restart(self):
+        """Quit and start a fresh process (after the CUDA runtime was unpacked)."""
+        return self._app.restart()
+
 
 class App:
     def __init__(self, server: Server, data_dir: Path, log_path: Path) -> None:
@@ -223,6 +227,7 @@ class App:
         self.tray = None
         self.hidden = False
         self.quitting = False
+        self.restart_requested = False
         self.state_file = data_dir / "window.json"
 
     # ---- js api, reachable as window.pywebview.api.* from the UI
@@ -248,7 +253,15 @@ class App:
             "log": str(self.log_path),
             "data_dir": str(self.data_dir),
             "exe": sys.executable if getattr(sys, "frozen", False) else "",
+            "can_restart": True,
         }
+
+    def restart(self):
+        if self.server.rendering():
+            return {"restarted": False, "reason": "a job is running; wait for it or cancel it"}
+        self.restart_requested = True
+        self.quit()
+        return {"restarted": True}
 
     def open_in_browser(self):
         webbrowser.open(f"http://{HOST}:{PORT}/")
@@ -467,11 +480,15 @@ def main() -> int:
 
         print(__version__)
         return 0
+    from shapestudio import runtime
     from shapestudio.config import Settings
 
     settings = Settings()
     log_path = setup_logging(settings.data_dir)
     log = logging.getLogger("app")
+    # before anything imports torch: serve the consented CUDA build from the data folder
+    root = runtime.activate_runtime(settings)
+    log.info("torch override: %s", root or "none (bundled build)")
     url = f"http://{HOST}:{PORT}/"
 
     if port_open(PORT):
@@ -516,8 +533,17 @@ def main() -> int:
         server.stop()
         return 0
 
+    st = runtime.torch_status()
+    log.info(
+        "torch %s %s at %s%s",
+        st.version or "(not importable)",
+        st.flavor,
+        st.location,
+        " (runtime folder)" if st.from_runtime_dir else "",
+    )
     set_app_id()
     app = App(server, settings.data_dir, log_path)
+    server.studio.on_restart = app.restart  # Settings → "Restart now" after a runtime change
     control = claim_instance(app.focus)
     try:
         app.run()  # blocks until the window is destroyed
@@ -527,7 +553,22 @@ def main() -> int:
         app.stop_tray()
         server.stop()
         log.info("stopped")
+    if app.restart_requested:
+        relaunch()
     return 0
+
+
+def relaunch() -> None:
+    """Start a new copy of this program once this one has let go of its ports."""
+    import subprocess
+
+    args = [sys.executable] if getattr(sys, "frozen", False) else [sys.executable, *sys.argv[:1]]
+    args += [a for a in sys.argv[1:] if a not in ("--browser", "--no-browser")]
+    logging.getLogger("app").info("restarting: %s", args)
+    flags = 0
+    if sys.platform == "win32":
+        flags = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+    subprocess.Popen(args, close_fds=True, creationflags=flags)
 
 
 if __name__ == "__main__":

@@ -42,7 +42,7 @@
   .dot.busy { background: var(--accent); animation: pulse 1.1s infinite; } .dot.warn { background: var(--warn); } .dot.off { background: var(--muted); }
   @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
   .ib { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; border: 1px solid var(--line); background: var(--surface2); color: var(--ink2); cursor: pointer; }
-  .btn { height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+  .btn { height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
   .btn:hover { border-color: var(--line2); } .btn:disabled { opacity: .45; cursor: default; }
   .btn.primary { background: var(--accent); color: var(--on-accent); border-color: transparent; font-weight: 600; }
   .btn.danger { color: var(--bad); }
@@ -68,14 +68,20 @@
   .alert { border-radius: 10px; padding: 8px 12px; font-size: 12.5px; background: color-mix(in srgb, var(--warn) 14%, transparent); border: 1px solid color-mix(in srgb, var(--warn) 40%, transparent); margin-top: 8px; }
   .alert.bad { background: color-mix(in srgb, var(--bad) 12%, transparent); border-color: color-mix(in srgb, var(--bad) 40%, transparent); }
   .alert.ok { background: color-mix(in srgb, var(--ok) 12%, transparent); border-color: color-mix(in srgb, var(--ok) 40%, transparent); }
+  .alert.info { background: var(--surface2); border-color: var(--line); }
+  .alert details { margin-top: 4px; } .alert summary { cursor: pointer; color: var(--muted); font-size: 12px; } .alert details p { margin: 6px 0 0; }
+  .alert .row { margin-top: 8px; }
   .drop { border: 2px dashed var(--line2); border-radius: 16px; padding: 22px; text-align: center; background: var(--surface2); cursor: pointer; min-height: 240px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
   .drop.over { border-color: var(--accent); }
   .drop img { max-width: 100%; max-height: 300px; border-radius: 10px; }
+  .thumbs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; } .thumbs img { width: 92px; height: 92px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); }
   .create { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr); gap: 16px; }
   @media (max-width: 860px) { .create { grid-template-columns: 1fr; } }
   .queue { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-top: 16px; }
-  .qcard { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+  .qcard { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-width: 0; display: grid; grid-template-columns: 48px 1fr; gap: 10px; }
+  .qcard img { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; background: var(--surface2); }
   .qcard .t { font-weight: 600; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .qcard .err { color: var(--bad); white-space: normal; }
   .bar { height: 5px; border-radius: 4px; background: var(--track); margin: 8px 0 6px; overflow: hidden; } .bar i { display: block; height: 100%; background: var(--accent); transition: width .5s; }
   .gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
   @media (max-width: 600px) { .gal { grid-template-columns: repeat(2, 1fr); } }
@@ -102,20 +108,28 @@
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th, td { text-align: left; padding: 8px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
   th { color: var(--muted); font-weight: 600; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
-  .pill { font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink2); }
+  table.req { font-size: 12px; margin-top: 8px; } table.req td, table.req th { padding: 4px 6px; }
+  td.act { white-space: nowrap; } td.act .btn { margin: 2px 4px 2px 0; white-space: nowrap; }
+  .pill { font-size: 11px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink2); white-space: nowrap; }
   .pill.ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 50%, transparent); } .pill.warn { color: var(--warn); } .pill.bad { color: var(--bad); }
+  .pill.reco { color: var(--on-accent); background: var(--accent); border-color: transparent; font-weight: 600; }
   .toasts { position: fixed; right: 14px; bottom: 14px; display: flex; flex-direction: column; gap: 8px; z-index: 20; }
   .toast { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; box-shadow: var(--shadow); font-size: 13px; max-width: 360px; }
-  .ask { padding: 18px 20px; max-width: 520px; }
+  .ask { padding: 18px 20px; max-width: 560px; }
   .ask h3 { margin: 0 0 8px; } .ask p { margin: 6px 0; color: var(--ink2); font-size: 13px; }
-  .guide li { margin: 6px 0; } .guide li.done { color: var(--muted); text-decoration: line-through; }
+  .ask pre { max-height: 40vh; overflow: auto; font-size: 11.5px; background: var(--surface2); padding: 10px; border-radius: 10px; white-space: pre-wrap; }
+  .guide li { margin: 8px 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .guide li.done { color: var(--muted); } .guide li.done .step { text-decoration: line-through; }
   .tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
-  .tiers .card { border-left: 3px solid var(--honey); }
+  .tiers .card.reco { border-left: 3px solid var(--accent); }
+  .tiers .card.dim { opacity: .78; }
+  .setup { border-left: 3px solid var(--accent); }
+  .setup .big { font-size: 15px; }
   footer.credit { text-align: center; color: var(--muted); font-size: 12px; padding: 20px; border-top: 1px solid var(--line); }
   .sw { position: relative; width: 38px; height: 22px; border-radius: 999px; background: var(--track); border: 0; cursor: pointer; }
   .sw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }
   .sw.on { background: var(--accent); } .sw.on::after { left: 19px; }
   .hidden { display: none !important; }
+  .sect { color: var(--muted); font-size: 11px; letter-spacing: .6px; text-transform: uppercase; font-weight: 600; margin: 14px 0 4px; }
   @media (max-width: 700px) {
     .top { height: auto; flex-wrap: wrap; padding: 8px 10px; gap: 8px; }
     .brand .lk b { margin-right: 4px; }
@@ -140,11 +154,13 @@
 </header>
 
 <section class="view" id="home"><div class="wrap">
+  <div class="card setup hidden" id="setupcard" style="margin-bottom:14px"></div>
   <div class="card" style="margin-bottom:14px">
     <h2>Your own 3D studio. Free, local, honest.</h2>
     <p class="muted">One picture in, a textured mesh out (GLB and OBJ), on the machine in front of you. Nothing is uploaded, nothing is paid for.</p>
     <ol class="guide" id="guide"></ol>
   </div>
+  <div class="sect">Models for this machine</div>
   <div class="tiers" id="tiers"></div>
   <div class="card" style="margin-top:14px">
     <h3>The policy</h3>
@@ -156,10 +172,12 @@
   <div class="create">
     <div>
       <div class="drop" id="drop">
-        <input type="file" id="file" accept="image/png,image/jpeg,image/webp" class="hidden">
-        <div id="dropempty"><div style="font-size:30px">⬡</div><div><b>Drop a picture here</b> or click to choose</div><div class="muted small">PNG, JPEG or WebP · one object, centred · the background is cut out for you</div></div>
+        <input type="file" id="file" accept="image/png,image/jpeg,image/webp" multiple class="hidden">
+        <div id="dropempty"><div style="font-size:30px">⬡</div><div><b>Drop one or more pictures here</b> or click to choose</div><div class="muted small">PNG, JPEG or WebP · one object per picture, centred, on a plain background · the background is cut out for you</div></div>
         <img id="dropimg" class="hidden" alt="">
+        <div id="dropthumbs" class="thumbs hidden"></div>
       </div>
+      <div class="row small" style="margin-top:8px" id="samplerow"><span class="muted">No picture at hand? Try a sample:</span></div>
       <div class="row" style="margin-top:10px">
         <button class="btn primary" id="go" disabled>Reconstruct</button>
         <span class="muted small" id="planline">choose a picture</span>
@@ -168,13 +186,13 @@
       <div class="queue" id="queue"></div>
     </div>
     <div class="card">
-      <label class="f">Tier</label>
-      <select id="tier"><option value="">Auto: the strongest that is downloaded and fits</option></select>
+      <label class="f">Model</label>
+      <select id="tier"><option value="">Auto: the strongest downloaded model that fits</option></select>
       <div class="muted small" id="tiernote" style="margin-top:6px"></div>
       <label class="f">Preset</label>
       <div class="seg" id="preset"><button data-v="best" class="active">best · 256³</button><button data-v="balanced">balanced · 192³</button><button data-v="fast">fast · 128³</button></div>
       <div class="muted small" id="presetnote" style="margin-top:6px"></div>
-      <label class="f">Surface grid <span class="mono" id="resv">256</span></label>
+      <label class="f">Surface grid <span class="mono" id="resv">256</span> <span class="muted" id="resnote"></span></label>
       <input type="range" id="res" min="64" max="512" step="32" value="256">
       <label class="f">Object size in frame <span class="mono" id="fgv">0.85</span></label>
       <input type="range" id="fg" min="0.5" max="1" step="0.05" value="0.85">
@@ -207,11 +225,13 @@
   <div class="card" style="grid-column:1/-1">
     <h3>This machine</h3>
     <div class="kv" id="hw"></div>
-    <div class="row"><button class="btn sm" id="bench">Run benchmark (one fast reconstruction)</button><span class="muted small" id="benchnote"></span></div>
+    <div id="rtstate"></div>
+    <div class="row" style="margin-top:8px"><button class="btn sm" id="bench">Run benchmark (one fast reconstruction)</button><span class="muted small" id="benchnote"></span></div>
     <div id="profile" class="small" style="margin-top:8px"></div>
   </div>
   <div class="card" style="grid-column:1/-1">
     <h3>Models, tools and runtime</h3>
+    <p class="muted small" style="margin:0 0 6px">Installed components first; the rest can be installed from here. Every download is hash-verified and comes from the model's original host.</p>
     <div style="overflow-x:auto"><table id="comps"><thead><tr><th>Component</th><th>Tier</th><th>Licence</th><th>Size</th><th>Status</th><th></th></tr></thead><tbody></tbody></table></div>
     <div id="tasks" class="small" style="margin-top:8px"></div>
   </div>
@@ -234,6 +254,11 @@
     <div id="trashlist" class="small"></div>
     <button class="btn sm danger" id="emptytrash" style="margin-top:8px">Empty trash</button>
   </div>
+  <div class="card">
+    <h3>Something went wrong?</h3>
+    <p class="small muted" style="margin:0 0 8px">Report a problem bundles the version, this machine's summary, the runtime state, the last failed job's error and the log tail into one text you can read before sending. No pictures, no meshes.</p>
+    <button class="btn sm" id="reportbtn">Report a problem…</button>
+  </div>
   <div class="card" style="grid-column:1/-1">
     <h3>About</h3>
     <div class="small" id="about"></div>
@@ -250,13 +275,15 @@
 <script>
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
-const S = { caps: null, jobs: [], file: null, preset: "best", res: 256, fg: 0.85, rmbg: true, tier: "", plan: null, picked: new Set(), picking: false, fav: false, prjFilter: "", search: "", projects: [], current: null, comps: [], tasks: {} };
+const S = { caps: null, jobs: [], files: [], sample: null, preset: "best", res: 256, fg: 0.85, rmbg: true, tier: "", plan: null, picked: new Set(), picking: false, fav: false, prjFilter: "", search: "", projects: [], current: null, comps: [], tasks: {} };
 const api = async (url, opts={}) => { const r = await fetch(url, opts); const j = await r.json().catch(()=>({})); if (!r.ok) throw new Error(j.error || r.statusText); return j; };
 const post = (url, body) => api(url, { method: "POST", headers: {"content-type":"application/json"}, body: JSON.stringify(body||{}) });
 const toast = (m, ms=4500) => { const d = document.createElement("div"); d.className="toast"; d.textContent=m; $("#toasts").append(d); setTimeout(()=>d.remove(), ms); };
 const human = s => s==null ? "—" : s<60 ? `${Math.round(s)} s` : s<3600 ? `${Math.floor(s/60)} min ${String(Math.round(s%60)).padStart(2,"0")} s` : `${Math.floor(s/3600)} h ${String(Math.floor(s%3600/60)).padStart(2,"0")} min`;
 const gib = b => (b/2**30).toFixed(b>2**30?2:3) + " GiB";
+const mb = b => b >= 2**30 ? gib(b) : `${Math.round(b/2**20)} MB`;
 const esc = s => String(s??"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const desktop = () => window.pywebview && window.pywebview.api;
 function ask(title, html, buttons) { return new Promise(res => { const dlg=$("#askdlg"); $("#askbody").innerHTML = `<h3>${esc(title)}</h3>${html}<div class="row" style="justify-content:flex-end;margin-top:14px">${buttons.map((b,i)=>`<button class="btn ${b.primary?"primary":""} ${b.danger?"danger":""}" data-i="${i}">${esc(b.label)}</button>`).join("")}</div>`; $$("button[data-i]", dlg).forEach(b=>b.onclick=()=>{dlg.close(); res(buttons[+b.dataset.i].value);}); dlg.onclose=()=>res(undefined); dlg.showModal(); }); }
 // theme
 const theme = localStorage.getItem("theme"); if (theme) document.documentElement.dataset.theme = theme;
@@ -264,23 +291,45 @@ $("#theme").onclick = () => { const cur = document.documentElement.dataset.theme
 // tabs
 $$("#tabs button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
 function showTab(t) { $$("#tabs button").forEach(x=>x.classList.toggle("active", x.dataset.tab===t)); $$(".view").forEach(v=>v.classList.toggle("active", v.id===t)); location.hash = t; if (t==="settings") loadSettings(); if (t==="gallery") renderGallery(); if (t==="home") renderHome(); }
+window.showTab = showTab;
 if (location.hash.slice(1)) showTab(location.hash.slice(1));
 
 // ---------- capabilities & plan
-async function loadCaps() { S.caps = await api("/api/capabilities"); fillTiers(); renderHome(); refreshPlan(); }
-function fillTiers() { const sel = $("#tier"); sel.innerHTML = `<option value="">Auto: the strongest that is downloaded and fits</option>` + S.caps.models.map(m => `<option value="${m.name}">${esc(m.display_name)} · ${m.tier}${m.installed?"":" · not downloaded"}${m.fits_this_machine?"":" · does not fit"}</option>`).join(""); sel.value = S.tier; }
+async function loadCaps() { S.caps = await api("/api/capabilities"); fillTiers(); renderSamples(); renderHome(); refreshPlan(); if (!S.caps.setup.ready && !location.hash.slice(1)) showTab("home"); }
+const modelLabel = m => `${m.tier === "standard" ? "Standard" : "Best"} · ${m.display_name}`;
+function fillTiers() {
+  const sel = $("#tier"); const installed = S.caps.models.filter(m => m.installed);
+  sel.innerHTML = `<option value="">Auto: the strongest downloaded model that fits</option>` + installed.map(m => `<option value="${m.name}">${esc(modelLabel(m))}${m.fits_this_machine ? "" : " · does not fit this machine"}</option>`).join("");
+  sel.value = installed.some(m => m.name === S.tier) ? S.tier : ""; S.tier = sel.value;
+  const others = S.caps.models.filter(m => !m.installed);
+  $("#tiernote").innerHTML = (installed.length ? "" : `<span style="color:var(--bad)">No model is downloaded yet.</span> `) + (others.length ? `Not downloaded: ${others.map(m => `${esc(modelLabel(m))} (${m.fits_this_machine ? `fits, ${m.download_gib} GiB` : esc(m.fit_note)})`).join("; ")}. <a href="#settings" onclick="showTab('settings')">Settings</a>` : "");
+}
+function renderSamples() { const row = $("#samplerow"); row.querySelectorAll("button").forEach(b=>b.remove()); (S.caps.samples||[]).forEach(s => { const b = document.createElement("button"); b.className = "btn sm"; b.textContent = s.name; b.title = s.description; b.onclick = () => useSample(s.name); row.append(b); }); }
+function useSample(name) { S.files = []; S.sample = name; $("#dropimg").src = `/api/sample/${name}`; $("#dropimg").classList.remove("hidden"); $("#dropthumbs").classList.add("hidden"); $("#dropempty").classList.add("hidden"); refreshPlan(); }
 let planTimer; function refreshPlan() { clearTimeout(planTimer); planTimer = setTimeout(doPlan, 150); }
+function capSlider(m) { const max = Math.max(64, Math.min(512, m ? m.max_resolution_fits : 512)); const r = $("#res"); r.max = max; if (S.res > max) { S.res = max; r.value = max; $("#resv").textContent = max; } const presetRes = {best:256, balanced:192, fast:128}[S.preset]; $("#resnote").textContent = max < 512 ? `(up to ${max}³ fits this machine)` : ""; if (S.res > presetRes) $("#resnote").textContent += ` beyond the ${S.preset} preset: finer, slower, more memory`; }
 async function doPlan() {
   const q = new URLSearchParams({ preset: S.preset, resolution: S.res, foreground: S.fg, remove_background: S.rmbg }); if (S.tier) q.set("tier", S.tier);
+  const hasInput = S.files.length > 0 || !!S.sample;
   try { S.plan = await api("/api/plan?"+q); } catch (e) { S.plan = null; $("#planalerts").innerHTML = `<div class="alert bad">${esc(e.message)}</div>`; $("#planline").textContent = "refused"; $("#meter").style.width="100%"; $("#meter").className="over"; $("#loadline").textContent=""; $("#basis").textContent=""; $("#go").disabled = true; return; }
-  const p = S.plan; const m = S.caps.models.find(x=>x.name===p.model);
-  $("#planline").textContent = `${p.display_name} (${p.tier}) on ${p.device.toUpperCase()}, ${p.resolution}³ grid · about ${p.estimate.human}${p.estimate.calibrated?"":" (not measured yet)"}`;
-  $("#tiernote").textContent = m ? `${m.description}` : "";
+  const p = S.plan; const m = S.caps.models.find(x=>x.name===p.model); capSlider(m);
+  const n = S.files.length; const what = n > 1 ? `${n} pictures, each: ` : "";
+  $("#planline").textContent = `${what}${p.display_name} (${p.tier}) on ${p.device.toUpperCase()}, ${p.resolution}³ grid · about ${p.estimate.human}${p.estimate.calibrated?"":" (not measured yet)"}`;
   $("#meter").style.width = Math.min(100, p.load.score) + "%"; $("#meter").className = p.load.label.replace(" ", "");
   $("#loadline").textContent = `${p.load.label}: needs about ${p.load.required_gib} GiB of the ${p.load.device.toUpperCase()}'s ${p.load.budget_gib} GiB budget (${p.load.available_gib} GiB free now)`;
   $("#basis").textContent = p.estimate.basis;
-  let alerts = ""; if (p.fit_note) alerts += `<div class="alert">${esc(p.fit_note)}</div>`; (p.warnings||[]).forEach(w=>alerts += `<div class="alert">${esc(w)}</div>`); if (!p.installed) alerts += `<div class="alert bad">${esc(p.display_name)} is not downloaded. <a href="#settings" onclick="showTab('settings')">Install it under Settings</a>.</div>`; if (p.verified && /not run yet|tests only/.test(p.verified)) alerts += `<div class="alert small">Status: ${esc(p.verified)}</div>`;
-  $("#planalerts").innerHTML = alerts; $("#go").disabled = !(S.file && p.installed);
+  // one compact note: the headline, the rest behind "details", and buttons for what would help
+  const notes = []; if (p.fit_note) notes.push(p.fit_note); (p.warnings||[]).forEach(w => notes.push(w));
+  const h = p.hints || {}; const actions = [];
+  if (!p.installed) actions.push(`<button class="btn sm primary" onclick="installComp('${p.model}')">Download ${esc(p.display_name)} (${m ? m.download_gib : "?"} GiB)</button>`);
+  if (h.install_cuda_runtime) actions.push(`<button class="btn sm" onclick="installRuntime()">Install the CUDA build of PyTorch…</button>`);
+  const bgMissing = S.rmbg && !S.caps.background_engine.models.some(x => x.installed);
+  if (bgMissing) actions.push(`<button class="btn sm primary" onclick="installComp('isnet-general-use')">Download the background model (170 MB)</button>`);
+  let html = "";
+  if (!p.installed) html += `<div class="alert bad">${esc(p.display_name)} is not downloaded yet, so nothing can run.${notes.length?` <details><summary>why this model</summary><p>${notes.map(esc).join("</p><p>")}</p></details>`:""}<div class="row">${actions.join("")}</div></div>`;
+  else if (bgMissing) html += `<div class="alert bad">Background removal needs a segmentation model (170 MB, Apache-2.0), or turn "Remove the background first" off for pictures that already have a transparent background.<div class="row">${actions.join("")}</div></div>`;
+  else if (notes.length) html += `<div class="alert">${esc(notes[0])}${notes.length>1?`<details><summary>${notes.length-1} more note${notes.length>2?"s":""}</summary><p>${notes.slice(1).map(esc).join("</p><p>")}</p></details>`:""}${actions.length?`<div class="row">${actions.join("")}</div>`:""}</div>`;
+  $("#planalerts").innerHTML = html; $("#go").disabled = !(hasInput && p.installed && !bgMissing);
   const presetNotes = {best: "Finest surface grid TripoSR's field resolves; most triangles, longest extraction.", balanced: "About half the extraction work; slightly softer small details.", fast: "Preview-grade surface in a fraction of the time; thin parts may break up."};
   $("#presetnote").textContent = presetNotes[S.preset] + " The network pass is identical at every preset.";
 }
@@ -289,22 +338,29 @@ $$("#preset button").forEach(b => b.onclick = () => { S.preset = b.dataset.v; $$
 $("#res").oninput = e => { S.res = +e.target.value; $("#resv").textContent = S.res; refreshPlan(); };
 $("#fg").oninput = e => { S.fg = +e.target.value; $("#fgv").textContent = S.fg.toFixed(2); refreshPlan(); };
 $("#rmbg").onclick = () => { S.rmbg = !S.rmbg; $("#rmbg").classList.toggle("on", S.rmbg); refreshPlan(); };
-// file
+// files (one or many)
 const drop = $("#drop"); drop.onclick = () => $("#file").click();
 drop.ondragover = e => { e.preventDefault(); drop.classList.add("over"); }; drop.ondragleave = () => drop.classList.remove("over");
-drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); };
-$("#file").onchange = e => { if (e.target.files[0]) setFile(e.target.files[0]); };
-function setFile(f) { S.file = f; const url = URL.createObjectURL(f); $("#dropimg").src = url; $("#dropimg").classList.remove("hidden"); $("#dropempty").classList.add("hidden"); refreshPlan(); }
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); setFiles([...e.dataTransfer.files]); };
+$("#file").onchange = e => setFiles([...e.target.files]);
+function setFiles(list) { list = list.filter(f => /^image\/(png|jpeg|webp)$/.test(f.type)); if (!list.length) return toast("Use PNG, JPEG or WebP pictures"); S.files = list.slice(0, 50); S.sample = null;
+  if (S.files.length === 1) { $("#dropimg").src = URL.createObjectURL(S.files[0]); $("#dropimg").classList.remove("hidden"); $("#dropthumbs").classList.add("hidden"); }
+  else { $("#dropthumbs").innerHTML = S.files.map(f => `<img src="${URL.createObjectURL(f)}" title="${esc(f.name)}" alt="">`).join(""); $("#dropthumbs").classList.remove("hidden"); $("#dropimg").classList.add("hidden"); }
+  $("#dropempty").classList.add("hidden"); refreshPlan(); }
 $("#go").onclick = async () => {
-  const fd = new FormData(); fd.append("file", S.file, S.file.name); fd.append("preset", S.preset); fd.append("resolution", S.res); fd.append("foreground", S.fg); fd.append("remove_background", S.rmbg); if (S.tier) fd.append("tier", S.tier);
   $("#go").disabled = true;
-  try { const j = await api("/api/reconstruct", { method:"POST", body: fd }); toast(`Queued ${j.title}: ${j.summary}`); await pollJobs(); } catch (e) { toast("Not queued: " + e.message, 8000); }
+  try {
+    if (S.sample) { const j = await post("/api/reconstruct", { image: `sample:${S.sample}`, preset: S.preset, resolution: S.res, foreground: S.fg, remove_background: S.rmbg, tier: S.tier || null }); toast(`Queued ${j.title}: ${j.summary}`); }
+    else { const fd = new FormData(); S.files.forEach(f => fd.append("file", f, f.name)); fd.append("preset", S.preset); fd.append("resolution", S.res); fd.append("foreground", S.fg); fd.append("remove_background", S.rmbg); if (S.tier) fd.append("tier", S.tier);
+      const j = await api("/api/reconstruct", { method:"POST", body: fd }); toast(j.jobs ? `Queued ${j.jobs.length} pictures` : `Queued ${j.title}: ${j.summary}`); }
+    await pollJobs();
+  } catch (e) { toast("Not queued: " + e.message, 8000); }
   $("#go").disabled = false;
 };
 // ---------- jobs
 async function pollJobs() { try { const j = await api("/api/jobs"); S.jobs = j.jobs; S.workerHere = j.worker_in_this_process; S.paused = j.paused; } catch { return; } renderQueue(); renderStatus(); if ($("#gallery").classList.contains("active")) renderGallery(); }
 function renderStatus() { const running = S.jobs.find(j=>j.status==="running"), queued = S.jobs.filter(j=>j.status==="queued").length; const chip = $("#statuschip"); const dot = chip.firstElementChild, txt = chip.lastElementChild; const spin = $(".spin", chip); spin.classList.toggle("hidden", !running); dot.classList.toggle("hidden", !!running); if (running) { dot.className="dot busy"; txt.textContent = running.summary + (queued?` · ${queued} queued`:""); } else if (S.paused) { dot.className="dot warn"; txt.textContent = "paused"; } else if (queued) { dot.className="dot warn"; txt.textContent = `${queued} queued · no worker?`; } else { dot.className="dot"; txt.textContent = S.workerHere===false ? "idle · another studio runs the jobs" : "idle"; } }
-function renderQueue() { const live = S.jobs.filter(j=>j.status==="queued"||j.status==="running"||(j.finished_at && Date.now()-Date.parse(j.finished_at) < 120000)); $("#queue").innerHTML = live.slice(0,8).map(j => `<div class="qcard"><div class="t">${esc(j.title)}</div><div class="bar"><i style="width:${Math.round((j.progress||0)*100)}%"></i></div><div class="row small" style="justify-content:space-between"><span class="${j.status==="failed"?"muted":""}">${esc(j.summary)}${j.error?` · ${esc(j.error)}`:""}</span>${j.status==="queued"||j.status==="running"?`<button class="btn sm" onclick="cancelJob('${j.id}')">Cancel</button>`:j.status==="done"?`<button class="btn sm" onclick="openViewer('${j.id}')">View</button>`:""}</div></div>`).join(""); }
+function renderQueue() { const live = S.jobs.filter(j=>j.status==="queued"||j.status==="running"||(j.finished_at && Date.now()-Date.parse(j.finished_at) < 180000)); $("#queue").innerHTML = live.slice(0,8).map(j => `<div class="qcard"><img src="/api/files/${j.id}/input" alt="" onerror="this.style.visibility='hidden'"><div style="min-width:0"><div class="t" title="${esc(j.title)}">${esc(j.source_name || j.title)}</div><div class="muted small">${j.preset} · ${j.resolution}³ · ${esc(j.device||"")}</div><div class="bar"><i style="width:${Math.round((j.progress||0)*100)}%"></i></div><div class="row small" style="justify-content:space-between"><span class="${j.status==="failed"?"err":""}">${j.status==="failed"?esc(j.error||"failed"):esc(j.summary)}</span>${j.status==="queued"||j.status==="running"?`<button class="btn sm" onclick="cancelJob('${j.id}')">Cancel</button>`:j.status==="done"?`<button class="btn sm" onclick="openViewer('${j.id}')">View</button>`:j.status==="failed"?`<button class="btn sm" onclick="reportProblem('${j.id}')">Report</button>`:""}</div></div></div>`).join(""); }
 window.cancelJob = async id => { await post(`/api/jobs/${id}/cancel`); pollJobs(); };
 // ---------- gallery
 function filteredJobs() { return S.jobs.filter(j => j.status==="done" && (!S.fav || j.favorite) && (!S.prjFilter || j.project===S.prjFilter) && (!S.search || (j.source_name+" "+(j.note||"")).toLowerCase().includes(S.search.toLowerCase()))); }
@@ -327,12 +383,17 @@ window.openViewer = async id => {
   const j = await api(`/api/jobs/${id}`); const dlg = $("#viewer"); const stage = $("#stage");
   const useMV = !window.__mvFailed && customElements.get("model-viewer");
   stage.innerHTML = useMV ? `<model-viewer src="/api/files/${id}/glb" camera-controls auto-rotate shadow-intensity="1" exposure="1" alt="${esc(j.source_name)}"></model-viewer>` : `<img src="/api/files/${id}/preview" alt="turntable"><div class="small muted" style="position:absolute;bottom:8px;left:12px">3D viewer not loaded (offline?): showing the turntable sheet</div>`;
-  $("#vside").innerHTML = `<h2>${esc(j.title)}</h2><div class="muted small">${esc(j.source_name)}</div>
+  const derived = (j.derived||[]).map(d => `<a class="btn sm" href="/api/derived/${id}/${encodeURIComponent(d.name)}">${esc(d.label)} (${d.format.toUpperCase()}, ${mb(d.bytes)})</a>`).join("");
+  $("#vside").innerHTML = `<h2>${esc(j.source_name)}</h2><div class="muted small">${esc(j.title)}</div>
     <div class="kv"><span>Model</span><span>${esc(j.model)} · ${j.tier} tier · ${j.device.toUpperCase()}</span><span>Preset</span><span>${j.preset} · ${j.resolution}³ grid · object ${j.foreground_ratio}</span><span>Mesh</span><span>${j.vertices?.toLocaleString()} vertices · ${j.faces?.toLocaleString()} faces</span><span>Time</span><span>${human(j.total_seconds)} (load ${human(j.load_seconds)}, network ${human(j.network_seconds)}, grid ${human(j.grid_seconds)})${j.peak_rss_gib?` · peak ${j.peak_rss_gib} GiB`:""}</span>${j.fit_note?`<span>Fit</span><span>${esc(j.fit_note)}</span>`:""}</div>
     <div class="row"><a class="btn sm" href="/api/files/${id}/glb?download=1">Download GLB</a><a class="btn sm" href="/api/files/${id}/obj?download=1">Download OBJ</a><a class="btn sm" href="/api/files/${id}/preview?download=1">Turntable PNG</a></div>
+    <label class="f">Mesh tools</label>
+    <div class="row"><button class="btn sm" data-op="stl">STL for printing…</button><button class="btn sm" data-op="decimate">Lighter mesh…</button><button class="btn sm" data-op="smooth">Smooth…</button><button class="btn sm" data-op="flip">Flip normals</button><button class="btn sm" data-op="scale">Scale…</button></div>
+    <div class="row" id="vderived" style="margin-top:6px">${derived}</div>
     <div class="row" style="margin-top:8px"><button class="btn sm" id="vfav">${j.favorite?"★ Favourite":"☆ Favourite"}</button><button class="btn sm" id="vproj">Project…</button><button class="btn sm" id="vinput">Show input</button><button class="btn sm" id="vcut">Show cutout</button><button class="btn sm" id="vmesh">Show mesh</button><button class="btn sm danger" id="vtrash">Trash</button></div>
     <label class="f">Note</label><textarea id="vnote" rows="2">${esc(j.note||"")}</textarea><div class="row" style="margin-top:6px"><button class="btn sm" id="vsave">Save note</button></div>
     ${j.warnings?.length?`<div class="alert small">${j.warnings.map(esc).join("<br>")}</div>`:""}`;
+  $$("#vside button[data-op]").forEach(b => b.onclick = () => meshTool(id, b.dataset.op, j));
   $("#vfav").onclick = async () => { await post(`/api/jobs/${id}/favorite`, {favorite: !j.favorite}); pollJobs(); openViewer(id); };
   $("#vproj").onclick = async () => { const pid = await pickProject(); if (pid===undefined) return; await post(`/api/jobs/${id}/project`, {project: pid}); toast("Filed"); pollJobs(); };
   $("#vinput").onclick = () => stage.innerHTML = `<img src="/api/files/${id}/input" alt="input">`;
@@ -342,32 +403,89 @@ window.openViewer = async id => {
   $("#vtrash").onclick = async () => { if (await ask("Move to trash", "<p>The mesh moves to the trash; restore it under Settings.</p>", [{label:"Cancel"},{label:"Trash", value:true, danger:true}])) { await fetch(`/api/jobs/${id}`, {method:"DELETE"}); dlg.close(); pollJobs(); } };
   dlg.showModal();
 };
+async function meshTool(id, op, j) {
+  let params = {};
+  if (op === "stl") { const v = await ask("STL for printing", `<p>Binary STL has no colours; slicers read it directly. Optionally scale so the longest side is a given size.</p><label class="f">Longest side in mm (blank = keep units)</label><input type="number" id="mm" min="1" step="1" placeholder="e.g. 80">`, [{label:"Cancel"},{label:"Make STL", value:true, primary:true}]); if (!v) return; params = {size_mm: +($("#mm")?.value||0)}; }
+  else if (op === "decimate") { const v = await ask("Lighter mesh", `<p>${j.faces?.toLocaleString()} faces now. Vertex clustering merges nearby vertices; fine detail softens, file size drops.</p><label class="f">Target faces</label><input type="number" id="tf" min="100" step="100" value="${Math.max(1000, Math.round((j.faces||4000)/4))}">`, [{label:"Cancel"},{label:"Make it", value:true, primary:true}]); if (!v) return; params = {target_faces: +($("#tf")?.value||0)}; }
+  else if (op === "smooth") { const v = await ask("Smooth", `<p>Laplacian smoothing evens out the surface noise marching cubes leaves; too many passes shrink thin parts.</p><label class="f">Passes</label><input type="number" id="it" min="1" max="20" value="2">`, [{label:"Cancel"},{label:"Smooth", value:true, primary:true}]); if (!v) return; params = {iterations: +($("#it")?.value||2)}; }
+  else if (op === "scale") { const v = await ask("Scale", `<p>Uniform scale so the longest side spans the given size, centred at the origin.</p><label class="f">Longest side (units of your target app)</label><input type="number" id="sz" min="0.001" step="0.1" value="1">`, [{label:"Cancel"},{label:"Scale", value:true, primary:true}]); if (!v) return; params = {size: +($("#sz")?.value||1)}; }
+  try { const r = await post(`/api/jobs/${id}/mesh`, {op, params}); toast(`${r.note || op}: ${r.format.toUpperCase()} ready`); openViewer(id); } catch (e) { toast(e.message, 8000); }
+}
 $("#vclose").onclick = () => $("#viewer").close();
 // ---------- home
-function renderHome() { if (!S.caps) return; const c = S.caps; const std = c.models.find(m=>m.tier==="standard"), best = c.models.find(m=>m.tier==="best"); const bg = c.background_engine.models.some(m=>m.installed); const done = S.jobs.some(j=>j.status==="done"&&j.tool==="reconstruct");
-  const steps = [[c.runtime.torch.installed, `PyTorch runtime ${c.runtime.torch.installed?`${c.runtime.torch.version} (${c.runtime.torch.flavor})`:"is not importable"}`], [std.installed, `Download ${std.display_name} (${std.download_gib} GiB, ${std.licence}) under Settings`], [bg, "Download a background-removal model (IS-Net, 170 MB, Apache-2.0)"], [done, "Reconstruct your first object on Create"], [!!c.profile, "Run the benchmark so estimates are measured, not guessed"]];
-  $("#guide").innerHTML = steps.map(([ok, t]) => `<li class="${ok?"done":""}">${ok?"✓ ":""}${esc(t)}</li>`).join("");
-  $("#tiers").innerHTML = c.models.map(m => `<div class="card"><h3>${esc(m.display_name)} · <span class="muted">${m.tier} tier</span></h3><p class="small">${esc(m.description)}</p><div class="small"><span class="pill ${m.installed?"ok":""}">${m.installed?"downloaded":`${m.download_gib} GiB to download`}</span> <span class="pill ${m.fits_this_machine?"ok":"bad"}">${m.fits_this_machine?`fits · runs on ${m.device.toUpperCase()}`:"does not fit this machine"}</span> <span class="pill">${esc(m.licence)}</span></div>${m.fit_note?`<div class="alert small">${esc(m.fit_note)}</div>`:""}<div class="muted small" style="margin-top:6px">Status: ${esc(m.verified)}</div></div>`).join("");
+function reqTable(rm) { if (!rm) return ""; const g = x => ({recommended:"ok", minimum:"warn", below:"bad", optional:""}[x]||""); const w = x => ({recommended:"meets recommended", minimum:"meets minimum", below:"below minimum", optional:"optional"}[x]||x); return `<details style="margin-top:8px"><summary class="small muted" style="cursor:pointer">Requirements · <span class="pill ${g(rm.overall)}">${esc(w(rm.overall))}</span></summary><table class="req"><tr><th></th><th>Minimum</th><th>Recommended</th><th>This machine</th></tr>${rm.rows.map(r=>`<tr><td>${esc(r.what)}</td><td>${esc(r.minimum)}</td><td>${esc(r.recommended)}</td><td><span class="pill ${g(r.grade)}">${esc(r.have)}</span></td></tr>`).join("")}</table><p class="small muted" style="margin:6px 0 0">${esc(rm.summary)}</p></details>`; }
+function renderHome() { if (!S.caps) return; const c = S.caps; const setup = c.setup; const bg = c.background_engine.models.some(m=>m.installed);
+  const card = $("#setupcard");
+  if (!setup.ready) { const reco = c.models.find(m => m.name === setup.recommended_model); card.classList.remove("hidden");
+    card.innerHTML = `<h2>Set up this machine</h2><p class="big">${esc(c.hardware.cpu_name)} · ${c.hardware.ram_total_gib} GiB RAM${c.hardware.gpus.length?` · ${c.hardware.gpus.map(g=>esc(g.name)+(g.vram_gib?` (${g.vram_gib} GiB)`:"")).join(", ")}`:""}</p>
+      ${reco ? `<p>Recommended here: <b>${esc(modelLabel(reco))}</b> on the ${reco.device.toUpperCase()}${reco.fit_note?"":" (it fits)"}. ${esc(reco.requirements?.summary||"")}</p>` : `<p style="color:var(--bad)">No model in the catalogue fits this machine.</p>`}
+      ${setup.missing.length ? `<p>To download, once, from the original hosts, hash-verified: ${setup.missing.map(m=>`<b>${esc(m.display_name)}</b> (${mb(m.bytes)}, ${esc(m.licence)})`).join(" and ")}. Total ${mb(setup.missing_bytes)}. After that everything runs offline.</p><div class="row"><button class="btn primary" onclick="installAll()">Download and set up (${mb(setup.missing_bytes)})</button><a class="btn" href="#settings" onclick="showTab('settings')">Choose yourself under Settings</a></div>` : ""}
+      ${!setup.torch_ok ? `<div class="alert bad">PyTorch is not importable: ${esc(c.runtime.torch.error)}</div>` : ""}
+      <div id="setuptasks" class="small" style="margin-top:8px"></div>`; }
+  else { card.classList.add("hidden"); }
+  const std = c.models.find(m=>m.name===setup.recommended_model) || c.models.find(m=>m.tier==="standard");
+  const steps = [
+    [setup.torch_ok, `PyTorch runtime ${c.runtime.torch.installed?`${c.runtime.torch.version} (${c.runtime.torch.flavor})`:"is not importable"}`, ""],
+    [std && std.installed, `Download ${std?esc(modelLabel(std)):"a model"} (${std?std.download_gib:"?"} GiB, ${std?esc(std.licence):""})`, std && !std.installed ? `<button class="btn sm primary" onclick="installComp('${std.name}')">Download</button>` : ""],
+    [bg, "Download a background-removal model (IS-Net, 170 MB, Apache-2.0)", bg ? "" : `<button class="btn sm primary" onclick="installComp('isnet-general-use')">Download</button>`],
+    [setup.first_run_done, "Reconstruct your first object", setup.first_run_done ? "" : `<button class="btn sm" onclick="showTab('create')">Open Create</button> <button class="btn sm" onclick="useSample('box'); showTab('create')">Try the sample box</button>`],
+    [setup.measured, setup.measured ? "Estimates are measured from your own runs" : "Estimates become measured after your first reconstruction (or run the benchmark under Settings)", ""]];
+  $("#guide").innerHTML = steps.map(([ok, t, act]) => `<li class="${ok?"done":""}"><span class="step">${ok?"✓ ":""}${t}</span>${act}</li>`).join("");
+  const order = [...c.models].sort((a,b) => (b.recommended - a.recommended) || (b.fits_this_machine - a.fits_this_machine) || (a.quality_rank - b.quality_rank));
+  $("#tiers").innerHTML = order.map(m => `<div class="card ${m.recommended?"reco":""} ${m.fits_this_machine?"":"dim"}"><h3>${esc(modelLabel(m))} ${m.recommended?`<span class="pill reco">Recommended for this machine</span>`:""}</h3><p class="small">${esc(m.description)}</p><div class="small row"><span class="pill ${m.installed?"ok":""}">${m.installed?"downloaded":`${m.download_gib} GiB to download`}</span> <span class="pill ${m.fits_this_machine?"ok":"bad"}">${m.fits_this_machine?`fits · runs on ${m.device.toUpperCase()}`:"does not fit this machine"}</span> <span class="pill">${esc(m.licence)}</span>${m.measured_runs?` <span class="pill ok">measured here: ${m.measured_runs} run${m.measured_runs>1?"s":""}</span>`:""}</div>${m.fit_note?`<div class="alert small">${esc(m.display_name)} ${esc(m.fit_note)}.</div>`:""}${reqTable(m.requirements_met)}<div class="muted small" style="margin-top:6px">${esc(m.verified)}</div></div>`).join("");
 }
+window.installAll = async () => { const s = S.caps.setup; const ok = await ask("Download and set up", `<p>These files are fetched once from their original hosts and SHA-256 verified:</p><ul class="small">${s.missing.map(m=>`<li><b>${esc(m.display_name)}</b> · ${mb(m.bytes)} · ${esc(m.licence)}</li>`).join("")}</ul><p>Total ${mb(s.missing_bytes)}. Nothing else is fetched; after this the studio runs offline.</p>`, [{label:"Cancel"},{label:"Download", value:true, primary:true}]); if (!ok) return; try { for (const m of s.missing) await post("/api/models/download", {name: m.name, consent: true}); toast("Downloads started"); watchTasks(); } catch (e) { toast(e.message, 8000); } };
 // ---------- settings
+function rtStateHtml(ov, cmp) { if (!ov) return ""; const r = cmp && cmp.can_restart ? ` <button class="btn sm primary" onclick="restartStudio()">Restart now</button>` : " Close the studio and start it again.";
+  if (ov.state === "pending_restart") return `<div class="alert">The CUDA build of PyTorch is unpacked (${esc(ov.wheel||"")}). One more step: restart the studio, and reconstructions use the GPU.${r}</div>`;
+  if (ov.state === "not_loaded") return `<div class="alert bad">The CUDA build is unpacked but did not load: ${esc(ov.detail||"")}. The bundled CPU build is in use. Remove it under Models, tools and runtime, or report the problem.</div>`;
+  if (ov.state === "active" && ov.detail) return `<div class="alert">${esc(ov.detail)}</div>`;
+  if (ov.state === "active") return `<div class="alert ok">The CUDA build of PyTorch is active on ${esc(ov.device||"the GPU")}; reconstructions run on the GPU when the model fits its memory.</div>`;
+  return ""; }
 async function loadSettings() {
   const c = S.caps || await api("/api/capabilities"); const h = c.hardware, t = c.runtime.torch;
-  $("#hw").innerHTML = `<span>CPU</span><span>${esc(h.cpu_name)} · ${h.physical_cores} cores / ${h.logical_cores} threads</span><span>RAM</span><span>${h.ram_total_gib} GiB total · ${h.ram_available_gib} GiB free now</span><span>GPU</span><span>${h.gpus.length?h.gpus.map(g=>`${esc(g.name)} [${g.kind}${g.vram_gib?`, ${g.vram_gib} GiB`:""}]`).join("<br>"):"none found"}</span><span>PyTorch</span><span>${t.installed?`${t.version} · ${t.flavor}${t.cuda_available?` · CUDA ${t.cuda_version} on ${esc(t.device_name)} (${t.device_vram_gib} GiB)`:""}${t.from_runtime_dir?" · from the studio's runtime folder":""}`:`not importable: ${esc(t.error)}`}</span><span>Memory budget</span><span>${c.config.memory_budget_gib} GiB for the CPU path</span>`;
-  const p = c.profile; $("#profile").innerHTML = p ? `Measured ${esc(p.measured_at)}: ${esc(p.model)} on ${p.device}, ${p.resolution}³ grid: wall ${human(p.wall_seconds)} (load ${human(p.load_seconds)}, network ${human(p.network_seconds)}, grid ${human(p.grid_seconds)}), peak ${p.peak_rss_gib} GiB, ${p.vertices?.toLocaleString()} vertices. Expected now: ${Object.entries(p.expected_seconds_per_preset).map(([k,v])=>`${k} ${human(v)}`).join(" · ")}` : `<span class="muted">No benchmark yet: estimates are heuristics labelled "not measured yet".</span>`;
+  $("#hw").innerHTML = `<span>CPU</span><span>${esc(h.cpu_name)} · ${h.physical_cores} cores / ${h.logical_cores} threads</span><span>RAM</span><span>${h.ram_total_gib} GiB total · ${h.ram_available_gib} GiB free now</span><span>GPU</span><span>${h.gpus.length?h.gpus.map(g=>`${esc(g.name)} [${g.kind}${g.vram_gib?`, ${g.vram_gib} GiB`:""}]`).join("<br>"):"none found"}</span><span>PyTorch</span><span>${t.installed?`${t.version} · ${t.flavor}${t.cuda_available?` · CUDA ${t.cuda_version} on ${esc(t.device_name)} (${t.device_vram_gib} GiB)`:""}${t.from_runtime_dir?" · loaded from the studio's runtime folder":" · the bundled build"}`:`not importable: ${esc(t.error)}`}</span><span>Memory budget</span><span>${c.config.memory_budget_gib} GiB for the CPU path</span>`;
+  $("#rtstate").innerHTML = rtStateHtml(c.runtime.override, {can_restart: !!desktop()});
+  const p = c.profile; $("#profile").innerHTML = p ? `Measured ${esc(new Date(p.measured_at).toLocaleString())} (${esc(p.source||"benchmark")}): ${esc(p.model)} on ${p.device}, ${p.resolution}³ grid: wall ${human(p.wall_seconds)} (load ${human(p.load_seconds)}, network ${human(p.network_seconds)}, grid ${human(p.grid_seconds)})${p.peak_rss_gib?`, peak ${p.peak_rss_gib} GiB`:""}, ${p.vertices?.toLocaleString()} vertices. Expected now: ${Object.entries(p.expected_seconds_per_preset).map(([k,v])=>`${k} ${human(v)}`).join(" · ")}` : `<span class="muted">Nothing measured yet: estimates are heuristics labelled "not measured yet". Your first reconstruction measures them; the benchmark does the same with a built-in test image.</span>`;
   const cfg = c.config; $("#device").value = cfg.device; $("#memlimit").value = cfg.max_memory_gib ?? ""; $("#threads").value = cfg.default_threads ?? ""; $("#overbudget").classList.toggle("on", cfg.allow_over_budget); $("#paused").classList.toggle("on", cfg.paused);
   const a = await api("/api/about"); $("#about").innerHTML = `${esc(a.product)} ${esc(a.version)} · ${esc(a.licence)} · <a href="${a.homepage}" target="_blank" rel="noopener">website</a> · <a href="${a.source}" target="_blank" rel="noopener">source</a><br>MCP server command: <code>${esc(a.mcp_command)}</code><br>Data folder: <code>${esc(c.paths.data_dir)}</code><br>${esc(a.credit)}`;
   loadComponents(); loadProjects().then(renderProjects); loadTrash();
 }
-async function loadComponents() { const j = await api("/api/components"); S.comps = j.components; const tb = $("#comps tbody"); tb.innerHTML = S.comps.map(cmp => { const inst = cmp.installed; let action = "";
-    if (cmp.kind==="runtime") { const ci = cmp.cuda_install||{}; action = cmp.cuda ? `<span class="pill ok">CUDA active</span>` : !cmp.nvidia_gpu ? `<span class="muted small">CPU build; no NVIDIA GPU found, so the CUDA build is not offered</span>` : ci.possible ? `<button class="btn sm" onclick="installRuntime()">Install CUDA build…</button>` : `<span class="muted small">${esc(ci.reason||"")}</span>`; if (cmp.runtime_installed) action += ` <button class="btn sm" onclick="removeComp('runtime','torch')">Remove</button>`; }
-    else action = inst ? `<button class="btn sm" onclick="reveal('${esc(cmp.path).replace(/\\/g,"\\\\")}')">Show</button> <button class="btn sm danger" ${cmp.in_use?"disabled":""} onclick="removeComp('${cmp.kind}','${cmp.name}')">Remove</button>` : `<button class="btn sm primary" onclick="installComp('${cmp.name}')">Install…</button>`;
-    const status = cmp.kind==="runtime" ? (inst?`${cmp.flavor}${cmp.device?` · ${esc(cmp.device)}`:""}`:"not importable") : inst ? `<span class="pill ok">installed</span>` : `<span class="pill">not downloaded</span>`;
-    return `<tr><td><b>${esc(cmp.display_name)}</b>${cmp.verified?`<div class="muted small">${esc(cmp.verified)}</div>`:""}${cmp.note?`<div class="muted small">${esc(cmp.note)}</div>`:""}</td><td>${esc(cmp.tier)}</td><td>${esc(cmp.licence)}</td><td class="mono">${cmp.size?gib(cmp.size):"—"}</td><td>${status}</td><td class="row">${action}</td></tr>`; }).join(""); }
-window.installComp = async name => { const info = await api("/api/models/download?name="+name); const ok = await ask(`Download ${info.display_name}`, `<p>${esc(info.licence)} · ${info.total_gib} GiB total. Files, from their original hosts, SHA-256 verified:</p><ul class="small">${info.files.map(f=>`<li><code>${esc(f.filename)}</code> ${f.size_gib} GiB<br><span class="muted">${esc(f.source)} · sha256 ${f.sha256.slice(0,16)}…</span></li>`).join("")}</ul>${info.verified?`<p><b>Status:</b> ${esc(info.verified)}</p>`:""}${info.note?`<p>${esc(info.note)}</p>`:""}<p>Nothing else is fetched; after this the model runs offline.</p>`, [{label:"Cancel"},{label:"Download", value:true, primary:true}]); if (!ok) return; try { await post("/api/models/download", {name, consent:true}); toast("Download started"); watchTasks(); } catch (e) { toast(e.message); } };
-window.installRuntime = async () => { const rt = await api("/api/runtime"); const ci = rt.cuda_install; const ok = await ask("Install the CUDA build of PyTorch", `<p>Method: <b>${esc(ci.method)}</b>${ci.gib?` · about ${ci.gib} GiB`:""}.</p><p>${esc(ci.note||"")}</p>${ci.wheel?`<p class="small mono">${esc(ci.wheel)}<br>sha256 ${esc(ci.sha256)}</p>`:""}<p>Pinned PyTorch ${esc(rt.pinned_version)} (${esc(rt.cuda_label)}), BSD-3-Clause; the CUDA libraries inside are under NVIDIA's EULA. Not yet verified by this project on a GPU machine: please report what you see.</p>`, [{label:"Cancel"},{label:"Install", value:true, primary:true}]); if (!ok) return; try { await post("/api/runtime/install", {consent:true}); toast("Runtime install started"); watchTasks(); } catch (e) { toast(e.message, 8000); } };
-window.removeComp = async (kind, name) => { if (!await ask("Remove", `<p>Delete the files of <b>${esc(name)}</b> from disk? You can download them again later.</p>`, [{label:"Cancel"},{label:"Remove", value:true, danger:true}])) return; try { const r = await post("/api/components/remove", {kind, name}); toast(`Removed, ${gib(r.freed_bytes)} freed`); loadComponents(); } catch (e) { toast(e.message); } };
+function compRow(cmp) { const inst = cmp.installed; let action = "", status = "";
+  if (cmp.kind==="runtime") { const ci = cmp.cuda_install||{}; const ov = cmp.override||{state:"none"};
+    if (cmp.cuda) { status = `<span class="pill ok">CUDA active</span> ${esc(cmp.device||"")}`; action = cmp.runtime_installed ? `<button class="btn sm" onclick="removeComp('runtime','torch')">Remove</button>` : ""; }
+    else if (ov.state === "pending_restart") { status = `<span class="pill warn">unpacked · restart to load</span>`; action = (cmp.can_restart ? `<button class="btn sm primary" onclick="restartStudio()">Restart now</button> ` : "") + `<button class="btn sm" onclick="removeComp('runtime','torch')">Remove</button>`; }
+    else if (ov.state === "not_loaded") { status = `<span class="pill bad">unpacked · did not load</span><div class="muted small">${esc(ov.detail||"")}</div>`; action = `<button class="btn sm" onclick="removeComp('runtime','torch')">Remove</button> <button class="btn sm" onclick="reportProblem()">Report</button>`; }
+    else if (!cmp.nvidia_gpu) { status = `<span class="pill">CPU build</span>`; action = `<span class="muted small">No NVIDIA GPU found, so the CUDA build is not offered.</span>`; }
+    else if (ci.possible) { status = `<span class="pill">CPU build</span>`; action = `<button class="btn sm primary" onclick="installRuntime()">Install CUDA build…</button>`; }
+    else { status = `<span class="pill">CPU build</span>`; action = `<span class="muted small">${esc(ci.reason||"")}</span>`; }
+    const note = cmp.nvidia_gpu && !cmp.cuda ? `<div class="muted small">This machine has ${esc(cmp.gpu_name||"an NVIDIA GPU")}. The CUDA build (about ${ci.gib||1.9} GiB) makes reconstructions run on it. After the download: restart once, then the planner picks the GPU whenever the model fits its memory.</div>` : "";
+    return `<tr><td><b>${esc(cmp.display_name)}</b>${note}</td><td>runtime</td><td>${esc(cmp.licence)}</td><td class="mono">${ci.gib && !cmp.cuda ? `${ci.gib} GiB` : "—"}</td><td>${status}</td><td class="act">${action}</td></tr>`; }
+  const fits = cmp.kind !== "model" || cmp.fits_this_machine;
+  if (inst) action = `<button class="btn sm" onclick="reveal('${esc(cmp.path).replace(/\\/g,"\\\\")}')">Show</button> <button class="btn sm danger" ${cmp.in_use?"disabled":""} onclick="removeComp('${cmp.kind}','${cmp.name}')">Remove</button>`;
+  else action = fits ? `<button class="btn sm primary" onclick="installComp('${cmp.name}')">Install…</button>` : `<button class="btn sm" onclick="installComp('${cmp.name}', true)">Install anyway…</button>`;
+  status = inst ? `<span class="pill ok">installed</span>` : `<span class="pill">not downloaded</span>`;
+  if (cmp.kind === "model") status += ` <span class="pill ${fits?"ok":"bad"}">${fits?`fits · ${esc(cmp.device||"").toUpperCase()}`:"does not fit"}</span>${cmp.recommended?` <span class="pill reco">recommended</span>`:""}`;
+  const rm = cmp.requirements_met; const req = rm ? `<div class="muted small">Minimum: ${rm.rows.map(r=>`${esc(r.what)} ${esc(r.minimum)}`).join(" · ")}. Recommended: ${rm.rows.map(r=>`${esc(r.what)} ${esc(r.recommended)}`).join(" · ")}. This machine: <b>${esc(rm.overall === "below" ? "below minimum" : rm.overall === "minimum" ? "meets minimum" : "meets recommended")}</b>${cmp.fit_note?` (${esc(cmp.fit_note)})`:""}.</div>` : "";
+  return `<tr><td><b>${esc(cmp.display_name)}</b>${cmp.note?`<div class="muted small">${esc(cmp.note)}</div>`:""}${req}${cmp.measured_runs?`<div class="muted small">measured on this machine: ${cmp.measured_runs} run${cmp.measured_runs>1?"s":""}</div>`:cmp.verified?`<div class="muted small">${esc(cmp.verified)}</div>`:""}</td><td>${esc(cmp.tier)}</td><td>${esc(cmp.licence)}</td><td class="mono">${cmp.size?gib(cmp.size):"—"}</td><td>${status}</td><td class="act">${action}</td></tr>`; }
+async function loadComponents() { const j = await api("/api/components"); S.comps = j.components; const tb = $("#comps tbody");
+  const installed = S.comps.filter(c => c.installed && c.kind !== "runtime"), available = S.comps.filter(c => !c.installed && c.kind !== "runtime"), rt = S.comps.filter(c => c.kind === "runtime");
+  const sect = (t, rows) => rows.length ? `<tr><td colspan="6" class="sect" style="border:0;padding-top:12px">${t}</td></tr>` + rows.map(compRow).join("") : "";
+  tb.innerHTML = sect("Installed", installed) + sect("Available to install", available) + sect("Runtime", rt); }
+window.installComp = async (name, anyway=false) => { const info = await api("/api/models/download?name="+name); const cmp = S.comps.find(c => c.name === name) || (S.caps && S.caps.models.find(m => m.name === name));
+  const warn = cmp && cmp.kind !== "tool" && cmp.fits_this_machine === false ? `<div class="alert bad"><b>This model will not run on this machine:</b> ${esc(cmp.display_name)} ${esc(cmp.fit_note||"")}. Downloading it only uses ${info.total_gib} GiB of disk.</div>` : "";
+  const ok = await ask(`Download ${info.display_name}`, `${warn}<p>${esc(info.licence)} · ${info.total_gib} GiB total. Files, from their original hosts, SHA-256 verified:</p><ul class="small">${info.files.map(f=>`<li><code>${esc(f.filename)}</code> ${f.size_gib} GiB<br><span class="muted">${esc(f.source)} · sha256 ${f.sha256.slice(0,16)}…</span></li>`).join("")}</ul>${info.note?`<p>${esc(info.note)}</p>`:""}<p>Nothing else is fetched; after this the model runs offline.</p>`, [{label:"Cancel"},{label: warn ? "Download anyway" : "Download", value:true, primary:!warn, danger:!!warn}]); if (!ok) return; try { await post("/api/models/download", {name, consent:true}); toast("Download started"); watchTasks(); } catch (e) { toast(e.message); } };
+window.installRuntime = async () => { const rt = await api("/api/runtime"); const ci = rt.cuda_install; const ok = await ask("Install the CUDA build of PyTorch", `<p>Pinned PyTorch ${esc(rt.pinned_version)} (${esc(rt.cuda_label)}), BSD-3-Clause; the CUDA libraries inside are under NVIDIA's EULA.${ci.gib?` About ${ci.gib} GiB.`:""}</p><p><b>What happens:</b></p><ol class="small">${(ci.steps||[]).map(s=>`<li>${esc(s)}</li>`).join("")}</ol>${ci.wheel?`<p class="small mono">${esc(ci.wheel)}<br>sha256 ${esc(ci.sha256)}</p>`:""}<p class="small muted">Not yet verified by this project on a GPU machine: please report what you see.</p>`, [{label:"Cancel"},{label:"Install", value:true, primary:true}]); if (!ok) return; try { await post("/api/runtime/install", {consent:true}); toast("Runtime install started"); watchTasks(); } catch (e) { toast(e.message, 8000); } };
+window.restartStudio = async () => { if (!await ask("Restart the studio", "<p>The window closes and opens again in a few seconds. Queued jobs wait; a running job blocks the restart.</p>", [{label:"Cancel"},{label:"Restart", value:true, primary:true}])) return; try { const r = desktop() ? await desktop().restart() : await post("/api/restart"); if (!r.restarted) toast(r.reason || "not restarted", 8000); } catch (e) { toast(e.message, 8000); } };
+window.removeComp = async (kind, name) => { if (!await ask("Remove", `<p>Delete the files of <b>${esc(name)}</b> from disk? You can download them again later.</p>`, [{label:"Cancel"},{label:"Remove", value:true, danger:true}])) return; try { const r = await post("/api/components/remove", {kind, name}); toast(`Removed, ${gib(r.freed_bytes)} freed`); S.caps = await api("/api/capabilities"); loadSettings(); fillTiers(); refreshPlan(); } catch (e) { toast(e.message); } };
 window.reveal = async path => { try { await post("/api/reveal", {path}); } catch (e) { toast(e.message); } };
-let taskTimer; async function watchTasks() { clearTimeout(taskTimer); const t = await api("/api/tasks"); S.tasks = t; const rows = Object.values(t); $("#tasks").innerHTML = rows.map(x => `${esc(x.label)}: ${x.status}${x.progress!=null?` ${Math.round(x.progress*100)}%`:""}${x.current_file?` · ${esc(x.current_file)}`:""}${x.message?` · ${esc(x.message)}`:""}${x.error?` · <span style="color:var(--bad)">${esc(x.error)}</span>`:""}`).join("<br>"); if (rows.some(x=>x.status==="running")) taskTimer = setTimeout(watchTasks, 1500); else { loadComponents(); S.caps = await api("/api/capabilities"); fillTiers(); refreshPlan(); } }
+window.reportProblem = async jobId => { const r = await api("/api/report" + (jobId ? `?job=${jobId}` : "")); const url = `${r.issues_url}?title=${encodeURIComponent(r.title)}&body=${encodeURIComponent(r.body.slice(0, 6000))}`;
+  const v = await ask("Report a problem", `<p>This is everything the report contains. Read it; nothing is sent until you open the issue page and press Submit there.</p><pre>${esc(r.body)}</pre>`, [{label:"Close"},{label:"Copy text", value:"copy"},{label:"Open GitHub issue", value:"open", primary:true}]);
+  if (v === "copy") { try { await navigator.clipboard.writeText(`${r.title}\n\n${r.body}`); toast("Copied"); } catch { toast("Copy failed; select the text instead"); } }
+  if (v === "open") window.open(url, "_blank", "noopener"); };
+$("#reportbtn").onclick = () => reportProblem();
+let taskTimer; async function watchTasks() { clearTimeout(taskTimer); const t = await api("/api/tasks"); S.tasks = t; const rows = Object.values(t); const html = rows.map(x => `${esc(x.label)}: ${x.status}${x.progress!=null?` ${Math.round(x.progress*100)}%`:""}${x.current_file?` · ${esc(x.current_file)}`:""}${x.message?` · ${esc(x.message)}`:""}${x.error?` · <span style="color:var(--bad)">${esc(x.error)}</span>`:""}${x.kind==="runtime"&&x.status==="done"&&desktop()?` <button class="btn sm primary" onclick="restartStudio()">Restart now</button>`:""}`).join("<br>"); $("#tasks").innerHTML = html; const st = $("#setuptasks"); if (st) st.innerHTML = html;
+  if (rows.some(x=>x.status==="running")) taskTimer = setTimeout(watchTasks, 1500); else { S.caps = await api("/api/capabilities"); fillTiers(); refreshPlan(); renderHome(); if ($("#settings").classList.contains("active")) loadComponents(); } }
 $("#bench").onclick = async () => { try { await post("/api/benchmark", {preset:"fast"}); $("#benchnote").textContent = "running: one fast reconstruction of the built-in test image…"; watchTasks(); const wait = setInterval(async () => { const t = await api("/api/tasks"); if (t.benchmark && t.benchmark.status!=="running") { clearInterval(wait); $("#benchnote").textContent = t.benchmark.error || "done"; S.caps = await api("/api/capabilities"); loadSettings(); } }, 2000); } catch (e) { toast(e.message, 8000); } };
 $("#overbudget").onclick = () => $("#overbudget").classList.toggle("on"); $("#paused").onclick = () => $("#paused").classList.toggle("on");
 $("#saveprefs").onclick = async () => { try { await post("/api/config", {device: $("#device").value, max_memory_gib: $("#memlimit").value || null, default_threads: $("#threads").value || null, allow_over_budget: $("#overbudget").classList.contains("on"), paused: $("#paused").classList.contains("on")}); $("#prefnote").textContent = "saved"; S.caps = await api("/api/capabilities"); refreshPlan(); pollJobs(); } catch (e) { $("#prefnote").textContent = e.message; } };

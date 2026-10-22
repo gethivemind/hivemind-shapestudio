@@ -98,6 +98,12 @@ def cmd_doctor(args: argparse.Namespace) -> int:
             print(f"  CUDA: {t['device_name']}")
     else:
         print(f"  PyTorch: NOT importable ({t['error']})")
+    ov = rt.get("override") or {}
+    if ov.get("state") not in (None, "none"):
+        print(
+            f"  CUDA build override: {ov['state']}"
+            + (f" ({ov['detail']})" if ov.get("detail") else "")
+        )
     ci = rt["cuda_install"]
     if ci.get("possible"):
         size = f"about {ci['gib']} GiB" if ci.get("gib") else "size: see note"

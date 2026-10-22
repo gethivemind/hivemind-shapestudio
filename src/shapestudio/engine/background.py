@@ -15,7 +15,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from shapestudio.engine.base import EngineError, EngineResult, Progress, ProgressFn
+from shapestudio.engine.base import BackgroundResult, EngineError, Progress, ProgressFn
 
 
 @dataclass
@@ -71,7 +71,7 @@ class BackgroundEngine:
 
     def remove_background(
         self, spec: BackgroundSpec, on_progress: ProgressFn | None = None
-    ) -> EngineResult:
+    ) -> BackgroundResult:
         np, _ort, image_mod = _ensure_runtime()
         t0 = time.monotonic()
         if on_progress:
@@ -108,10 +108,10 @@ class BackgroundEngine:
         t2 = time.monotonic()
         if on_progress:
             on_progress(Progress("saving", 1, 1))
-        return EngineResult(
+        return BackgroundResult(
             output=spec.output,
             load_seconds=t1 - t0,
-            sampling_seconds=t2 - t1,
+            matte_seconds=t2 - t1,
             total_seconds=t2 - t0,
             log_tail=[f"{spec.model_name} {size}px matte"],
         )

@@ -46,6 +46,32 @@ class Preset:
 
 
 @dataclass(frozen=True)
+class Requirements:
+    """What a model needs, stated as minimum and recommended so the UI can show both next
+    to the model and mark which this machine meets. Memory figures are for the ``best``
+    preset; ``min`` is what the ``fast`` preset gets by without swapping."""
+
+    min_ram_gib: float  # CPU path, or system RAM alongside a GPU run
+    rec_ram_gib: float
+    min_vram_gib: float  # 0 = the GPU path is not offered
+    rec_vram_gib: float
+    cpu_ok: bool
+    gpu_required: bool
+    summary: str  # one sentence, for the cards
+
+    def to_dict(self) -> dict:
+        return {
+            "min_ram_gib": self.min_ram_gib,
+            "rec_ram_gib": self.rec_ram_gib,
+            "min_vram_gib": self.min_vram_gib,
+            "rec_vram_gib": self.rec_vram_gib,
+            "cpu_ok": self.cpu_ok,
+            "gpu_required": self.gpu_required,
+            "summary": self.summary,
+        }
+
+
+@dataclass(frozen=True)
 class MeshModel:
     """An image-to-3D model the studio can run.
 
@@ -71,6 +97,7 @@ class MeshModel:
     engine: str = "triposr"
     note: str = ""
     extra_runtime: tuple[str, ...] = field(default_factory=tuple)  # packages not bundled
+    requirements: Requirements | None = None
 
     @property
     def download_bytes(self) -> int:
@@ -140,9 +167,20 @@ TRIPOSR = MeshModel(
     weights_bytes_in_memory=1677246742,  # fp32 state dict as shipped
     cpu_capable=True,
     min_vram_bytes=4 * GIB,
-    verified="tests only (fake engine); the real model has not been run by this project yet",
+    verified="runs end to end in this project's tests; the first real run with the "
+    "downloaded weights on your machine is what makes the estimates measured",
     engine="triposr",
     note="1.56 GiB download. The reconstruction code is vendored under engine/tsr (MIT).",
+    requirements=Requirements(
+        min_ram_gib=8,
+        rec_ram_gib=16,
+        min_vram_gib=4,
+        rec_vram_gib=6,
+        cpu_ok=True,
+        gpu_required=False,
+        summary="Any 64-bit PC with 8 GiB of RAM runs it on the CPU; 16 GiB keeps the best "
+        "preset out of swap. An NVIDIA GPU with 4 GiB or more makes it much faster.",
+    ),
 )
 
 
@@ -294,6 +332,16 @@ TRELLIS = MeshModel(
         "spconv",
         "xformers or flash-attn",
         "nvdiffrast",
+    ),
+    requirements=Requirements(
+        min_ram_gib=16,
+        rec_ram_gib=32,
+        min_vram_gib=16,
+        rec_vram_gib=24,
+        cpu_ok=False,
+        gpu_required=True,
+        summary="Needs a discrete NVIDIA GPU with 16 GiB of memory or more (24 GiB "
+        "recommended) and the CUDA build of PyTorch. There is no CPU path.",
     ),
 )
 

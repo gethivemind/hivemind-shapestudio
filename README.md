@@ -54,8 +54,9 @@ accounts.
 
 **Measured, not promised.** Every time estimate comes from runs on your machine (per model,
 per device) and is labelled `not measured yet` until the first one. This README contains no
-timing claim this project has not measured: as of 0.1.1 the real model has not been run by
-the project yet (see Status).
+timing claim this project has not measured. As of 0.1.6 the real TripoSR weights have been
+loaded on a user's GPU laptop (the run surfaced two bugs, both fixed in 0.1.6); a complete
+measured reconstruction is still to be reported (see Status).
 
 ## Status, stated plainly
 
@@ -63,9 +64,10 @@ the project yet (see Status).
 | --- | --- |
 | Queue, planner, tiers, consented downloads, UI, CLI, MCP server, GLB/OBJ writer, turntable | Proven by the test suite with a fake engine (no weights needed) |
 | Vendored TripoSR code (no `torchmcubes`, `transformers`, `einops`, `omegaconf`) | Runs end to end on random weights; the DINO ViT matches the reference implementation exactly at 224 px and to 1e-2 at 512 px (interpolation recipe); parameter names match the published checkpoint layout |
-| TripoSR with the real `model.ckpt` | **Not run by this project yet.** First real run planned on a GPU machine; the engine loads strictly and reports any mismatch by name |
+| TripoSR with the real `model.ckpt` | **Loaded on a user's machine (0.1.5, GTX 1660 Ti laptop); the run then failed in the background remover, fixed in 0.1.6.** A complete measured reconstruction is still to be reported; the first one writes the machine's profile automatically |
 | TRELLIS engine | **Not integrated.** Catalogue entry, hash pins, fit check and planner tier exist; the engine refuses with the reason until verified on a 16 GB NVIDIA GPU |
-| CUDA runtime download for the packaged Windows app | Written, **not verified on a GPU machine** |
+| CUDA runtime download for the packaged Windows app | Download and unpack verified by a user (0.1.5). Loading it was broken until 0.1.6 (the launcher never activated it); Settings now shows whether the unpacked build loaded, **GPU run still to be confirmed** |
+| Minimum and recommended requirements per model | Stated in the catalogue and checked against the machine (0.1.6): TripoSR 8 GiB RAM minimum, 16 recommended, NVIDIA 4 GiB optional; TRELLIS NVIDIA 16 GiB minimum, 24 recommended, no CPU path |
 | Windows installer, portable zip, MSIX, macOS and Linux builds | Built by the release workflow on GitHub's runners |
 
 ## Sizes, stated plainly
@@ -137,27 +139,39 @@ shapestudio install-runtime --cuda --yes
 ```
 
 installs the pinned CUDA build of PyTorch (pip into the same interpreter; in the packaged
-Windows app a hash-verified wheel unpacked under the data folder). It is offered, never
-automatic, and `doctor` says which build actually loaded.
+Windows app a hash-verified wheel unpacked under the data folder, or Settings → Install CUDA
+build). Then restart the studio. It is offered, never automatic, and `doctor` and Settings
+say which build actually loaded and from where.
 
 The GitHub Releases of this repository and the `presidium-shapestudio` package on PyPI are the
 official builds (see NOTICE and TRADEMARK.md).
 
 ## The app
 
-- **Home**: a getting-started checklist (runtime, model, background model, first mesh,
-  benchmark), the two tiers with their state on this machine, and the policy.
-- **Create**: drop a picture, pick a tier and preset, see the expected time and a load meter
-  before you commit, reconstruct. The queue shows every job with its phase and an honest ETA
-  (or "measuring" once the estimate is spent).
+- **Home**: on a fresh machine a setup card names the model recommended for this hardware
+  and the background model, with sizes, and one button downloads both; then a checklist with
+  buttons (first mesh, try the sample box), the models sorted by fit with minimum and
+  recommended requirements against this machine, and the policy.
+- **Create**: drop one picture or several, or pick a built-in sample (sphere, box, mug);
+  choose among the downloaded models (the others are named below with their fit and size),
+  a preset, a surface grid capped at what fits this machine's memory; see the expected time
+  and a load meter before you commit. One compact note explains the choice, with buttons for
+  what would help (download the model, install the CUDA build). The queue shows every job
+  with its picture, phase and an honest ETA; a failed job offers "Report".
 - **Gallery**: every mesh with a 3D viewer ([model-viewer](https://modelviewer.dev/),
   Apache-2.0, loaded from jsdelivr pinned to 4.1.0; offline the PNG turntable is shown
-  instead), downloads (GLB, OBJ, turntable), favourites, notes, projects (named series with
-  one-zip export), select several for a zip or the trash, trash with restore.
-- **Settings**: hardware and runtime, benchmark and the measured profile, every model and
-  tool with licence, size, status and Install/Show/Remove (install dialogs show the files,
-  sizes, sources and SHA-256), preferences (device, memory limit, threads, over-budget
-  unlock, pause), projects, trash, about (with the MCP command).
+  instead), downloads (GLB, OBJ, turntable), mesh tools (STL for printing scaled to a size
+  in mm, lighter mesh, smooth, flip normals, scale; each a new file next to the original),
+  favourites, notes, projects (named series with one-zip export), select several for a zip
+  or the trash, trash with restore.
+- **Settings**: hardware, which PyTorch loaded and from where, the state of the CUDA build
+  (unpacked and waiting for a restart, active, or did not load and why) with Restart now;
+  benchmark and the measured profile (written by your first reconstruction anyway); the
+  components in three groups, Installed, Available to install and Runtime, each model with
+  its minimum and recommended requirements against this machine, licence, size, status and
+  Install/Show/Remove (install dialogs show the files, sizes, sources and SHA-256; a model
+  that does not fit asks "Download anyway"); preferences (device, memory limit, threads,
+  over-budget unlock, pause), projects, trash, "Report a problem", about.
 
 Dark and light themes in the Presidium palette (Shape Studio coral #D5582F), phone-friendly layout, the Presidium spinner while a job runs.
 
@@ -218,7 +232,8 @@ folder is `%LOCALAPPDATA%\shapestudio` (Windows), `~/Library/Application Support
 
 ## Roadmap
 
-1. First real TripoSR run on a GPU machine; measured numbers into this README and the site.
+1. First complete TripoSR run reported from a GPU machine (0.1.6 fixed what stopped the first
+   attempt); measured numbers into this README and the site.
 2. TRELLIS engine integration behind the existing tier (CUDA stack packaging).
 3. Texture baking (UV atlas) in addition to vertex colours.
-4. Multi-view input and mesh clean-up (hole filling, decimation presets).
+4. Multi-view input; quadric decimation and hole filling next to the 0.1.6 mesh tools.

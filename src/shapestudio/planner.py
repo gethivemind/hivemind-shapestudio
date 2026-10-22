@@ -34,6 +34,8 @@ class PlanError(ValueError):
     pass
 
 
+CUDA_RUNTIME_MISSING = "needs the CUDA build of PyTorch, which is not installed yet"
+
 UNLOCK_HINT = (
     "Over-budget runs are locked by default. To try anyway, set "
     'SHAPESTUDIO_ALLOW_OVER_BUDGET=1 or put {"allow_over_budget": true} in config.json '
@@ -112,6 +114,7 @@ class Plan:
     load: Load | None = None
     over_budget: bool = False
     remove_background: bool = True
+    hints: dict = field(default_factory=dict)  # machine-readable: what would help
 
     def to_dict(self) -> dict:
         return {
@@ -130,6 +133,7 @@ class Plan:
             "load": self.load.to_dict() if self.load else None,
             "over_budget": self.over_budget,
             "verified": self.model.verified,
+            "hints": dict(self.hints),
         }
 
 
@@ -179,16 +183,31 @@ def fit_for(
         g = cuda_gpu(hw)
         if g is None:
             reason = "needs an NVIDIA GPU and this machine has none"
-        elif not cuda_runtime:
-            reason = "the CUDA runtime is not installed (shapestudio install-runtime --cuda)"
         elif model.min_vram_bytes and (g.vram_bytes or 0) < model.min_vram_bytes:
+            # the hardware verdict first: installing the CUDA build would not change it
             reason = (
                 f"needs a GPU with at least {model.min_vram_bytes / GIB:.0f} GiB of memory; "
                 f"{g.name} has {(g.vram_bytes or 0) / GIB:.0f} GiB"
             )
+        elif not cuda_runtime:
+            reason = CUDA_RUNTIME_MISSING
     elif not model.cpu_capable:
-        reason = f"{model.display_name} has no CPU path"
+        reason = "has no CPU path"
     return Fit(model, device, need, budget, reason)
+
+
+def max_fitting_resolution(
+    model: MeshModel, hw: Hardware, device: str, cap_bytes: int | None = None
+) -> int:
+    """The finest grid (a multiple of the step) whose working memory still fits the budget
+    on ``device``; MIN_RESOLUTION when nothing fits. Lets the UI cap its slider instead of
+    offering grids that will swap or be refused."""
+    budget = memory_budget(hw, device, cap_bytes)
+    best = MIN_RESOLUTION
+    for r in range(MIN_RESOLUTION, MAX_RESOLUTION + 1, RESOLUTION_STEP):
+        if required_bytes(model, device, r) <= budget:
+            best = r
+    return best
 
 
 def snap_resolution(value: int) -> int:
@@ -240,7 +259,8 @@ class Planner:
 
     def resolve_model(self, name: str | None, resolution: int) -> tuple[MeshModel, str | None]:
         """``None``/``"auto"`` picks the strongest catalogue model that is installed and fits;
-        failing that, the strongest installed one; failing that, the strongest that fits.
+        failing that, the strongest that fits this machine (the plan then says it is not
+        downloaded, which is one click to fix); failing that, the strongest installed one.
         A tier name (``best``, ``standard``) is accepted in place of a model name. The
         second value explains the choice when it is not the strongest model."""
         if name and name not in ("auto", "best-available"):
@@ -258,10 +278,10 @@ class Planner:
             if self.store.model_installed(m) and self.device_for(m, resolution)[1].fits:
                 return m, self._why_not_top(m, top, resolution)
         for m in ranked:
-            if self.store.model_installed(m):
+            if self.device_for(m, resolution)[1].fits:
                 return m, self._why_not_top(m, top, resolution)
         for m in ranked:
-            if self.device_for(m, resolution)[1].fits:
+            if self.store.model_installed(m):
                 return m, self._why_not_top(m, top, resolution)
         return ranked[-1], self._why_not_top(ranked[-1], top, resolution)
 
@@ -310,6 +330,7 @@ class Planner:
         res = res0 or preset.resolution
         device, fit = self.device_for(model, res)
         warnings: list[str] = []
+        hints: dict = {}
         over_budget = False
         if not fit.fits:
             if fit.reason:
@@ -342,10 +363,16 @@ class Planner:
             )
         if device == "cpu" and cuda_gpu(self.hw) and not self.cuda_runtime:
             warnings.append(
-                f"This machine has an NVIDIA GPU ({cuda_gpu(self.hw).name}); the CUDA runtime "
-                "is not installed, so the reconstruction runs on the CPU. `shapestudio "
-                "install-runtime --cuda` offers the download."
+                f"This machine has an NVIDIA GPU ({cuda_gpu(self.hw).name}), but the CUDA "
+                "build of PyTorch is not installed, so this runs on the CPU. Installing the "
+                "CUDA build (Settings, or `shapestudio install-runtime --cuda`) makes it much "
+                "faster."
             )
+            hints["install_cuda_runtime"] = True
+        if not installed:
+            hints["install_model"] = model.name
+        if device == "cpu" and self.hw.ram_available_bytes < fit.required_bytes:
+            hints["low_free_ram"] = True
         load = Load(fit.required_bytes, fit.budget_bytes, available, device)
         return Plan(
             model=model,
@@ -360,6 +387,7 @@ class Planner:
             load=load,
             over_budget=over_budget,
             remove_background=remove_background,
+            hints=hints,
         )
 
     def preset_table(self, model: MeshModel) -> list[dict]:

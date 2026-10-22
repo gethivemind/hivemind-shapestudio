@@ -4,6 +4,63 @@ All notable changes to Presidium Shape Studio. The format follows Keep a Changel
 follow semantic versioning. Official builds: GitHub Releases and the `presidium-shapestudio`
 package on PyPI.
 
+## 0.1.6 — 2026-10-22
+
+The first run on a real GPU laptop (GTX 1660 Ti, 6 GiB; 16 GiB RAM) found two blocking bugs
+and a screen full of things that misled. This release fixes all of them and adds what that
+first user needed.
+
+### Fixed
+- **Every real reconstruction failed** with `EngineResult.__init__() got an unexpected keyword
+  argument 'output'`: the background remover (copied from Image Studio) returned Image Studio's
+  result type. It has its own `BackgroundResult` now, and a test runs the real remover with a
+  stub ONNX session.
+- **The CUDA build never loaded in the desktop app.** "Install CUDA build" downloaded and
+  unpacked the wheel, but the window launcher never called `activate_runtime`, so after the
+  restart the bundled CPU build loaded again. The launcher activates the override first thing,
+  logs which PyTorch loaded and from where, and Settings shows the override state (unpacked,
+  restart needed / active / did not load, with the reason).
+- Auto tier chose a downloaded model that can never run here (TRELLIS on a 6 GiB GPU) over one
+  that fits but is not downloaded, and then refused. It now prefers the model that fits and says
+  what to download. Fit reasons name the real blocker first (GPU memory before the missing CUDA
+  build) and read as sentences.
+- Unexpected engine errors are reported as "internal error … please report it", not a bare
+  traceback fragment.
+- Uploaded pictures kept their generated file name; the job title and gallery now show the
+  name you uploaded.
+
+### Changed
+- In-app hints no longer tell you to run `shapestudio install-runtime --cuda` (the Store and
+  installer apps put no such command on PATH); they are buttons: Download TripoSR, Install the
+  CUDA build, Download the background model.
+- Create lists only downloaded models in the Model menu; models that are not downloaded are
+  named underneath with their fit and size, with a link to Settings. The surface-grid slider
+  stops at the finest grid that fits this machine's memory.
+- One compact note on Create instead of four stacked banners; further notes behind "more".
+- Settings splits the table into Installed, Available to install and Runtime. Every model shows
+  minimum and recommended requirements (RAM, NVIDIA GPU memory, CUDA build) against this
+  machine. Installing a model that does not fit asks "Download anyway", with the reason.
+- The CUDA build is one row like the others: Install… / Remove / Restart now, with the steps
+  written out (download, verify, unpack, restart, then the GPU is used) and the wheel's hash.
+- Home sorts the models by fit and marks the one recommended for this machine; cards carry the
+  requirements table. Checklist steps have buttons.
+- TripoSR's status line says what is true: it runs end to end in the project's tests and your
+  first real run makes the estimates measured; "measured on this machine: N runs" once it has.
+
+### Added
+- First-run setup card on Home: detects the machine, names the recommended model and
+  background model with sizes, one "Download and set up" button, then "Try the sample box".
+- Three built-in sample pictures (sphere, box, mug), no download needed.
+- Batch mode: drop several pictures, one job each.
+- The first successful reconstruction writes the measured profile; no benchmark click needed.
+- Restart from inside the desktop app (Settings, and after the CUDA build is unpacked).
+- Mesh tools in the viewer: STL for printing (optionally scaled to a size in mm), lighter mesh
+  (vertex clustering), smooth, flip normals, scale. Each writes a new file next to the original.
+- "Report a problem": one text with version, machine, runtime, the failing job and the log
+  tail, shown in full before you open a prefilled issue on presidium-releases.
+- `capabilities()` and `components` carry `requirements`, `requirements_met`,
+  `recommended`, `max_resolution_fits`, `setup` and `samples`; `plan` carries `hints`.
+
 ## 0.1.5 — 2026-10-21
 
 ### Fixed

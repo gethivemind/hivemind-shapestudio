@@ -20,6 +20,8 @@ from __future__ import annotations
 
 import importlib.machinery
 import json
+import logging
+import os
 import subprocess
 import sys
 import zipfile
@@ -39,6 +41,7 @@ from shapestudio.registry import (
 
 ConsentFn = Callable[[str, int], bool]
 ProgressFn = Callable[[int, int], None]
+log = logging.getLogger("shapestudio.runtime")
 
 
 @dataclass
@@ -131,7 +134,9 @@ def runtime_info(settings: Settings) -> dict | None:
 
 
 def activate_runtime(settings: Settings) -> Path | None:
-    """Called before anything imports torch. Returns the runtime root in use, if any."""
+    """Called before anything imports torch (the CLI's main and the desktop launcher's main
+    both do; 0.1.0 to 0.1.5's launcher forgot, so the unpacked CUDA build was never loaded).
+    Returns the runtime root in use, if any."""
     global _RUNTIME_ROOT
     info = runtime_info(settings)
     if not info or info.get("flavor") != "cuda":
@@ -140,10 +145,62 @@ def activate_runtime(settings: Settings) -> Path | None:
         return None  # the user switched back to the bundled CPU build
     root = settings.runtime_dir / "cuda" / "site-packages"
     if not (root / "torch" / "__init__.py").exists():
+        log.warning("runtime.json says cuda but %s has no torch package", root)
+        return None
+    if "torch" in sys.modules:
+        log.warning("torch was imported before activate_runtime; the override cannot apply")
         return None
     _RUNTIME_ROOT = root
     sys.meta_path.insert(0, _RuntimeFinder(root))
+    if sys.platform == "win32" and hasattr(os, "add_dll_directory"):
+        lib = root / "torch" / "lib"
+        if lib.is_dir():
+            os.add_dll_directory(str(lib))
+    log.info("torch will load from %s", root)
     return root
+
+
+def override_state(settings: Settings) -> dict:
+    """What happened to the consented CUDA build, in words the Settings page can show:
+    ``none`` (nothing unpacked), ``pending_restart`` (unpacked in this session, not loaded),
+    ``active`` (this process runs it), ``not_loaded`` (unpacked, a restart happened, but the
+    bundled build still loaded: the error says why) or ``disabled`` (switched back)."""
+    info = runtime_info(settings)
+    if not info or info.get("flavor") != "cuda":
+        return {"state": "none"}
+    if settings.config().get("runtime", "cuda") != "cuda":
+        return {"state": "disabled", "wheel": info.get("wheel")}
+    st = torch_status()
+    if _RUNTIME_ROOT is not None and st.installed and st.from_runtime_dir:
+        return {
+            "state": "active",
+            "wheel": info.get("wheel"),
+            "cuda_available": st.cuda_available,
+            "device": st.device_name,
+            "detail": None
+            if st.cuda_available
+            else (
+                "the CUDA build loaded but sees no CUDA device: "
+                f"{st.device_name or 'is the NVIDIA driver installed and current?'}"
+            ),
+        }
+    if _RUNTIME_ROOT is not None and not st.installed:
+        return {
+            "state": "not_loaded",
+            "wheel": info.get("wheel"),
+            "detail": f"the unpacked build failed to import: {st.error}",
+        }
+    if _RUNTIME_ROOT is None:
+        return {
+            "state": "pending_restart",
+            "wheel": info.get("wheel"),
+            "detail": "unpacked; the studio loads it at its next start",
+        }
+    return {
+        "state": "not_loaded",
+        "wheel": info.get("wheel"),
+        "detail": f"the bundled build loaded instead, from {st.location}",
+    }
 
 
 # --- install --------------------------------------------------------------------------------
@@ -184,8 +241,15 @@ def cuda_install_plan(settings: Settings) -> dict:
             "bytes": wheel.file.size,
             "gib": round(wheel.file.size / GIB, 2),
             "target": str(settings.runtime_dir / "cuda"),
-            "note": "downloaded once, hash-verified, unpacked under the data folder; the app "
-            "loads it instead of its bundled CPU build. Not yet verified on a GPU machine.",
+            "note": "downloaded once, hash-verified, unpacked under the data folder. After a "
+            "restart the app loads it instead of its bundled CPU build and reconstructions "
+            "run on the GPU.",
+            "steps": [
+                "download the wheel (about 1.9 GiB, from download.pytorch.org)",
+                "verify its SHA-256 and unpack it under the data folder",
+                "restart the studio: it then loads the CUDA build",
+                "reconstruct: the planner picks the GPU when the model fits its memory",
+            ],
         }
     return {
         "possible": True,
@@ -207,6 +271,11 @@ def cuda_install_plan(settings: Settings) -> dict:
             "interpreter. On Linux the wheel is about 0.5 GiB and pulls roughly 2.5 GiB of "
             "nvidia-* library wheels; on Windows the single wheel is about 1.9 GiB."
         ),
+        "steps": [
+            "pip replaces the CPU build of torch in this Python environment",
+            "restart the studio so the new build is imported",
+            "reconstruct: the planner picks the GPU when the model fits its memory",
+        ],
     }
 
 
@@ -230,8 +299,12 @@ def install_cuda_runtime(
                 f"'torch=={TORCH_VERSION}' --pip-args='--index-url {TORCH_CUDA_INDEX}' "
                 "(or --force to replace the CPU build)."
             )
-        torch_status(refresh=True)
-        return {"installed": True, "method": "pip", "status": torch_status().to_dict()}
+        return {
+            "installed": True,
+            "method": "pip",
+            "restart_required": True,
+            "message": "the CUDA build is installed; restart the studio to load it",
+        }
     # frozen: download the wheel and unpack it
     from shapestudio import download as dl
 
@@ -296,6 +369,7 @@ def report(settings: Settings) -> dict:
         "frozen_app": is_frozen(),
         "runtime_dir": str(settings.runtime_dir),
         "runtime_installed": runtime_info(settings),
+        "override": override_state(settings),
         "cuda_install": plan,
         "python": f"{sys.version_info.major}.{sys.version_info.minor}",
     }

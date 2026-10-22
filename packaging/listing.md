@@ -1,7 +1,8 @@
 # Microsoft Store listing: Presidium Shape Studio
 
 Copy-paste material for Partner Center. Nothing here claims a measurement the project has not
-made; the first real reconstruction on a GPU machine is still pending (see README → Status).
+made; a complete measured reconstruction on a GPU machine is still pending (see README →
+Status). Submit 0.1.6 or newer: 0.1.5 fails every reconstruction with background removal.
 
 ## Product name
 
@@ -35,7 +36,12 @@ Permissive licences only. Models under non-commercial or revenue-gated terms are
 policy and named as such. The models download once, with your consent, pinned by SHA-256, and
 the studio works offline afterwards.
 
-Also inside: a gallery with a 3D viewer, favourites, notes and projects with one-zip export; a
+Every model states its minimum and recommended requirements and the studio checks them
+against your PC before you download anything. A first-run card sets the machine up with one
+button, and three built-in sample pictures let you try it before you find a photo.
+
+Also inside: a gallery with a 3D viewer and mesh tools (STL for printing, lighter mesh, smooth,
+flip, scale), favourites, notes and projects with one-zip export; batch reconstruction; a
 command line; and a Model Context Protocol server so Claude, Cursor, VS Code or Presidium can
 make meshes for you. Dark and light themes, phone-friendly layout.
 
@@ -47,7 +53,15 @@ Part of the Presidium family, alongside Presidium Image Studio. Open source unde
 2. Best quality by default; faster presets only when you choose them, with the trade-off stated
 3. Two tiers chosen by your hardware, never swapped silently; CPU or NVIDIA GPU
 4. Permissive licences only (TripoSR, TRELLIS); models download once with your consent, then offline
-5. Gallery with 3D viewer, projects and exports, a command line, and an MCP server for AI agents
+5. Requirements checked against your PC, one-button setup, STL export and mesh tools, an MCP server for AI agents
+
+## What's new in this version (release notes field)
+
+0.1.6: fixes the two bugs the first GPU-laptop run found (every reconstruction failed in the
+background remover; the CUDA build downloaded but never loaded). Minimum and recommended
+requirements per model, checked against your PC. One-button first-run setup and sample
+pictures. Only downloaded models in the Create menu; grid capped at what fits. STL export and
+mesh tools. Restart from inside the app. "Report a problem" with the full text shown first.
 
 ## URLs
 

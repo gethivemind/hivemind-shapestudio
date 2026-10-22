@@ -484,7 +484,11 @@ class Worker:
                 job.status, job.phase, job.error = "failed", "failed", str(e)
         except Exception as e:
             stop_watch.set()
-            job.status, job.phase, job.error = "failed", "failed", f"{type(e).__name__}: {e}"
+            job.status, job.phase = "failed", "failed"
+            job.error = (
+                f"The engine hit an internal error ({type(e).__name__}: {e}). This is a bug "
+                "in the studio, not in your picture; please report it from Settings."
+            )
         else:
             stop_watch.set()
             job.status, job.phase, job.progress = "done", "done", 1.0

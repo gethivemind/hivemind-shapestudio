@@ -11,6 +11,7 @@ import time
 import zlib
 
 from shapestudio.engine.base import (
+    BackgroundResult,
     EngineError,
     EngineResult,
     MeshSpec,
@@ -117,8 +118,8 @@ class FakeBackgroundEngine:
     def version(self) -> str | None:
         return "fake-bg-0"
 
-    def remove_background(self, spec, on_progress=None) -> EngineResult:
+    def remove_background(self, spec, on_progress=None) -> BackgroundResult:
         self.calls.append(spec)
         spec.output.parent.mkdir(parents=True, exist_ok=True)
         spec.output.write_bytes(tiny_png(16, 16, (10, 200, 10)))
-        return spec.output
+        return BackgroundResult(spec.output, 0.0, 0.0, 0.0, ["fake-bg"])

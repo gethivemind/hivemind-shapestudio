@@ -65,6 +65,17 @@ class EngineResult:
     peak_rss_bytes: int = 0
 
 
+@dataclass
+class BackgroundResult:
+    """What the background remover produced: the RGBA cutout and its timings."""
+
+    output: Path
+    load_seconds: float
+    matte_seconds: float
+    total_seconds: float
+    log_tail: list[str] = field(default_factory=list)
+
+
 ProgressFn = Callable[[Progress], None]
 
 
