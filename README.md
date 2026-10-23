@@ -69,6 +69,7 @@ measured reconstruction is still to be reported (see Status).
 | CUDA runtime download for the packaged Windows app | Download and unpack verified by a user (0.1.5). Loading it was broken until 0.1.6 (the launcher never activated it); Settings now shows whether the unpacked build loaded, **GPU run still to be confirmed** |
 | Minimum and recommended requirements per model | Stated in the catalogue and checked against the machine (0.1.6): TripoSR 8 GiB RAM minimum, 16 recommended, NVIDIA 4 GiB optional; TRELLIS NVIDIA 16 GiB minimum, 24 recommended, no CPU path |
 | Windows installer, portable zip, MSIX, macOS and Linux builds | Built by the release workflow on GitHub's runners |
+| Updates | Off until you say yes (Home asks once). Then one request a day to GitHub's releases API; the Windows installer build can download the verified Setup.exe and install it, the Store updates its own copies, pip installs are told the command (0.1.7) |
 
 ## Sizes, stated plainly
 
@@ -171,7 +172,8 @@ official builds (see NOTICE and TRADEMARK.md).
   its minimum and recommended requirements against this machine, licence, size, status and
   Install/Show/Remove (install dialogs show the files, sizes, sources and SHA-256; a model
   that does not fit asks "Download anyway"); preferences (device, memory limit, threads,
-  over-budget unlock, pause), projects, trash, "Report a problem", about.
+  over-budget unlock, pause), projects, trash, Updates (consent-first daily check, Check
+  now, Download and install on the Windows installer build), "Report a problem", about.
 
 Dark and light themes in the Presidium palette (Shape Studio coral #D5582F), phone-friendly layout, the Presidium spinner while a job runs.
 

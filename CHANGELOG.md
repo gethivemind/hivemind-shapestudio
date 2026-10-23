@@ -4,6 +4,19 @@ All notable changes to Presidium Shape Studio. The format follows Keep a Changel
 follow semantic versioning. Official builds: GitHub Releases and the `presidium-shapestudio`
 package on PyPI.
 
+## 0.1.7 — 2026-10-23
+
+### Added
+- **Update check, consent first.** Home asks once whether the studio may check GitHub's
+  releases API for a newer version (one request a day, nothing about the machine sent);
+  Settings → Updates has the switch, "Check now" and the answer. When a newer version
+  exists, a pill appears in the header and Home and Settings say what to do for this kind of
+  installation: the Windows installer build offers "Download and install" (the Setup.exe is
+  fetched from GitHub Releases, verified against its published SHA-256, then Inno Setup
+  closes the studio, installs and starts the new one); Store copies are updated by the
+  Store; pip installs get the `pipx upgrade` command; portable, macOS and Linux builds get
+  the release link. `shapestudio update` does the same from the command line.
+
 ## 0.1.6 — 2026-10-22
 
 The first run on a real GPU laptop (GTX 1660 Ti, 6 GiB; 16 GiB RAM) found two blocking bugs

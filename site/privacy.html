@@ -19,11 +19,12 @@
   <h2>What leaves your computer</h2>
   <ul>
     <li><b>Model and runtime downloads</b>, only when you ask for them and approve the size: the studio fetches the pinned files from their original hosts (Hugging Face for TripoSR and TRELLIS, GitHub Releases for the background-removal models, download.pytorch.org for the CUDA build of PyTorch) and verifies their SHA-256. Those hosts see an ordinary download request from your IP address, as any browser download would.</li>
+    <li><b>Update check</b>, only if you turned it on (Home asks once; Settings → Updates): at most one request a day to api.github.com for the number of the latest release. Nothing about your machine is sent. "Download and install" then fetches the installer from GitHub Releases and verifies its SHA-256.</li>
     <li><b>The 3D viewer script</b> (model-viewer, Apache-2.0) is loaded from the jsdelivr CDN at a pinned version when you open the gallery; jsdelivr sees that request. Without it the gallery shows the turntable PNG rendered locally.</li>
   </ul>
   <p>Nothing else connects anywhere. Your pictures, meshes, settings and job history stay in the studio's data folder on your disk (<code>%LOCALAPPDATA%\shapestudio</code> on Windows) and are yours to delete.</p>
   <h2>The MCP server</h2>
   <p>When an agent (Claude, Cursor, VS Code or another MCP client) uses the studio, that client decides what it sends to its own model provider; the studio itself only reads and writes files on your machine.</p>
-  <p class="muted">Contact: <a href="https://github.com/presidiumdev/presidium-releases/issues">GitHub issues (presidium-releases)</a>. Last updated 2026-10-18.</p>
+  <p class="muted">Contact: <a href="https://github.com/presidiumdev/presidium-releases/issues">GitHub issues (presidium-releases)</a>. Last updated 2026-10-23.</p>
 </div></body>
 </html>

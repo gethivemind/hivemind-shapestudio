@@ -57,6 +57,8 @@ Part of the Presidium family, alongside Presidium Image Studio. Open source unde
 
 ## What's new in this version (release notes field)
 
+0.1.7: the app can check for new versions (only after you say yes; one request a day to
+GitHub) and tell you what to do; Store copies are updated by the Store itself.
 0.1.6: fixes the two bugs the first GPU-laptop run found (every reconstruction failed in the
 background remover; the CUDA build downloaded but never loaded). Minimum and recommended
 requirements per model, checked against your PC. One-button first-run setup and sample

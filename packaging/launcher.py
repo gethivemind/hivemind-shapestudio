@@ -544,6 +544,7 @@ def main() -> int:
     set_app_id()
     app = App(server, settings.data_dir, log_path)
     server.studio.on_restart = app.restart  # Settings → "Restart now" after a runtime change
+    server.studio.on_quit = app.quit  # the update installer takes over from here
     control = claim_instance(app.focus)
     try:
         app.run()  # blocks until the window is destroyed

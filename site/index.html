@@ -115,7 +115,7 @@
 
   <section id="status">
     <h2>Status, stated plainly</h2>
-    <p class="sub">Version 0.1.6. What is proven, what a first user found, what still waits for a GPU report.</p>
+    <p class="sub">Version 0.1.7. What is proven, what a first user found, what still waits for a GPU report.</p>
     <div class="tablewrap"><table class="status">
       <tr><th>Part</th><th>State</th></tr>
       <tr><td>Queue, planner, downloads, UI, CLI, MCP server, GLB/OBJ, turntable</td><td class="ok">proven by the test suite with a fake engine</td></tr>
@@ -123,6 +123,7 @@
       <tr><td>TripoSR with the real weights</td><td class="warn">loaded on a user's GTX 1660 Ti laptop with 0.1.5; that run failed in the background remover (fixed in 0.1.6). A complete measured run is still to be reported</td></tr>
       <tr><td>TRELLIS engine</td><td class="bad">not integrated; the studio says so</td></tr>
       <tr><td>CUDA build in the Windows app</td><td class="warn">download and unpack verified by a user; loading it was broken until 0.1.6 (the app never activated it). Settings now says whether it loaded; a GPU run is still to be confirmed</td></tr>
+      <tr><td>Updates</td><td class="ok">0.1.7: consent-first daily check against GitHub Releases; the Windows installer build downloads the verified Setup.exe and installs it, the Store updates its copies, pip installs get the command</td></tr>
       <tr><td>Requirements, setup, mesh tools, problem reports</td><td class="ok">0.1.6: minimum and recommended requirements per model checked against your machine, a one-button first-run setup with sample pictures, STL export and mesh clean-up, "Report a problem"</td></tr>
       <tr><td>Desktop window (Windows, macOS, Linux apps)</td><td class="ok">starts since 0.1.5; every earlier app build crashed at launch (the CLI and web UI were unaffected)</td></tr>
     </table></div>
@@ -139,10 +140,10 @@
     <h2>Install</h2>
     <p class="sub">A Windows, macOS or Linux app, or Python 3.11 or newer on any OS. The models are downloaded by the studio itself, with your consent, hash-verified.</p>
     <div class="install">
-      <div class="card"><h3>Windows app</h3><pre>ShapeStudio-0.1.6-Setup.exe
-→ Next, Next, done</pre><p class="note"><b>Use 0.1.6 or newer.</b> 0.1.0 to 0.1.4 crash at start; 0.1.5 starts but every reconstruction with background removal fails and the CUDA build never loads. 0.1.6 fixes both. A Microsoft Store listing is in certification; until it carries 0.1.6, install from the release below.</p><p class="note">From the <a href="https://github.com/presidiumdev/presidium-shapestudio/releases/latest" target="_blank" rel="noopener">latest release</a>. Start menu, uninstall from Settings, no administrator rights. A portable zip is there too. Not code-signed yet: SmartScreen asks once per download ("More info" → "Run anyway"). The SHA-256 is next to the download. PyTorch's CPU build (124 MB) is inside; the CUDA build (1.9 GiB) is offered on NVIDIA machines.</p></div>
-      <div class="card"><h3>macOS and Linux</h3><pre>ShapeStudio-0.1.6-macos-arm64.zip
-ShapeStudio-0.1.6-linux-x86_64.tar.gz</pre><p class="note">Apple silicon: unzip, right-click "Shape Studio.app" → Open the first time (not notarized yet). Linux x86_64: unpack, run <code>ShapeStudio</code>; it opens in your browser. The SHA-256 is next to each download.</p></div>
+      <div class="card"><h3>Windows app</h3><pre>ShapeStudio-0.1.7-Setup.exe
+→ Next, Next, done</pre><p class="note"><b>Use 0.1.6 or newer.</b> 0.1.0 to 0.1.4 crash at start; 0.1.5 starts but every reconstruction with background removal fails and the CUDA build never loads. 0.1.6 fixes both; from 0.1.7 the app can tell you about new versions itself (one request a day to GitHub, only after you say yes) and install them. A Microsoft Store listing is in certification; until it carries the current version, install from the release below.</p><p class="note">From the <a href="https://github.com/presidiumdev/presidium-shapestudio/releases/latest" target="_blank" rel="noopener">latest release</a>. Start menu, uninstall from Settings, no administrator rights. A portable zip is there too. Not code-signed yet: SmartScreen asks once per download ("More info" → "Run anyway"). The SHA-256 is next to the download. PyTorch's CPU build (124 MB) is inside; the CUDA build (1.9 GiB) is offered on NVIDIA machines.</p></div>
+      <div class="card"><h3>macOS and Linux</h3><pre>ShapeStudio-0.1.7-macos-arm64.zip
+ShapeStudio-0.1.7-linux-x86_64.tar.gz</pre><p class="note">Apple silicon: unzip, right-click "Shape Studio.app" → Open the first time (not notarized yet). Linux x86_64: unpack, run <code>ShapeStudio</code>; it opens in your browser. The SHA-256 is next to each download.</p></div>
       <div class="card"><h3>With pipx or pip</h3><pre>pipx install presidium-shapestudio
 shapestudio ui</pre><p class="note">PyTorch comes along as a dependency: 124 MB on Windows, 127 MB on macOS; on Linux the PyPI default is the CUDA build (about 3 GB with its libraries), so add <code>--pip-args "--extra-index-url https://download.pytorch.org/whl/cpu"</code> for the CPU build.</p></div>
       <div class="card"><h3>First run</h3><pre>shapestudio doctor

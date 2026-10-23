@@ -374,6 +374,25 @@ def build_app(studio: Studio) -> Starlette:
     async def restart(_: Request) -> JSONResponse:
         return JSONResponse(studio.request_restart())
 
+    async def update_state(request: Request) -> JSONResponse:
+        force = request.query_params.get("force") in ("1", "true")
+        return JSONResponse(await run_in_threadpool(studio.update_state, force))
+
+    async def update_consent(request: Request) -> JSONResponse:
+        body = await request.json()
+        return JSONResponse(
+            await run_in_threadpool(studio.set_update_check, bool(body.get("enabled")))
+        )
+
+    async def update_install(request: Request) -> JSONResponse:
+        body = await request.json()
+        if not body.get("consent"):
+            return err(StudioError("consent required"))
+        try:
+            return JSONResponse(studio.start_update_install().to_dict())
+        except StudioError as e:
+            return err(e)
+
     async def trash(_: Request) -> JSONResponse:
         return JSONResponse({"jobs": studio.trash()})
 
@@ -538,6 +557,9 @@ def build_app(studio: Studio) -> Starlette:
             Route("/api/sample/{name}", sample),
             Route("/api/report", report),
             Route("/api/restart", restart, methods=["POST"]),
+            Route("/api/update", update_state),
+            Route("/api/update/consent", update_consent, methods=["POST"]),
+            Route("/api/update/install", update_install, methods=["POST"]),
             Route("/api/trash", trash),
             Route("/api/trash/empty", empty_trash, methods=["POST"]),
             Route("/api/export", export_jobs, methods=["POST"]),

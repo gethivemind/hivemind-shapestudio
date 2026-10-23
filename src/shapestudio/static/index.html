@@ -38,6 +38,7 @@
   .grow { flex: 1; }
   .chip { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface2); font-size: 12px; color: var(--ink2); white-space: nowrap; }
   .chip .spin { width: 18px; height: 18px; margin: -2px 0; }
+  button.chip { cursor: pointer; color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
   .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
   .dot.busy { background: var(--accent); animation: pulse 1.1s infinite; } .dot.warn { background: var(--warn); } .dot.off { background: var(--muted); }
   @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
@@ -149,11 +150,13 @@
   <div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="53.1" cy="18.2" r="3.6" fill="#D5582F"/><circle cx="58.3" cy="41" r="3.6" fill="#D5582F"/><circle cx="43.7" cy="59.3" r="3.6" fill="#D5582F"/><circle cx="20.3" cy="59.3" r="3.6" fill="#D5582F"/><circle cx="5.7" cy="41" r="3.6" fill="#D5582F"/><circle cx="10.9" cy="18.2" r="3.6" fill="#D5582F"/><circle cx="32" cy="8" r="5.5" fill="#D5582F"/><path d="M32 24 L42 29.5 V40.5 L32 46 L22 40.5 V29.5 Z" fill="none" stroke="#D5582F" stroke-width="3" stroke-linejoin="round"/><path d="M22 29.5 L32 35 L42 29.5 M32 35 V46" fill="none" stroke="#D5582F" stroke-width="2.6" stroke-linejoin="round"/></svg><span class="lk"><b>Presidium</b> Shape Studio</span></div>
   <nav class="tabs" id="tabs"><button data-tab="home">Home</button><button data-tab="create" class="active">Create</button><button data-tab="gallery">Gallery</button><button data-tab="settings">Settings</button></nav>
   <div class="grow"></div>
+  <button class="chip hidden" id="updatechip" title="A newer version is available" onclick="showTab('settings')"><i class="dot busy"></i><span>update</span></button>
   <span class="chip" id="statuschip"><i class="dot off"></i><img class="spin hidden" src="/brand/shape-spinner.svg" alt="" width="18" height="18"><span>starting…</span></span>
   <button class="ib" id="theme" title="Theme">◐</button>
 </header>
 
 <section class="view" id="home"><div class="wrap">
+  <div id="updatehome"></div>
   <div class="card setup hidden" id="setupcard" style="margin-bottom:14px"></div>
   <div class="card" style="margin-bottom:14px">
     <h2>Your own 3D studio. Free, local, honest.</h2>
@@ -253,6 +256,10 @@
     <h3 style="margin-top:16px">Trash</h3>
     <div id="trashlist" class="small"></div>
     <button class="btn sm danger" id="emptytrash" style="margin-top:8px">Empty trash</button>
+  </div>
+  <div class="card">
+    <h3>Updates</h3>
+    <div id="updatecard" class="small"></div>
   </div>
   <div class="card">
     <h3>Something went wrong?</h3>
@@ -449,7 +456,7 @@ async function loadSettings() {
   const p = c.profile; $("#profile").innerHTML = p ? `Measured ${esc(new Date(p.measured_at).toLocaleString())} (${esc(p.source||"benchmark")}): ${esc(p.model)} on ${p.device}, ${p.resolution}³ grid: wall ${human(p.wall_seconds)} (load ${human(p.load_seconds)}, network ${human(p.network_seconds)}, grid ${human(p.grid_seconds)})${p.peak_rss_gib?`, peak ${p.peak_rss_gib} GiB`:""}, ${p.vertices?.toLocaleString()} vertices. Expected now: ${Object.entries(p.expected_seconds_per_preset).map(([k,v])=>`${k} ${human(v)}`).join(" · ")}` : `<span class="muted">Nothing measured yet: estimates are heuristics labelled "not measured yet". Your first reconstruction measures them; the benchmark does the same with a built-in test image.</span>`;
   const cfg = c.config; $("#device").value = cfg.device; $("#memlimit").value = cfg.max_memory_gib ?? ""; $("#threads").value = cfg.default_threads ?? ""; $("#overbudget").classList.toggle("on", cfg.allow_over_budget); $("#paused").classList.toggle("on", cfg.paused);
   const a = await api("/api/about"); $("#about").innerHTML = `${esc(a.product)} ${esc(a.version)} · ${esc(a.licence)} · <a href="${a.homepage}" target="_blank" rel="noopener">website</a> · <a href="${a.source}" target="_blank" rel="noopener">source</a><br>MCP server command: <code>${esc(a.mcp_command)}</code><br>Data folder: <code>${esc(c.paths.data_dir)}</code><br>${esc(a.credit)}`;
-  loadComponents(); loadProjects().then(renderProjects); loadTrash();
+  loadComponents(); loadProjects().then(renderProjects); loadTrash(); renderUpdate();
 }
 function compRow(cmp) { const inst = cmp.installed; let action = "", status = "";
   if (cmp.kind==="runtime") { const ci = cmp.cuda_install||{}; const ov = cmp.override||{state:"none"};
@@ -495,6 +502,24 @@ window.removeProject = async id => { if (await ask("Forget project", "<p>The mes
 async function loadTrash() { const t = await api("/api/trash"); $("#trashlist").innerHTML = t.jobs.length ? t.jobs.map(j => `<div class="row" style="justify-content:space-between;padding:4px 0"><span>${esc(j.title)}</span><button class="btn sm" onclick="restoreJob('${j.id}')">Restore</button></div>`).join("") : `<span class="muted">Empty.</span>`; }
 window.restoreJob = async id => { await post(`/api/jobs/${id}/restore`); loadTrash(); pollJobs(); };
 $("#emptytrash").onclick = async () => { if (await ask("Empty trash", "<p>Deletes the trashed meshes permanently.</p>", [{label:"Cancel"},{label:"Delete", value:true, danger:true}])) { const r = await post("/api/trash/empty"); toast(`${r.emptied} removed`); loadTrash(); } };
+// ---------- updates (consent first; one request a day to GitHub's releases API)
+async function loadUpdate(force=false) { try { S.update = await api("/api/update" + (force ? "?force=1" : "")); } catch (e) { S.update = {error: e.message}; } renderUpdate(); }
+function renderUpdate() { const u = S.update; if (!u) return; const chip = $("#updatechip"); chip.classList.toggle("hidden", !u.available); if (u.available) chip.lastElementChild.textContent = `update ${u.latest}`;
+  const home = $("#updatehome"); const when = u.checked_at ? new Date(u.checked_at*1000).toLocaleString() : null;
+  const ask = u.enabled === null || u.enabled === undefined ? `<div class="card" style="margin-bottom:14px"><h3>Check for updates once a day?</h3><p class="small muted" style="margin:0 0 8px">One request a day to api.github.com for the number of the latest release; nothing about this machine is sent. You can change this under Settings → Updates.</p><div class="row"><button class="btn sm primary" onclick="setUpdateCheck(true)">Yes, check daily</button><button class="btn sm" onclick="setUpdateCheck(false)">No, I will look myself</button></div></div>` : "";
+  const notice = u.available ? `<div class="card setup" style="margin-bottom:14px"><h3>Version ${esc(u.latest)} is available (you run ${esc(u.current)})</h3><p class="small">${esc(u.how?.text||"")}</p><div class="row">${u.how?.can_install ? `<button class="btn sm primary" onclick="installUpdate()">Download and install</button>` : ""}<a class="btn sm" href="${esc(u.how?.url||u.url||u.releases_url)}" target="_blank" rel="noopener">Release notes</a></div></div>` : "";
+  home.innerHTML = ask + notice;
+  const card = $("#updatecard"); if (!card) return;
+  const sw = `<div class="row" style="margin-bottom:8px"><button class="sw ${u.enabled?"on":""}" onclick="setUpdateCheck(${!u.enabled})"></button><span>Check once a day (api.github.com, one request)</span></div>`;
+  let state;
+  if (u.error) state = `<div class="alert bad">Could not check: ${esc(u.error)}</div>`;
+  else if (u.available) state = `<div class="alert"><b>Version ${esc(u.latest)} is available</b> (you run ${esc(u.current)}). ${esc(u.how?.text||"")}<div class="row">${u.how?.can_install ? `<button class="btn sm primary" onclick="installUpdate()">Download and install</button>` : ""}<a class="btn sm" href="${esc(u.how?.url||u.url||u.releases_url)}" target="_blank" rel="noopener">Release notes</a></div></div>`;
+  else if (u.latest) state = `<div class="muted">You run ${esc(u.current)}, the latest release is ${esc(u.latest)}${when?` (checked ${esc(when)})`:""}.</div>`;
+  else state = `<div class="muted">Not checked yet. This copy: ${esc(u.current)} (${esc(u.install_kind)}).</div>`;
+  card.innerHTML = sw + state + `<div class="row" style="margin-top:8px"><button class="btn sm" onclick="loadUpdate(true)">Check now</button><a class="btn sm" href="${esc(u.releases_url)}" target="_blank" rel="noopener">All releases</a></div><div id="updtask" class="small" style="margin-top:6px"></div>`; }
+window.setUpdateCheck = async v => { try { S.update = await post("/api/update/consent", {enabled: v}); renderUpdate(); if (v) loadUpdate(); } catch (e) { toast(e.message); } };
+window.installUpdate = async () => { const u = S.update; if (!await ask(`Install Shape Studio ${esc(u.latest)}`, `<p>${esc(u.how?.text||"")}</p><p class="small muted">The installer is fetched from GitHub Releases and checked against its published SHA-256 before it runs. Queued jobs wait; a running job blocks the update.</p>`, [{label:"Cancel"},{label:"Download and install", value:true, primary:true}])) return;
+  try { await post("/api/update/install", {consent:true}); toast("Downloading the installer…"); const t = setInterval(async () => { const tasks = await api("/api/tasks"); const x = tasks["update:install"]; if (!x) return; const el = $("#updtask"); if (el) el.innerHTML = `${esc(x.label)}: ${x.status}${x.progress!=null?` ${Math.round(x.progress*100)}%`:""}${x.message?` · ${esc(x.message)}`:""}${x.error?` · <span style="color:var(--bad)">${esc(x.error)}</span>`:""}`; if (x.status !== "running") { clearInterval(t); if (x.error) toast(x.error, 10000); } }, 1000); } catch (e) { toast(e.message, 8000); } };
 // ---------- the desktop window asks before closing while a job runs (pywebview api)
 window.askClose = async () => {
   const api = window.pywebview && window.pywebview.api; const info = api ? await api.app_info().catch(()=>({})) : {};
@@ -505,7 +530,7 @@ window.askClose = async () => {
   if (api) api.close_decision(v || "cancel");
 };
 // ---------- boot
-(async () => { await pollJobs(); await loadCaps(); await loadProjects(); setInterval(pollJobs, 2000); document.body.dataset.booted = "1"; })();
+(async () => { await pollJobs(); await loadCaps(); await loadProjects(); setInterval(pollJobs, 2000); document.body.dataset.booted = "1"; loadUpdate(); })();
 </script>
 </body>
 </html>

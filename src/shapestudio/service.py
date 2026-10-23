@@ -19,7 +19,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from shapestudio import __version__, runtime
+from shapestudio import __version__, runtime, updates
 from shapestudio.calibration import Calibration, human_duration
 from shapestudio.config import ENV_ALLOW_OVER_BUDGET, Settings
 from shapestudio.hardware import GIB, Hardware, detect
@@ -142,6 +142,7 @@ class Studio:
         self.worker_wanted = start_worker
         self.tasks: dict[str, BackgroundTask] = {}
         self.on_restart = None  # the desktop launcher sets this; None = no in-app restart
+        self.on_quit = None  # the desktop launcher sets this; used after an update download
         if start_worker:
             self.worker.start()
 
@@ -1024,6 +1025,86 @@ class Studio:
         threading.Thread(target=run, name=key, daemon=True).start()
         return task
 
+    # -- updates -----------------------------------------------------------------------------
+
+    def update_state(self, force: bool = False) -> dict[str, Any]:
+        """The update picture for the UI: consent, the cached or fresh check, what this
+        installation can do about it. Never contacts the network unless the user said yes
+        (or ``force`` for an explicit "Check now")."""
+        on = updates.enabled(self.settings)
+        kind = updates.install_kind()
+        info: dict[str, Any] | None = None
+        if on or force:
+            info = updates.check(self.settings, force=force)
+        else:
+            info = updates.cached(self.settings)
+            if info:
+                info["available"] = updates.is_newer(info.get("latest") or "0.0.0")
+        out: dict[str, Any] = {
+            "enabled": on,
+            "current": __version__,
+            "install_kind": kind,
+            "releases_url": updates.RELEASES_URL,
+            "latest": None,
+            "available": False,
+        }
+        if info:
+            keys = (
+                "latest",
+                "available",
+                "url",
+                "published_at",
+                "notes",
+                "checked_at",
+                "error",
+                "setup_name",
+            )
+            out.update({k: info.get(k) for k in keys})
+            out["how"] = updates.how_to_update(kind, info)
+        return out
+
+    def set_update_check(self, value: bool) -> dict[str, Any]:
+        updates.set_enabled(self.settings, value)
+        return self.update_state()
+
+    def start_update_install(self) -> BackgroundTask:
+        """Windows installer build only: download the new Setup.exe, verify, hand over."""
+        key = "update:install"
+        existing = self.tasks.get(key)
+        if existing and existing.status == "running":
+            return existing
+        info = updates.check(self.settings)
+        how = updates.how_to_update(updates.install_kind(), info)
+        if not info.get("available"):
+            raise StudioError("no newer version is known; check for updates first")
+        if not how["can_install"]:
+            raise StudioError(how["text"])
+        if self.jobs.running() is not None:
+            raise StudioError("a job is running; wait for it or cancel it before updating")
+        task = BackgroundTask("update", f"Shape Studio {info['latest']} installer")
+        self.tasks[key] = task
+
+        def progress(done: int, total: int) -> None:
+            task.done_bytes, task.total_bytes = done, total or task.total_bytes
+
+        def run() -> None:
+            try:
+                path = updates.download_installer(self.settings, info, progress)
+                task.message = "verified; starting the installer, the studio closes now"
+                task.status = "done"
+                task.result = {"installer": str(path)}
+                task.finished_at = time.time()
+                time.sleep(1.5)  # let the UI read the final state
+                updates.launch_installer(path)
+                if self.on_quit is not None:
+                    self.on_quit()
+            except Exception as e:
+                task.status, task.error = "failed", str(e)
+                task.finished_at = time.time()
+
+        threading.Thread(target=run, name=key, daemon=True).start()
+        return task
+
     def start_runtime_install(self) -> BackgroundTask:
         key = "runtime:cuda"
         existing = self.tasks.get(key)
@@ -1180,6 +1261,7 @@ class Studio:
             "paused": self.jobs.is_paused(),
             "current_project": self.current_project(),
             "runtime": cfg.get("runtime", "cpu"),
+            "check_updates": cfg.get("check_updates"),
         }
 
     def set_config(self, changes: dict[str, Any]) -> dict[str, Any]:
@@ -1209,6 +1291,8 @@ class Studio:
                 cfg.pop("default_threads", None)
             else:
                 cfg["default_threads"] = max(1, int(v))
+        if "check_updates" in changes:
+            cfg["check_updates"] = bool(changes["check_updates"])
         if "runtime" in changes:
             r = str(changes["runtime"]).lower()
             if r not in ("cpu", "cuda"):

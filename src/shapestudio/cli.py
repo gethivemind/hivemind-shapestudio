@@ -454,6 +454,29 @@ def cmd_jobs(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_update(args: argparse.Namespace) -> int:
+    from shapestudio import updates
+
+    settings = Settings.load()
+    settings.ensure_dirs()
+    if args.enable or args.disable:
+        updates.set_enabled(settings, bool(args.enable))
+        print(f"Daily update check {'on' if args.enable else 'off'}.")
+        return 0
+    info = updates.check(settings, force=True)
+    if info.get("error"):
+        print(f"Could not check: {info['error']}")
+        return 1
+    kind = updates.install_kind()
+    print(f"{PRODUCT_NAME} {__version__} ({kind}); latest release {info.get('latest')}")
+    if info.get("available"):
+        print(f"A newer version is available: {info['url']}")
+        print(updates.how_to_update(kind, info)["text"])
+        return 2
+    print("You are up to date.")
+    return 0
+
+
 def cmd_ui(args: argparse.Namespace) -> int:
     from shapestudio.ui import serve_ui
 
@@ -544,6 +567,11 @@ def build_parser() -> argparse.ArgumentParser:
     j = sub.add_parser("jobs", help="list jobs")
     j.add_argument("--json", action="store_true")
     j.set_defaults(fn=cmd_jobs)
+
+    up = sub.add_parser("update", help="check GitHub for a newer release (one request)")
+    up.add_argument("--enable", action="store_true", help="turn the daily check on")
+    up.add_argument("--disable", action="store_true", help="turn the daily check off")
+    up.set_defaults(fn=cmd_update)
 
     u = sub.add_parser("ui", help="run the local web UI")
     u.add_argument("--host", default="127.0.0.1")
